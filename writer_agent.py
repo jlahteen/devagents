@@ -24,6 +24,7 @@ class WriterAgent(ConversableAgent):
             """,
             llm_config=config.llm_config,
             human_input_mode="NEVER",
+            is_termination_msg=self.is_termination_msg,
         )
 
         self.register_for_llm(
