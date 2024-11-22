@@ -11,10 +11,10 @@ from utils.coding_mode import stop_coding_mode
 load_dotenv()
 
 from config import Config
-from scrum_master_agent import ScrumMasterAgent
-from developer_agent import DeveloperAgent
-from reviewer_agent import ReviewerAgent
-from writer_agent import WriterAgent
+from agents.scrum_master_agent import ScrumMasterAgent
+from agents.developer_agent import DeveloperAgent
+from agents.reviewer_agent import ReviewerAgent
+from agents.writer_agent import WriterAgent
 
 
 def main():
