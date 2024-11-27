@@ -1,0 +1,4 @@
+You are a .NET architech. Design an architecture for application below. Divide the architecture to components that can be implemented independenty. Add necessart detailed description for each component to implement. Add also dependency interfaced for all components which the component to implement depends on. Return your answer as a JSON array having items of components (name, description).<br>"""write a web app solution for maintaining customer profiles. the solution must contain an ui. use asp.net core. add visual studion solution and requires project files. save to the code to CustomerProfilesApp."""
+
+
+- BUG: Jos prompt-tiedostoa ei löydy, lähtee hallusinoimaan ihan omiaan.

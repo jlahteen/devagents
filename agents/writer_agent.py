@@ -1,14 +1,25 @@
-import autogen
+import textwrap
 from config import Config
 from autogen import ConversableAgent
 from tools.file_tools import save_code_to_file
 
 
 class WriterAgent(ConversableAgent):
+    _system_message = textwrap.dedent(
+        """
+        You get a conversation between a developer and a reviewer.
+        When your turn comes, the reviewer has approved the code written by the developer.
+        Your task is to save the APPROVED version of the code blocks to the files specified in the conversation.
+        Note that the file names may include a directory part which must be followed.
+        You use the save_code_to_file tool and _executor_agent agent to save files.
+        In the end, say TERMINATE.
+        """
+    )
+
     def __init__(self, config: Config):
         super().__init__(
             name="writer_agent",
-            system_message=config.writer_agent_system_message,
+            system_message=self._system_message,
             llm_config=config.llm_config,
             is_termination_msg=self.is_termination_msg,
         )
@@ -17,25 +28,23 @@ class WriterAgent(ConversableAgent):
         self._human_input = "NEVER"
 
         self._save_file_executor = ConversableAgent(
-            "_save_file_executor",
-            system_message="""
-            Your task is to save code blocks found in conversations to the corresponding file.
-            You use the save_code_to_file tool for saving files.
-            """,
-            llm_config=config.llm_config,
+            "_executor_agent",
+            system_message="",
+            llm_config=None,
             human_input_mode="NEVER",
             is_termination_msg=self.is_termination_msg,
         )
 
         self.register_for_llm(
-            name="save_code_to_file", description="A tool that can save code to a file."
+            name="save_code_to_file",
+            description="A tool that can save a code block to a file.",
         )(save_code_to_file)
 
         self._save_file_executor.register_for_execution("save_code_to_file")(
             save_code_to_file
         )
 
-        prompt = "Write the code block to the files in the following conversation:\n"
+        prompt = "Write the code blocks in the following message to the corresponding files mentioned before each block:\n"
 
         self.register_nested_chats(
             [
