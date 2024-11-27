@@ -4,7 +4,7 @@ from autogen import ConversableAgent
 from tools.file_tools import save_code_to_file
 
 
-class WriterAgent(ConversableAgent):
+class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
         You get a conversation between a developer and a reviewer.
@@ -18,10 +18,10 @@ class WriterAgent(ConversableAgent):
 
     def __init__(self, config: Config):
         super().__init__(
-            name="writer_agent",
+            name="output_agent",
             system_message=self._system_message,
             llm_config=config.llm_config,
-            is_termination_msg=self.is_termination_msg,
+            is_termination_msg=self._is_termination_msg,
         )
 
         self._code_execution_config = False
@@ -32,7 +32,7 @@ class WriterAgent(ConversableAgent):
             system_message="",
             llm_config=None,
             human_input_mode="NEVER",
-            is_termination_msg=self.is_termination_msg,
+            is_termination_msg=self._is_termination_msg,
         )
 
         self.register_for_llm(
@@ -62,7 +62,7 @@ class WriterAgent(ConversableAgent):
             lambda sender: sender not in [self._save_file_executor, self],
         )
 
-    def is_termination_msg(self, msg: dict) -> bool:
+    def _is_termination_msg(self, msg: dict) -> bool:
         return (
             msg != None
             and msg["content"] != None

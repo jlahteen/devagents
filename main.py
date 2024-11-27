@@ -14,7 +14,7 @@ from config import Config
 from agents.scrum_master_agent import ScrumMasterAgent
 from agents.developer_agent import DeveloperAgent
 from agents.reviewer_agent import ReviewerAgent
-from agents.writer_agent import WriterAgent
+from agents.output_agent import OutputAgent
 
 
 def main():
@@ -31,12 +31,12 @@ def main():
     # Reviewer Agent
     reviewer_agent = ReviewerAgent(config=config)
 
-    # Writer Agent
-    writer_agent = WriterAgent(config=config)
+    # Output Agent
+    output_agent = OutputAgent(config=config)
 
     # Create a ScrumMaster agent
     scrum_master_agent = ScrumMasterAgent(
-        config, developer_agent, reviewer_agent, writer_agent
+        config, developer_agent, reviewer_agent, output_agent
     )
 
     # Get the prompt from the user

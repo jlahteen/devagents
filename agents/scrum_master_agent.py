@@ -4,7 +4,7 @@ from autogen import UserProxyAgent, ConversableAgent, GroupChat, GroupChatManage
 
 
 class ScrumMasterAgent(ConversableAgent):
-    def __init__(self, config: Config, developer_agent, reviewer_agent, writer_agent):
+    def __init__(self, config: Config, developer_agent, reviewer_agent, output_agent):
         super().__init__(
             name="scrum_master_agent",
             system_message="You are a ScrumMaster agent that manages the DevAgents team consisting of AI agents.",
@@ -15,7 +15,7 @@ class ScrumMasterAgent(ConversableAgent):
         self._config = config
         self._developer_agent = developer_agent
         self._reviewer_agent = reviewer_agent
-        self._writer_agent = writer_agent
+        self._output_agent = output_agent
 
     def select_next_speaker(self, last_speaker, groupchat):
         if last_speaker is self._user_proxy_agent:
@@ -23,8 +23,8 @@ class ScrumMasterAgent(ConversableAgent):
         elif last_speaker is self._developer_agent:
             return self._reviewer_agent
         elif last_speaker is self._reviewer_agent:
-            if self.__is_code_approved(groupchat.messages[-1]["content"]):
-                return self._writer_agent
+            if self._is_code_approved(groupchat.messages[-1]["content"]):
+                return self._output_agent
             else:
                 return self._developer_agent
         else:
@@ -40,7 +40,7 @@ class ScrumMasterAgent(ConversableAgent):
                 self._user_proxy_agent,
                 self._developer_agent,
                 self._reviewer_agent,
-                self._writer_agent,
+                self._output_agent,
             ],
             speaker_selection_method=self.select_next_speaker,
             messages=[],
@@ -54,7 +54,7 @@ class ScrumMasterAgent(ConversableAgent):
         )
         return chat_result
 
-    def __is_code_approved(self, message):
+    def _is_code_approved(self, message):
         # Use a regex to match 'CODE APPROVED' surrounded by any special characters
         pattern = r"[^a-zA-Z0-9]*CODE\sAPPROVED[^a-zA-Z0-9]*"
         return bool(re.fullmatch(pattern, message))
