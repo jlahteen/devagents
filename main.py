@@ -11,7 +11,7 @@ from utils.coding_mode import stop_coding_mode
 load_dotenv()
 
 from config import Config
-from agents.scrum_master_agent import ScrumMasterAgent
+from agents.team_lead_agent import TeamLeadAgent
 from agents.developer_agent import DeveloperAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.output_agent import OutputAgent
@@ -34,8 +34,8 @@ def main():
     # Output Agent
     output_agent = OutputAgent(config=config)
 
-    # Create a ScrumMaster agent
-    scrum_master_agent = ScrumMasterAgent(
+    # Create a Team Lead Agent
+    team_lead_agent = TeamLeadAgent(
         config, developer_agent, reviewer_agent, output_agent
     )
 
@@ -48,8 +48,8 @@ def main():
     # Redirect stdout
     redirect_stdout()
 
-    # Pass the prompt to the ScrumMaster agent
-    chat_result = scrum_master_agent.start_chat(prompt)
+    # Pass the prompt to the Team Lead agent
+    chat_result = team_lead_agent.start_chat(prompt)
 
     # Restore stdout
     restore_stdout()

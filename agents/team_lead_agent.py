@@ -1,13 +1,20 @@
 import re
+import textwrap
 from config import Config
 from autogen import UserProxyAgent, ConversableAgent, GroupChat, GroupChatManager
 
 
-class ScrumMasterAgent(ConversableAgent):
+class TeamLeadAgent(ConversableAgent):
+    _system_message = textwrap.dedent(
+        """
+        You are a Team Lead agent that manages the DevAgents team consisting of AI agents.
+        """
+    )
+
     def __init__(self, config: Config, developer_agent, reviewer_agent, output_agent):
         super().__init__(
-            name="scrum_master_agent",
-            system_message="You are a ScrumMaster agent that manages the DevAgents team consisting of AI agents.",
+            name="team_lead_agent",
+            system_message=self._system_message,
             llm_config=config.llm_config,
         )
         self._code_execution_config = False
