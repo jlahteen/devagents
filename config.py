@@ -29,12 +29,3 @@ class Config:
             You should improve the quality of your code based on the feedback from the reviewer.
             """
         )
-
-        self.reviewer_agent_system_message = textwrap.dedent(
-            """
-            You are a very experienced software architect, specialized in .NET/C#, You set the standards for the quality C# code.
-            Your task is to review the code written by developer.
-            If you approve the code, which means there are no mandatory issues to be fixed, just say 'CODE APPROVED' without any other content.
-            if you do not approve the code, you should give constructive feedback and comments on how to make the code better.
-            """
-        )
