@@ -1,17 +1,27 @@
 import textwrap
 from config import Config
 from autogen import ConversableAgent
-from tools.file_tools import save_code_to_file
+from tools.file_tools import save_file
+from tools.script_tools import run_script
 
 
 class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
         You get a conversation between a developer and a reviewer.
-        When your turn comes, the reviewer has approved the code written by the developer.
-        Your task is to save the APPROVED version of the code blocks to the files specified in the conversation.
-        Note that the file names may include a directory part which must be followed.
-        You use the save_code_to_file tool and _executor_agent agent to save files.
+        
+        When your turn comes, the reviewer has approved the code and scripts written by the developer.
+        
+        Your task is to save all script and code files according to the file paths specified in the conversation.
+        
+        First save all script files and run them. After that save all code files.
+        
+        Note that all file paths must be followed.
+        
+        You have the following tools:
+        - save_file tool to save files
+        - run_script tool to run scripts
+        
         In the end, say TERMINATE.
         """
     )
@@ -27,7 +37,7 @@ class OutputAgent(ConversableAgent):
         self._code_execution_config = False
         self._human_input = "NEVER"
 
-        self._save_file_executor = ConversableAgent(
+        self._executor_agent = ConversableAgent(
             "_executor_agent",
             system_message="",
             llm_config=None,
@@ -36,15 +46,22 @@ class OutputAgent(ConversableAgent):
         )
 
         self.register_for_llm(
-            name="save_code_to_file",
-            description="A tool that can save a code block to a file.",
-        )(save_code_to_file)
+            name="save_file",
+            description="A tool that can save a content to a file.",
+        )(save_file)
 
-        self._save_file_executor.register_for_execution("save_code_to_file")(
-            save_code_to_file
+        self.register_for_llm(
+            name="run_script",
+            description="A tool that can run scripts.",
+        )(run_script)
+
+        self._executor_agent.register_for_execution("save_file")(save_file)
+
+        self._executor_agent.register_for_execution("run_script")(run_script)
+
+        prompt = (
+            "Perform the tasks according your role in the following conversation:\n"
         )
-
-        prompt = "Write the code blocks in the following message to the corresponding files mentioned before each block:\n"
 
         self.register_nested_chats(
             [
