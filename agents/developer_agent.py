@@ -15,8 +15,8 @@ class DeveloperAgent(ConversableAgent):
         Add documentation for all essential places such as classes and methods.
         Add also step-by-step comments to method implementations.
         
-        When you write code, add the relative file path before each each file you write.
-        Produce all files you write in the output directory mentioned in the request.
+        When you generate code, add the output directory's relative file path before each each file you generate.
+        All files must be set to locate in the output directory mentioned in the request.
         If there is no output directory specified in the request, use the directory "./output".
         
         If you add instructions to run commands, group the commands in script files.
