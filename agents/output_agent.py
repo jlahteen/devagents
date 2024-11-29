@@ -66,7 +66,7 @@ class OutputAgent(ConversableAgent):
         self.register_nested_chats(
             [
                 {
-                    "recipient": self._save_file_executor,
+                    "recipient": self._executor_agent,
                     "message": lambda _1, messages, _2, _3: prompt
                     + (
                         messages[-2]["content"]
@@ -76,7 +76,7 @@ class OutputAgent(ConversableAgent):
                     "summary_method": "last_msg",
                 }
             ],
-            lambda sender: sender not in [self._save_file_executor, self],
+            lambda sender: sender not in [self._executor_agent, self],
         )
 
     def _is_termination_msg(self, msg: dict) -> bool:
