@@ -62,7 +62,7 @@ def main():
 # or enter a file path containg a prompt. In the latter case the file content
 # will be returned.
 def get_prompt():
-    user_input = input("Enter a prompt or a requirement file:\n")
+    user_input = input("Enter a prompt or a prompt file:\n")
     prompt = ""
 
     if os.path.isfile(user_input):
