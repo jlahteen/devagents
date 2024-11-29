@@ -23,6 +23,7 @@ class DeveloperAgent(ConversableAgent):
         As with code files, include also a relative file path to each script file.
         Place script files to appropriate places under the output directory. 
         When you create script files, you can assume Windows OS compatible script files.
+        Use .bat scripts for Windows OS.
         
         Your code will be reviewed, and you should improve the quality of your code based on the feedback from the reviewer.
         """
