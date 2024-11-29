@@ -11,6 +11,7 @@ def run_script(script_path: str) -> str:
             capture_output=True,
             text=True,
         )
+        print(f"run_script OK: Script '{script_path}' was run successfully")
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"run_script ERROR: Failed to run the script '{script_path}': {e.stderr}"
