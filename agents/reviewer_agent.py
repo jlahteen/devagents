@@ -18,8 +18,8 @@ class ReviewerAgent(ConversableAgent):
         If you approve the code, which means there are no issues to be fixed or developed, simply
         say 'CODE APPROVED' without any other content or text formatting.
         
-        if you do not approve the code, you should give constructive feedback and comments on how
-        to make the code better.
+        If you do not approve the code, you should give constructive feedback and comments on how
+        to make the code better. In this case, do not include 'CODE APPROVED' to your answer.
         """
     )
 
