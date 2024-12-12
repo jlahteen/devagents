@@ -4,10 +4,10 @@ from config import Config
 from autogen import UserProxyAgent, ConversableAgent, GroupChat, GroupChatManager
 
 
-class TeamLeadAgent(ConversableAgent):
+class OrchestratorAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
-        You are a Team Lead agent that manages the DevAgents team consisting of AI agents.
+        You are an orchestrator agent that manages the DevAgents team consisting of AI agents.
         """
     )
 

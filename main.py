@@ -11,7 +11,7 @@ from utils.coding_mode import stop_coding_mode
 load_dotenv()
 
 from config import Config
-from agents.team_lead_agent import TeamLeadAgent
+from agents.orchestrator_agent import OrchestratorAgent
 from agents.scaffold_agent import ScaffoldAgent
 from agents.developer_agent import DeveloperAgent
 from agents.reviewer_agent import ReviewerAgent
@@ -41,8 +41,8 @@ def main():
     # Output Agent
     output_agent = OutputAgent(config=config)
 
-    # Create a Team Lead Agent
-    team_lead_agent = TeamLeadAgent(
+    # Create an Orchestrator Agent
+    orchestrator_agent = OrchestratorAgent(
         config, scaffold_agent, developer_agent, reviewer_agent, output_agent
     )
 
@@ -58,8 +58,8 @@ def main():
     # Redirect stdout
     redirect_stdout()
 
-    # Pass the prompt to the Team Lead agent
-    chat_result = team_lead_agent.start_chat(prompt)
+    # Pass the prompt to the Orchestrator Agent
+    chat_result = orchestrator_agent.start_chat(prompt)
 
     # Restore stdout
     restore_stdout()
