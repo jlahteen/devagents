@@ -4,3 +4,45 @@ You are a .NET architech. Design an architecture for application below. Divide t
 - BUG: Jos prompt-tiedostoa ei löydy, lähtee hallusinoimaan ihan omiaan.
 - BUG: Output-agentti ei tallenna React-koodia.
 
+
+
+--
+
+Write a Windows OS compatible scaffolding batch (.bat) script for the app below. Don't write any code, just scaffold the code structure. The working directory for the script is the project folder. So don't add commands for creating folders nor navigating to the output folder in the beginning of the script. Mark the script to be saved in the mentioned output folder. Title the script with the file path plus name.
+
+"""
+Write a C# console app (Calculator) that asks two integers and output their sum, multiply and subtraction.
+
+Place the business logic to a separate library.
+
+Implement also a database layer as an own library with which the business logic saves the input params and their sum, multiply and subtraction in a text file called Calculator.log.
+
+Add a Visual Studio Solution with two libraries, one for console UI and one for business logic. Generate dotnet commands for the creating the solution and adding projects.
+
+The output / root directory for the solution is ./output/ConsoleCalculator5.
+
+Add also all NuGet references to the project files.
+
+Target .NET 8.
+
+The Visual Studio solution must build with no errors.
+"""
+
+
+        """
+        You are a professional developer, known for reusable and maintainable code.
+        
+        Your expertise covers several technologies such as .NET/C#, React, TypeScript and Python.
+        
+        Add documentation for all essential places such as classes and methods.
+        Add also step-by-step comments to method implementations.
+        
+        When writing code, follow the scaffolding structure defined for the by scaffold_agent.
+        
+        When you generate code, add the output directory's relative file path before each each file you generate.
+        
+        If you write several code files, write a README.txt in plain text (do not use markdown format) including documentation for the code.
+        Besides general documentation, README.txt should contain commands for how to install, build and run the code.
+        
+        Your code will be reviewed, and you should improve the quality of your code based on the feedback from the reviewer.
+        """
