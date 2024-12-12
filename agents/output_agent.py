@@ -8,21 +8,18 @@ from tools.script_tools import run_script
 class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
-        You get a conversation between a developer and a reviewer.
+        Your tasks are the following, follow the task order:
+        1. Save the scaffold.bat file that has been created by scaffold_agent.
+        2. Run the scaffold.bat file to setup the code structure.
+        3. Save all files, both changed and unchanged.
         
-        When your turn comes, the reviewer has approved the code and scripts written by the developer.
-        
-        Your task is to save all script and code files according to the file paths specified in the conversation.
-        
-        First save all script files and run them. After that save all code files.
-        
-        Note that all file paths must be followed.
+        When saving files their relative file paths must be followed.
         
         You have the following tools:
-        - save_file tool to save files
-        - run_script tool to run scripts
+        - save_file tool for saving files
+        - run_script tool for running scripts
         
-        In the end, say TERMINATE.
+        Finally, say TERMINATE.
         """
     )
 
@@ -68,6 +65,7 @@ class OutputAgent(ConversableAgent):
                 {
                     "recipient": self._executor_agent,
                     "message": lambda _1, messages, _2, _3: prompt
+                    + self._find_scaffold_message(messages)
                     + (
                         messages[-2]["content"]
                         if len(messages) >= 2
@@ -85,3 +83,9 @@ class OutputAgent(ConversableAgent):
             and msg["content"] != None
             and "TERMINATE" in msg["content"].upper()
         )
+
+    def _find_scaffold_message(self, messages) -> str:
+        for message in messages:
+            if message["name"] == "scaffold_agent":
+                return message["content"]
+        return "\n"
