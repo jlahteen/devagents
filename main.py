@@ -19,6 +19,9 @@ from agents.output_agent import OutputAgent
 
 
 def main():
+    """The main program to run DevAgents."""
+
+    # Start by saying Hello
     say_hello()
 
     # Create a Config instance
@@ -65,10 +68,14 @@ def main():
     stop_coding_mode()
 
 
-# Gets a prompt containing a coding task. The user can either enter a prompt
-# or enter a file path containg a prompt. In the latter case the file content
-# will be returned.
 def get_prompt():
+    """
+    Gets a prompt containing a coding task.
+
+    The user can either enter a prompt or enter a file path containg a prompt.
+    In the latter case the file content will be returned.
+    """
+
     user_input = input("Enter a prompt or a prompt file:\n> ")
     prompt = ""
 
@@ -89,8 +96,9 @@ def get_prompt():
     return prompt
 
 
-# Redirects stdout to a trace file.
 def redirect_stdout():
+    """Redirects stdout to a trace file."""
+
     trace_file = (
         os.getenv("TRACE_DIR")
         + "/trace-"
@@ -100,20 +108,22 @@ def redirect_stdout():
     sys.stdout = open(trace_file, "w", encoding="utf-8")
 
 
-# Restores stdout.
 def restore_stdout():
+    """Restores stdout."""
+
     sys.stdout.close()
     sys.stdout = sys.__stdout__
 
 
 def set_workspace_directory():
+    """Sets the workspace directory."""
+
     # Build the default directory
     default_dir = os.path.join(os.getcwd(), "output")
 
     # Ask for the workspace directory
     workspace_dir = (
-        input(f"Enter the workspace directory [{default_dir}]:\n> ")
-        or default_dir
+        input(f"Enter the workspace directory [{default_dir}]:\n> ") or default_dir
     )
 
     # Check if the workspace directory exists
