@@ -12,6 +12,7 @@ load_dotenv()
 
 from config import Config
 from agents.team_lead_agent import TeamLeadAgent
+from agents.scaffold_agent import ScaffoldAgent
 from agents.developer_agent import DeveloperAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.output_agent import OutputAgent
@@ -25,6 +26,9 @@ def main():
 
     # Create the necessary agents
 
+    # Scaffold Agent
+    scaffold_agent = ScaffoldAgent(config=config)
+
     # Developer Agent
     developer_agent = DeveloperAgent(config=config)
 
@@ -36,11 +40,14 @@ def main():
 
     # Create a Team Lead Agent
     team_lead_agent = TeamLeadAgent(
-        config, developer_agent, reviewer_agent, output_agent
+        config, scaffold_agent, developer_agent, reviewer_agent, output_agent
     )
 
     # Get the prompt from the user
     prompt = get_prompt()
+
+    # Set the workspace directory
+    set_workspace_directory()
 
     # Start the coding mode
     start_coding_mode()
@@ -62,7 +69,7 @@ def main():
 # or enter a file path containg a prompt. In the latter case the file content
 # will be returned.
 def get_prompt():
-    user_input = input("Enter a prompt or a prompt file:\n")
+    user_input = input("Enter a prompt or a prompt file:\n> ")
     prompt = ""
 
     if os.path.isfile(user_input):
@@ -97,6 +104,25 @@ def redirect_stdout():
 def restore_stdout():
     sys.stdout.close()
     sys.stdout = sys.__stdout__
+
+
+def set_workspace_directory():
+    # Build the default directory
+    default_dir = os.path.join(os.getcwd(), "output")
+
+    # Ask for the workspace directory
+    workspace_dir = (
+        input(f"Enter the workspace directory [{default_dir}]:\n> ")
+        or default_dir
+    )
+
+    # Check if the workspace directory exists
+    if not os.path.exists(workspace_dir):
+        print(f"Workspace directory '{workspace_dir}' does not exist.")
+        sys.exit(1)
+
+    # Change to the workspace directory
+    os.chdir(workspace_dir)
 
 
 if __name__ == "__main__":
