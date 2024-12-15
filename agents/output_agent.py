@@ -1,18 +1,22 @@
 import textwrap
 from config import Config
 from autogen import ConversableAgent
-from tools.file_tools import save_code_to_file
+from tools.file_tools import save_file
+from tools.shell_tools import run_script
 
 
 class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
-        You get a conversation between a developer and a reviewer.
-        When your turn comes, the reviewer has approved the code written by the developer.
-        Your task is to save the APPROVED version of the code blocks to the files specified in the conversation.
-        Note that the file names may include a directory part which must be followed.
-        You use the save_code_to_file tool and _executor_agent agent to save files.
-        In the end, say TERMINATE.
+        Your tasks are the following, follow the task order:
+        1. Run the scaffold script with the run_script tool. Do not save the script, just run it.
+        2. Save all (both changed and unchanged) code files corresponding to their relative file paths.
+        
+        You have the following tools:
+        - save_file tool for saving files
+        - run_script tool for running scripts
+        
+        Finally, say TERMINATE.
         """
     )
 
@@ -27,7 +31,7 @@ class OutputAgent(ConversableAgent):
         self._code_execution_config = False
         self._human_input = "NEVER"
 
-        self._save_file_executor = ConversableAgent(
+        self._executor_agent = ConversableAgent(
             "_executor_agent",
             system_message="",
             llm_config=None,
@@ -36,21 +40,29 @@ class OutputAgent(ConversableAgent):
         )
 
         self.register_for_llm(
-            name="save_code_to_file",
-            description="A tool that can save a code block to a file.",
-        )(save_code_to_file)
+            name="save_file",
+            description="A tool that can save a content to a file.",
+        )(save_file)
 
-        self._save_file_executor.register_for_execution("save_code_to_file")(
-            save_code_to_file
+        self.register_for_llm(
+            name="run_script",
+            description="A tool that can run scripts.",
+        )(run_script)
+
+        self._executor_agent.register_for_execution("save_file")(save_file)
+
+        self._executor_agent.register_for_execution("run_script")(run_script)
+
+        prompt = (
+            "Perform the tasks according your role in the following conversation:\n"
         )
-
-        prompt = "Write the code blocks in the following message to the corresponding files mentioned before each block:\n"
 
         self.register_nested_chats(
             [
                 {
-                    "recipient": self._save_file_executor,
+                    "recipient": self._executor_agent,
                     "message": lambda _1, messages, _2, _3: prompt
+                    + self._find_scaffold_message(messages)
                     + (
                         messages[-2]["content"]
                         if len(messages) >= 2
@@ -59,7 +71,7 @@ class OutputAgent(ConversableAgent):
                     "summary_method": "last_msg",
                 }
             ],
-            lambda sender: sender not in [self._save_file_executor, self],
+            lambda sender: sender not in [self._executor_agent, self],
         )
 
     def _is_termination_msg(self, msg: dict) -> bool:
@@ -68,3 +80,9 @@ class OutputAgent(ConversableAgent):
             and msg["content"] != None
             and "TERMINATE" in msg["content"].upper()
         )
+
+    def _find_scaffold_message(self, messages) -> str:
+        for message in messages:
+            if message["name"] == "scaffold_agent":
+                return message["content"]
+        return "\n"

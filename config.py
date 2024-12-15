@@ -14,5 +14,6 @@ class Config:
                     "base_url": os.getenv("AZURE_OPENAI_URL"),
                     "api_version": "2024-05-01-preview",
                 }
-            ]
+            ],
+            "cache_seed": None
         }
