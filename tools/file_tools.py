@@ -7,6 +7,7 @@ def save_file(file_path: str, file_content: str) -> str:
 
     If the file path contains a directory and it does not exist, the function creates it.
     """
+
     try:
         directory = os.path.dirname(file_path)
         if directory and not os.path.exists(directory):
