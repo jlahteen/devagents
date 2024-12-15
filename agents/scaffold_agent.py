@@ -2,7 +2,7 @@ import textwrap
 from config import Config
 from autogen import ConversableAgent
 from tools.file_tools import save_file
-from tools.script_tools import run_script
+from tools.shell_tools import run_script
 
 
 class ScaffoldAgent(ConversableAgent):
