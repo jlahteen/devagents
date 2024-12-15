@@ -1,37 +1,39 @@
 import subprocess
 import os
+import tempfile
 
 
-def run_script(script_path: str) -> str:
+def run_script(script: str) -> str:
     """
     Runs a specified script.
 
-    When running the script, the function sets the current directory corresponding to a location of the script.
+    The function saves the specified script to a temp file of type *.bat and
+    runs the temp file with the cmd /c option.
+
     Note: Only Windows OS is currently supported.
     """
+
+    script_start = (script if len(script) <= 25 else script[:25] + "...").replace(
+        "\n", " "
+    )
+
+    # Save the script to a temporary file
+    with tempfile.NamedTemporaryFile(
+        delete=False, mode="w", suffix=".bat"
+    ) as temp_file:
+        temp_file.write(script)
+        temp_file_path = temp_file.name
+
     try:
-        original_dir = os.getcwd()
-
-        # Extract the directory from the script path
-        script_dir = os.path.dirname(script_path)
-        script_file = os.path.basename(script_path)
-
-        # Set cwd to None if there's no directory part
-        cwd = script_dir if script_dir else None
-
-        # Run the script
+        # Run the script from the temp file
         result = subprocess.run(
-            ["cmd", "/c", script_file.replace("/", "\\")],
+            ["cmd", "/c", temp_file_path],
             check=True,
             capture_output=True,
             text=True,
-            cwd=cwd,
         )
-        print(f"run_script OK: Script '{script_path}' was run successfully")
+
+        print(f"run_script OK: Script '{script_start}' was run successfully")
         return result.stdout
-    except subprocess.CalledProcessError as e:
-        return f"run_script ERROR: Failed to run the script '{script_path}': {e.stderr}"
     except Exception as e:
-        return f"run_script ERROR: Failed to run the script '{script_path}': {str(e)}"
-    finally:
-        os.chdir(original_dir)
+        return f"run_script ERROR: Failed to run the script '{script_start}': {str(e)}"
