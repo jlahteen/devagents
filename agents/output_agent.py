@@ -9,11 +9,8 @@ class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
         Your tasks are the following, follow the task order:
-        1. Save the scaffold.bat file that has been created by scaffold_agent.
-        2. Run the scaffold.bat file to setup the code structure.
-        3. Save all files, both changed and unchanged.
-        
-        When saving files their relative file paths must be followed.
+        1. Run the scaffold script with the run_script tool. Do not save the script, just run it.
+        2. Save all (both changed and unchanged) code files corresponding to their relative file paths.
         
         You have the following tools:
         - save_file tool for saving files
