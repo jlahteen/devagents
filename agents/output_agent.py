@@ -16,8 +16,8 @@ class OutputAgent(ConversableAgent):
             paths.
         
         You have the following tools:
-        - save_file tool for saving files
-        - run_script tool for running scripts
+        -   save_file tool for saving files
+        -   run_script tool for running scripts
         
         Finally, say TERMINATE.
         """
