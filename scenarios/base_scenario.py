@@ -4,6 +4,8 @@ from config import Config
 
 
 class BaseScenario(ABC):
+    """Defines an abstract base class for scenarios."""
+
     def __init__(self):
         pass
 
@@ -13,6 +15,8 @@ class BaseScenario(ABC):
 
 
 def create_scenario(scenario_name) -> BaseScenario:
+    """Creates a scenario based on a specified scenario name."""
+
     scenario = None
     match scenario_name:
         case "NewApp":
