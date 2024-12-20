@@ -9,7 +9,7 @@ from autogen import ChatResult
 
 
 class NewAppScenario(BaseScenario):
-    """A scenario for creating a new appliaction."""
+    """A scenario for creating a new application."""
 
     def __init__(self, config: Config):
         # Create the necessary agents
