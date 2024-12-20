@@ -4,7 +4,7 @@ from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
 from scenarios.base_scenario import BaseScenario
-from scenarios.new_app.orchestrator_agent import OrchestratorAgent
+from scenarios.new_app.new_app_orchestrator_agent import NewAppOrchestratorAgent
 from autogen import ChatResult
 
 
@@ -27,7 +27,7 @@ class NewAppScenario(BaseScenario):
         output_agent = OutputAgent(config=config)
 
         # Create an Orchestrator Agent
-        self._orchestrator_agent = OrchestratorAgent(
+        self._orchestrator_agent = NewAppOrchestratorAgent(
             config, scaffold_agent, developer_agent, reviewer_agent, output_agent
         )
 
