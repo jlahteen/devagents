@@ -1,10 +1,10 @@
-import re
 import textwrap
 from config import Config
 from autogen import UserProxyAgent, ConversableAgent, GroupChat, GroupChatManager
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
-class OrchestratorAgent(ConversableAgent):
+class OrchestratorAgent(OrchestratorAgentBase):
     """An orchestrator to run a NewApp scenario."""
 
     _system_message = textwrap.dedent(
@@ -22,13 +22,10 @@ class OrchestratorAgent(ConversableAgent):
         output_agent,
     ):
         super().__init__(
-            name="team_lead_agent",
+            name="orchestrator_agent",
             system_message=self._system_message,
-            llm_config=config.llm_config,
+            config=config,
         )
-        self._code_execution_config = False
-        self._human_input = "NEVER"
-        self._config = config
         self._scaffold_agent = scaffold_agent
         self._developer_agent = developer_agent
         self._reviewer_agent = reviewer_agent
@@ -73,13 +70,3 @@ class OrchestratorAgent(ConversableAgent):
             self.manager, message=coding_request
         )
         return chat_result
-
-    def _is_code_approved(self, message):
-        # Use a regex to match 'CODE APPROVED' surrounded by any special characters
-        pattern = r"[^a-zA-Z0-9]*CODE\sAPPROVED[^a-zA-Z0-9]*"
-
-        # Split the message into lines and get the last line
-        last_line = message.strip().split("\n")[-1]
-
-        # Check the pattern against the last line
-        return bool(re.fullmatch(pattern, last_line))
