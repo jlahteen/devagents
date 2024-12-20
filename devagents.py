@@ -1,50 +1,28 @@
 import datetime
 import os
 import sys
+import argparse
 
 from dotenv import load_dotenv
 from hello import say_hello
 from utils.coding_mode import start_coding_mode
 from utils.coding_mode import stop_coding_mode
+from scenarios.scenario_base import create_scenario
 
 # Load the environment variables
 load_dotenv()
-
-from config import Config
-from agents.orchestrator_agent import OrchestratorAgent
-from agents.scaffold_agent import ScaffoldAgent
-from agents.developer_agent import DeveloperAgent
-from agents.reviewer_agent import ReviewerAgent
-from agents.output_agent import OutputAgent
-
 
 def main():
     """The main program to run DevAgents."""
 
     # Start by saying Hello
     say_hello()
-
-    # Create a Config instance
-    config = Config()
-
-    # Create the necessary agents
-
-    # Scaffold Agent
-    scaffold_agent = ScaffoldAgent(config=config)
-
-    # Developer Agent
-    developer_agent = DeveloperAgent(config=config)
-
-    # Reviewer Agent
-    reviewer_agent = ReviewerAgent(config=config)
-
-    # Output Agent
-    output_agent = OutputAgent(config=config)
-
-    # Create an Orchestrator Agent
-    orchestrator_agent = OrchestratorAgent(
-        config, scaffold_agent, developer_agent, reviewer_agent, output_agent
-    )
+    
+    # Parse the command line args
+    args = parse_args()
+    
+    # Create a scenario
+    scenario = create_scenario(args.scenario)
 
     # Get the prompt from the user
     prompt = get_prompt()
@@ -57,9 +35,11 @@ def main():
 
     # Redirect stdout
     redirect_stdout()
-
-    # Pass the prompt to the Orchestrator Agent
-    chat_result = orchestrator_agent.start_chat(prompt)
+    
+    # Run the scenario
+    scenario.run_scenario(prompt=prompt)
+    
+    # Run the scenario
 
     # Restore stdout
     restore_stdout()
@@ -133,6 +113,20 @@ def set_workspace_directory():
 
     # Change to the workspace directory
     os.chdir(workspace_dir)
+    
+    
+def parse_args():
+    # Create a parser
+    parser = argparse.ArgumentParser(description="DevAgents")
+
+    # Add arguments
+    parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
+    parser.add_argument("--workspace_dir", type=str, default=None, help="A workspace directory to use")
+
+    # Parse the arguments
+    args = parser.parse_args()
+    
+    return args
 
 
 if __name__ == "__main__":
