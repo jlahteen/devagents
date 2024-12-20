@@ -4,7 +4,7 @@ from autogen import UserProxyAgent, ConversableAgent, GroupChat, GroupChatManage
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
-class OrchestratorAgent(OrchestratorAgentBase):
+class NewCodeOrchestratorAgent(OrchestratorAgentBase):
     """An orchestrator to run a NewCode scenario."""
 
     _system_message = textwrap.dedent(
