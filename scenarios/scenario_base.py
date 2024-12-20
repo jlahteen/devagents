@@ -3,7 +3,7 @@ from autogen import ChatResult
 from config import Config
 
 
-class BaseScenario(ABC):
+class ScenarioBase(ABC):
     """Defines an abstract base class for scenarios."""
 
     def __init__(self):
@@ -14,7 +14,7 @@ class BaseScenario(ABC):
         pass
 
 
-def create_scenario(scenario_name) -> BaseScenario:
+def create_scenario(scenario_name) -> ScenarioBase:
     """Creates a scenario based on a specified scenario name."""
 
     scenario = None

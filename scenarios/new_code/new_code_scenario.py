@@ -3,12 +3,12 @@ from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
-from scenarios.base_scenario import BaseScenario
+from scenarios.scenario_base import ScenarioBase
 from scenarios.new_code.new_code_orchestrator_agent import NewCodeOrchestratorAgent
 from autogen import ChatResult
 
 
-class NewCodeScenario(BaseScenario):
+class NewCodeScenario(ScenarioBase):
     """A scenario for creating new code."""
 
     def __init__(self, config: Config):

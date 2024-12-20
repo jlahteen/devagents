@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from hello import say_hello
 from utils.coding_mode import start_coding_mode
 from utils.coding_mode import stop_coding_mode
-from scenarios.base_scenario import create_scenario
+from scenarios.scenario_base import create_scenario
 
 # Load the environment variables
 load_dotenv()
