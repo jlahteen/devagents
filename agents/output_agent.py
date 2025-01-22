@@ -9,12 +9,15 @@ class OutputAgent(ConversableAgent):
     _system_message = textwrap.dedent(
         """
         Your tasks are the following, follow the task order:
-        1. Run the scaffold script with the run_script tool. Do not save the script, just run it.
-        2. Save all (both changed and unchanged) code files corresponding to their relative file paths.
+        1.  If there is a script named "Scaffold Script", run the script with the run_script tool
+            by passing the content of the script to the tool.
+            If there is no scaffold script, skip this step.
+        2.  Save all (both changed and unchanged) code files corresponding to their relative file
+            paths.
         
         You have the following tools:
-        - save_file tool for saving files
-        - run_script tool for running scripts
+        -   save_file tool for saving files
+        -   run_script tool for running scripts
         
         Finally, say TERMINATE.
         """
