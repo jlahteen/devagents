@@ -1,9 +1,12 @@
 import textwrap
 from config import Config
-from autogen import ConversableAgent
+from autogen_agentchat.agents import AssistantAgent
+from autogen_core.models import ChatCompletionClient
 
 
-class DeveloperAgent(ConversableAgent):
+class DeveloperAgent(AssistantAgent):
+    """An agent that acts as a professional developer."""
+
     _system_message = textwrap.dedent(
         """
         You are a professional developer, known for reusable and maintainable code.
@@ -38,8 +41,6 @@ class DeveloperAgent(ConversableAgent):
     def __init__(self, config: Config):
         super().__init__(
             name="developer_agent",
+            model_client=ChatCompletionClient.load_component(config.model_client),
             system_message=self._system_message,
-            llm_config=config.llm_config,
         )
-        self._code_execution_config = False
-        self._human_input = "NEVER"
