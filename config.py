@@ -1,19 +1,20 @@
 import os
+from dotenv import load_dotenv
 
 
-# A class for configuration.
 class Config:
+    """A class for configuration settings."""
+
     def __init__(self):
-        self.max_rounds = 20
-        self.llm_config = {
-            "config_list": [
-                {
-                    "model": os.getenv("AZURE_GPT_DEPLOYMENT_NAME"),
-                    "api_type": "azure",
-                    "api_key": os.getenv("AZURE_OPENAI_KEY"),
-                    "base_url": os.getenv("AZURE_OPENAI_URL"),
-                    "api_version": "2024-05-01-preview",
-                }
-            ],
-            "cache_seed": None
+        load_dotenv()
+        self.max_rounds = os.getenv("MAX_ROUNDS")
+        self.model_client = {
+            "provider": "AzureOpenAIChatCompletionClient",
+            "config": {
+                "model": os.getenv("AZURE_MODEL"),
+                "azure_endpoint": os.getenv("AZURE_ENDPOINT"),
+                "azure_deployment": os.getenv("AZURE_DEPLOYMENT"),
+                "api_version": os.getenv("AZURE_API_VERSION"),
+                "api_key": os.getenv("AZURE_API_KEY"),
+            },
         }
