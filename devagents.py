@@ -3,24 +3,21 @@ import os
 import sys
 import argparse
 
-from dotenv import load_dotenv
 from hello import say_hello
 from utils.coding_mode import start_coding_mode
 from utils.coding_mode import stop_coding_mode
 from scenarios.scenario_base import create_scenario
 
-# Load the environment variables
-load_dotenv()
 
 def main():
     """The main program to run DevAgents."""
 
     # Start by saying Hello
     say_hello()
-    
+
     # Parse the command line args
     args = parse_args()
-    
+
     # Create a scenario
     scenario = create_scenario(args.scenario)
 
@@ -35,10 +32,10 @@ def main():
 
     # Redirect stdout
     redirect_stdout()
-    
+
     # Run the scenario
     scenario.run_scenario(prompt=prompt)
-    
+
     # Run the scenario
 
     # Restore stdout
@@ -113,19 +110,21 @@ def set_workspace_directory():
 
     # Change to the workspace directory
     os.chdir(workspace_dir)
-    
-    
+
+
 def parse_args():
     # Create a parser
     parser = argparse.ArgumentParser(description="DevAgents")
 
     # Add arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
-    parser.add_argument("--workspace_dir", type=str, default=None, help="A workspace directory to use")
+    parser.add_argument(
+        "--workspace_dir", type=str, default=None, help="A workspace directory to use"
+    )
 
     # Parse the arguments
     args = parser.parse_args()
-    
+
     return args
 
 
