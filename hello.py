@@ -2,6 +2,8 @@ import pyfiglet
 
 
 def say_hello():
+    """Prints a welcome message with ASCII art for "DevAgents"."""
+
     # Generate ASCII art for "DevAgents"
     ascii_art = pyfiglet.figlet_format("DevAgents")
 
