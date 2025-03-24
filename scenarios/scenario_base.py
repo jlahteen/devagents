@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from autogen import ChatResult
 from config import Config
 
 
@@ -10,7 +9,7 @@ class ScenarioBase(ABC):
         pass
 
     @abstractmethod
-    def run_scenario(self, prompt: str) -> ChatResult:
+    async def run_scenario(self, prompt: str) -> None:
         pass
 
 
