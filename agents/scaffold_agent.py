@@ -1,11 +1,12 @@
 import textwrap
 from config import Config
-from autogen import ConversableAgent
-from tools.file_tools import save_file
-from tools.shell_tools import run_script
+from autogen_agentchat.agents import AssistantAgent
+from autogen_core.models import ChatCompletionClient
 
 
-class ScaffoldAgent(ConversableAgent):
+class ScaffoldAgent(AssistantAgent):
+    """An agent that generates a scaffold script for the requested solution."""
+    
     _system_message = textwrap.dedent(
         """
         Your task is to generate a script to scaffold the directory structure for the requested
@@ -38,7 +39,5 @@ class ScaffoldAgent(ConversableAgent):
         super().__init__(
             name="scaffold_agent",
             system_message=self._system_message,
-            llm_config=config.llm_config,
+            model_client=ChatCompletionClient.load_component(config.model_client),
         )
-        self._code_execution_config = False
-        self._human_input = "NEVER"
