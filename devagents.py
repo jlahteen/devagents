@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import os
 import sys
@@ -9,7 +10,7 @@ from utils.coding_mode import stop_coding_mode
 from scenarios.scenario_base import create_scenario
 
 
-def main():
+async def main():
     """The main program to run DevAgents."""
 
     # Start by saying Hello
@@ -34,7 +35,7 @@ def main():
     redirect_stdout()
 
     # Run the scenario
-    scenario.run_scenario(prompt=prompt)
+    await scenario.run_scenario(prompt=prompt)
 
     # Run the scenario
 
@@ -129,4 +130,4 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
