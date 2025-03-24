@@ -7,7 +7,7 @@ class Config:
 
     def __init__(self):
         load_dotenv()
-        self.max_rounds = os.getenv("MAX_ROUNDS")
+        self.max_rounds = int(os.getenv("MAX_ROUNDS"))
         self.model_client = {
             "provider": "AzureOpenAIChatCompletionClient",
             "config": {
