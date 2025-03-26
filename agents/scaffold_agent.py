@@ -2,36 +2,30 @@ import textwrap
 from config import Config
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
+from tools.shell_tools import run_script, run_command
 
 
 class ScaffoldAgent(AssistantAgent):
-    """An agent that generates a scaffold script for the requested solution."""
-    
+    """An agent that scaffolds a directory structure for the requested solution."""
+
     _system_message = textwrap.dedent(
         """
-        Your task is to generate a script to scaffold the directory structure for the requested
+        Your task is to scaffold a directory structure for the requested solution.
+        
+        Use the current directory as the solution root so do not create a directory for the
         solution.
         
-        Title the scaffold script as "Scaffold Script". Place the script in a separate script block
-        following the title.
-        
-        Use the current directory "./" as the solution root so DO NOT create a directory for the
-        solution in the scaffold script.
-        
-        DO NOT write code for the requested solution excluding necessary placeholder files that
-        should be dummy.
+        Do not write code for the requested solution excluding necessary placeholder files.
         
         Place each project in a separate subfolder under the solution root.
         
-        Prefer scaffolding the directory structure by using appropriate CLI commands in
-        scaffold.bat.
+        Scaffold the directory structure by using appropriate CLI commands.
         
-        Include also necessary install commands in the scaffold script.
+        Run all necessary install commands when scaffolding the solution.
         
-        Make sure that all the versions of packages and components are compatible with each other
-        in the scaffold script.
+        Run the commands as Windows OS compatible commands.
         
-        Write the scaffold script for Windows OS as a .bat file.
+        Run each command with the run_command tool.
         """
     )
 
@@ -40,4 +34,5 @@ class ScaffoldAgent(AssistantAgent):
             name="scaffold_agent",
             system_message=self._system_message,
             model_client=ChatCompletionClient.load_component(config.model_client),
+            tools=[run_command],
         )
