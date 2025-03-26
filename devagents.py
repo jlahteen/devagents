@@ -37,8 +37,6 @@ async def main():
     # Run the scenario
     await scenario.run_scenario(prompt=prompt)
 
-    # Run the scenario
-
     # Restore stdout
     restore_stdout()
 
