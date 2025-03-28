@@ -6,6 +6,7 @@ from autogen_agentchat.conditions import TextMentionTermination
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 from autogen_agentchat.ui import Console
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from agents.termination_agent import TerminationAgent
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):
@@ -34,6 +35,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         self._developer_agent = developer_agent
         self._reviewer_agent = reviewer_agent
         self._output_agent = output_agent
+        self._termination_agent = TerminationAgent(config=config)
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
@@ -47,6 +49,8 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
                 return self._output_agent.name
             else:
                 return self._developer_agent.name
+        elif messages[-1].source == self._output_agent.name:
+            return self._termination_agent.name
         else:
             return None
 
@@ -58,6 +62,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
                 self._developer_agent,
                 self._reviewer_agent,
                 self._output_agent,
+                self._termination_agent,
             ],
             model_client=self._model_client,
             selector_func=self.select_next_speaker,
