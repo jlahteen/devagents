@@ -1,6 +1,9 @@
 import subprocess
 import os
 import tempfile
+import threading
+
+file_lock = threading.Lock()
 
 
 def run_script(script: str) -> str:
@@ -37,3 +40,21 @@ def run_script(script: str) -> str:
         return result.stdout
     except Exception as e:
         return f"run_script ERROR: Failed to run the script '{script_start}': {str(e)}"
+
+
+def run_command(command: str) -> str:
+    """Runs a specified command."""
+
+    try:
+        with file_lock:
+            result = subprocess.run(
+                command,
+                shell=True,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        print(f"run_command OK: Command '{command}' was run successfully")
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        return f"run_command ERROR: Failed to run the command '{command}': {str(e)}"
