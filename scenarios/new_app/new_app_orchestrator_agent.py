@@ -2,11 +2,9 @@ import textwrap
 from typing import Sequence
 from config import Config
 from autogen_agentchat.teams import SelectorGroupChat
-from autogen_agentchat.conditions import TextMentionTermination
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 from autogen_agentchat.ui import Console
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from agents.termination_agent import TerminationAgent
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):
@@ -35,7 +33,6 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         self._developer_agent = developer_agent
         self._reviewer_agent = reviewer_agent
         self._output_agent = output_agent
-        self._termination_agent = TerminationAgent(config=config)
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
@@ -52,10 +49,10 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         elif messages[-1].source == self._output_agent.name:
             return self._termination_agent.name
         else:
-            return None
+            # Raise an error if the source is not recognized
+            raise ValueError(f"Unknown message source: {messages[-1].source}")
 
     async def start_chat(self, coding_request):
-        termination_condition = TextMentionTermination("TERMINATE")
         self.groupchat = SelectorGroupChat(
             [
                 self._scaffold_agent,
@@ -67,6 +64,6 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
             model_client=self._model_client,
             selector_func=self.select_next_speaker,
             max_turns=self._config.max_turns,
-            termination_condition=termination_condition,
+            termination_condition=self._termination_condition,
         )
         await Console(self.groupchat.run_stream(task=coding_request))

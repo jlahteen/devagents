@@ -2,6 +2,8 @@ import re
 from config import Config
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
+from agents.termination_agent import TerminationAgent
+from autogen_agentchat.conditions import TextMentionTermination
 
 
 class OrchestratorAgentBase(AssistantAgent):
@@ -19,6 +21,8 @@ class OrchestratorAgentBase(AssistantAgent):
             model_client=ChatCompletionClient.load_component(config.model_client),
         )
         self._config = config
+        self._termination_agent = TerminationAgent(config=config)
+        self._termination_condition = TextMentionTermination("TERMINATE")
 
     def _is_code_approved(self, message):
         """Checks whether the code is approved in the given message."""
