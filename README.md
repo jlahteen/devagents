@@ -1,10 +1,10 @@
 # DevAgents
 
-DevAgents is an experimental project for using a team of AI agents to generate code for different scenarios.
+DevAgents is an **experimental** project for using a team of AI agents to generate code for different scenarios.
 
 The currently supported scenarios are:
-- NewCode: A scenario for generating code snippets e.g. specific classes
-- NewApp: A scenario for generating complete applications
+- NewCode: A scenario for generating one or more code snippets e.g. specific classes, modules, scripts etc.
+- NewApp: A scenario for generating complete applications. In this scenario applications should consists of a maximum of 5 components or services.
 
 DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
 
@@ -52,7 +52,7 @@ To start DevAgents, use the following command:
 python devagents.py --scenario <ScenarioName>
 ```
 
-When DevAgents starts, you will be asked to give a prompt and a workspace directory. You can give a prompt as a raw prompt or as a file path containing a prompt.
+When DevAgents starts, you will be asked to enter a prompt and a workspace directory. You can give a prompt as a raw prompt or as a file path to a file containing a prompt.
 
 
 ## Output
@@ -97,3 +97,15 @@ PS C:\_dev2\devagents>
 
 ---
 Happy coding with DevAgents! 🚀
+
+---
+
+## Backlog
+
+- New: Add NewSystem scenario
+- New: Add NewFeature scenario
+- New: Add FixBuild scenario with a BuildAgent
+- Bug: If a prompt file is not found, DevAgents starts to hallucinate
+- New: Pass workspace directory as an argument
+- New: Pass prompt as an argument
+- New: Implment TestAgent run and fix tests
