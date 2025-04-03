@@ -22,7 +22,7 @@ class OrchestratorAgentBase(AssistantAgent):
 
     def _is_code_approved(self, message):
         """Checks whether the code is approved in the given message."""
-        
+
         # Use a regex to match 'CODE APPROVED' surrounded by any special characters
         pattern = r"[^a-zA-Z0-9]*CODE\sAPPROVED[^a-zA-Z0-9]*"
 

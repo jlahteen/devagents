@@ -6,7 +6,7 @@ from autogen_core.models import ChatCompletionClient
 
 class ReviewerAgent(AssistantAgent):
     """An agent that acts as a professional reviewer."""
-    
+
     _system_message = textwrap.dedent(
         """
         You are a very experienced software architect and developer specialized in several
