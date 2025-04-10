@@ -2,7 +2,7 @@ import textwrap
 from config import Config
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
-from tools.shell_tools import run_script, run_command
+from tools.shell_tools import run_command
 
 
 class ScaffoldAgent(AssistantAgent):
