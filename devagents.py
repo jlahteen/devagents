@@ -1,13 +1,12 @@
+import argparse
 import asyncio
 import datetime
 import os
 import sys
-import argparse
 
 from hello import say_hello
-from utils.coding_mode import start_coding_mode
-from utils.coding_mode import stop_coding_mode
 from scenarios.scenario_base import create_scenario
+from utils.coding_mode import start_coding_mode, stop_coding_mode
 
 
 async def main():
@@ -75,12 +74,7 @@ def get_prompt():
 def redirect_stdout():
     """Redirects stdout to a trace file."""
 
-    trace_file = (
-        os.getenv("TRACE_DIR")
-        + "/trace-"
-        + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        + ".md"
-    )
+    trace_file = os.getenv("TRACE_DIR") + "/trace-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".md"
     sys.stdout = open(trace_file, "w", encoding="utf-8")
 
 
@@ -98,9 +92,7 @@ def set_workspace_directory():
     default_dir = os.path.join(os.getcwd(), "output")
 
     # Ask for the workspace directory
-    workspace_dir = (
-        input(f"Enter the workspace directory [{default_dir}]:\n> ") or default_dir
-    )
+    workspace_dir = input(f"Enter the workspace directory [{default_dir}]:\n> ") or default_dir
 
     # Check if the workspace directory exists
     if not os.path.exists(workspace_dir):
@@ -117,9 +109,7 @@ def parse_args():
 
     # Add arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
-    parser.add_argument(
-        "--workspace_dir", type=str, default=None, help="A workspace directory to use"
-    )
+    parser.add_argument("--workspace_dir", type=str, default=None, help="A workspace directory to use")
 
     # Parse the arguments
     args = parser.parse_args()

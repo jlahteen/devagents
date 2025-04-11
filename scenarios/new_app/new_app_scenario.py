@@ -3,8 +3,8 @@ from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
-from scenarios.scenario_base import ScenarioBase
 from scenarios.new_app.new_app_orchestrator_agent import NewAppOrchestratorAgent
+from scenarios.scenario_base import ScenarioBase
 
 
 class NewAppScenario(ScenarioBase):

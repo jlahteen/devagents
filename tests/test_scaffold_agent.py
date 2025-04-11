@@ -1,11 +1,13 @@
-from autogen_core import CancellationToken
-from config import Config
-from agents.scaffold_agent import ScaffoldAgent
-from autogen_agentchat.messages import TextMessage
-import pytest
-import textwrap
 import os
 import shutil
+import textwrap
+
+import pytest
+from autogen_agentchat.messages import TextMessage
+from autogen_core import CancellationToken
+
+from agents.scaffold_agent import ScaffoldAgent
+from config import Config
 
 prompt = textwrap.dedent(
     """

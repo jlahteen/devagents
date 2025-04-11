@@ -1,10 +1,12 @@
 import textwrap
 from typing import Sequence
-from config import Config
-from autogen_agentchat.teams import SelectorGroupChat
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
-from autogen_agentchat.ui import Console
+
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.ui import Console
+
+from config import Config
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):

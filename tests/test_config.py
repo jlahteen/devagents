@@ -1,9 +1,10 @@
-from autogen_core import CancellationToken
-from config import Config
-from autogen_core.models import ChatCompletionClient
+import pytest
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
-import pytest
+from autogen_core import CancellationToken
+from autogen_core.models import ChatCompletionClient
+
+from config import Config
 
 
 @pytest.mark.asyncio

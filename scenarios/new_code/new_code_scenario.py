@@ -2,8 +2,8 @@ from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from config import Config
-from scenarios.scenario_base import ScenarioBase
 from scenarios.new_code.new_code_orchestrator_agent import NewCodeOrchestratorAgent
+from scenarios.scenario_base import ScenarioBase
 
 
 class NewCodeScenario(ScenarioBase):
@@ -22,9 +22,7 @@ class NewCodeScenario(ScenarioBase):
         output_agent = OutputAgent(config=config)
 
         # Create an Orchestrator Agent
-        self._orchestrator_agent = NewCodeOrchestratorAgent(
-            config, developer_agent, reviewer_agent, output_agent
-        )
+        self._orchestrator_agent = NewCodeOrchestratorAgent(config, developer_agent, reviewer_agent, output_agent)
 
     async def run_scenario(self, prompt: str) -> None:
         """Runs the scenario."""

@@ -1,8 +1,9 @@
-from autogen_core import CancellationToken
-from config import Config
-from agents.developer_agent import DeveloperAgent
-from autogen_agentchat.messages import TextMessage
 import pytest
+from autogen_agentchat.messages import TextMessage
+from autogen_core import CancellationToken
+
+from agents.developer_agent import DeveloperAgent
+from config import Config
 
 
 @pytest.mark.asyncio
