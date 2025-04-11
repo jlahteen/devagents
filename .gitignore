@@ -170,3 +170,6 @@ prompts/
 
 # Trace files
 trace/
+
+# Test output results
+tests/test_output/
