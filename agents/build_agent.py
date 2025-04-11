@@ -31,7 +31,6 @@ class BuildAgent(AssistantAgent):
         - Run the build command.
         - Check the build output for errors.
         - If the build fails, fix the build errors.
-        - If the build succeeds, check the build output for warnings and fix them.
         
         If you managed to build the application, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
         If you failed to fix the build errors, say '{BUILD_AGENT_FAILED}' without any other content.
