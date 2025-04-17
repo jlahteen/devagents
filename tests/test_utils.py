@@ -15,3 +15,12 @@ def copy_test_data(source_dir, dest_dir):
 
     # Copy the source directory to the destination directory
     shutil.copytree(source_dir, dest_dir)
+
+
+def create_test_run_dir(test_run_dir):
+    """Creates a test run directory. If it exists, it will be removed and recreated."""
+
+    # Remove the directory and recreate it
+    if os.path.exists(test_run_dir):
+        shutil.rmtree(test_run_dir)
+    os.makedirs(test_run_dir)
