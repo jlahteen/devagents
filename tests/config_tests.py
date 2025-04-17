@@ -18,13 +18,13 @@ async def test_init_agent_should_response_with_joke():
         model_client=model_client,
     )
     cancellation_token = CancellationToken()
-    
+
     # Act
     response = await assistant.on_messages(
         [TextMessage(content="Hello! Tell me a funny 'why' joke.", source="user")],
         cancellation_token,
     )
     print(response)
-    
+
     # Assert
     assert "why" in response.chat_message.content.lower()
