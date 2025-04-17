@@ -25,6 +25,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         developer_agent,
         reviewer_agent,
         output_agent,
+        build_agent,
     ):
         super().__init__(
             name="orchestrator_agent",
@@ -35,6 +36,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         self._developer_agent = developer_agent
         self._reviewer_agent = reviewer_agent
         self._output_agent = output_agent
+        self._build_agent = build_agent
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
@@ -49,6 +51,8 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
             else:
                 return self._developer_agent.name
         elif messages[-1].source == self._output_agent.name:
+            return self._build_agent.name
+        elif messages[-1].source == self._build_agent.name:
             return self._termination_agent.name
         else:
             # Raise an error if the source is not recognized
