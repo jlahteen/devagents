@@ -8,7 +8,7 @@ from config import Config
 
 
 @pytest.mark.asyncio
-async def test_init_agent_should_response_with_joke():
+async def test_init_agent__should_response_with_joke():
     # Arrange
     config = Config()
     model_client = ChatCompletionClient.load_component(config.model_client)

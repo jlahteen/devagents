@@ -26,7 +26,7 @@ prompt = textwrap.dedent(
 
 
 @pytest.mark.asyncio
-async def test_scaffold_react_app_should_scaffold():
+async def test_scaffold_react_app__should_scaffold():
     # Arrange
     base_dir = os.getcwd()
     test_run_dir = os.path.join(base_dir, "tests", "test_output", "test_scaffold_react_app")

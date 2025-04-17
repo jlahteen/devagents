@@ -7,7 +7,7 @@ from tools.shell_tools import run_command
 
 
 @pytest.mark.asyncio
-async def test_dotnet_build_should_build():
+async def test_dotnet_build__should_build():
     # Arrange
     base_dir = os.getcwd()
     test_data_dir = os.path.join(base_dir, "tests", "test_data", "hello_world_console_app")

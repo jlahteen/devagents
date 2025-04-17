@@ -7,7 +7,7 @@ from config import Config
 
 
 @pytest.mark.asyncio
-async def test_generate_cs_console_hello_app_should_response_with_code():
+async def test_generate_cs_console_hello_app__should_response_with_code():
     # Arrange
     developer_agent = DeveloperAgent(config=Config())
     cancellation_token = CancellationToken()
