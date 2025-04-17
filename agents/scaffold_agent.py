@@ -14,6 +14,8 @@ class ScaffoldAgent(AssistantAgent):
         """
         Your task is to scaffold a directory structure for the requested solution.
         
+        Scaffold the solution for Windows OS.
+        
         Use the current directory as the solution root so do not create a directory for the
         solution.
         
@@ -23,9 +25,9 @@ class ScaffoldAgent(AssistantAgent):
         
         Scaffold the directory structure by using appropriate CLI commands.
         
-        Run all necessary install commands when scaffolding the solution.
+        Pass such options to commands that do not require user input.
         
-        Run the commands as Windows OS compatible commands.
+        Run all necessary install commands when scaffolding the solution.
         
         Run each command with the run_command tool.
         """
