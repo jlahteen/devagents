@@ -8,6 +8,7 @@ from autogen_core import CancellationToken
 
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
+from tests.test_utils import create_test_run_dir
 
 prompt = textwrap.dedent(
     """
@@ -17,8 +18,6 @@ prompt = textwrap.dedent(
     
     Name the frontend project "my-chatgpt-frontend" and the backend project "my-chatgpt-backend".
 
-    In this phase, you can mock the backend service.
-
     Use the latest React version and templates.
 
     Design the UI with fancy styles.
@@ -27,21 +26,12 @@ prompt = textwrap.dedent(
 
 
 @pytest.mark.asyncio
-async def test_scaffold_agent():
+async def test_scaffold_react_app_should_scaffold():
     # Arrange
-
-    # Set the test directory relative to the current working directory
     base_dir = os.getcwd()
-    test_dir = os.path.join(base_dir, "output", "scaffold_test")
-
-    # Remove the directory and recreate it
-    if os.path.exists(test_dir):
-        shutil.rmtree(test_dir)
-    os.makedirs(test_dir)
-
-    # Set the current directory to test_dir
-    os.chdir(test_dir)
-    print(f"Current working directory: {os.getcwd()}")
+    test_run_dir = os.path.join(base_dir, "tests", "test_output", "test_scaffold_react_app")
+    create_test_run_dir(test_run_dir)
+    os.chdir(test_run_dir)
     scaffold_agent = ScaffoldAgent(config=Config())
     cancellation_token = CancellationToken()
 
@@ -58,8 +48,11 @@ async def test_scaffold_agent():
     print(response)
 
     # Assert
-    assert os.path.exists(os.path.join(test_dir, "my-chatgpt-frontend"))
-    assert os.path.exists(os.path.join(test_dir, "my-chatgpt-backend"))
-    assert os.path.exists(os.path.join(test_dir, "my-chatgpt-frontend", "node_modules"))
-    assert os.path.exists(os.path.join(test_dir, "my-chatgpt-frontend", "src"))
-    assert os.path.exists(os.path.join(test_dir, "my-chatgpt-frontend", "public"))
+    assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend"))
+    assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-backend"))
+    assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "node_modules"))
+    assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "src"))
+    assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "public"))
+
+    # Clean up
+    os.chdir(base_dir)
