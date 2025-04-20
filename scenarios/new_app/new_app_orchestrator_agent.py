@@ -65,6 +65,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
                 self._developer_agent,
                 self._reviewer_agent,
                 self._output_agent,
+                self._build_agent,
                 self._termination_agent,
             ],
             model_client=self._model_client,
