@@ -18,3 +18,9 @@ if __name__ == "__main__":
 
     # ScaffoldAgent tests
     # pytest.main(["-s", "tests\\test_scaffold_agent.py"])
+
+    # NewAppScenario tests
+    # pytest.main(["-s", "tests\\test_new_app_scenario.py"])
+
+    # FixBuildErrorsScenario tests
+    # pytest.main(["-s", "tests\\test_fix_build_errors_scenario.py"])
