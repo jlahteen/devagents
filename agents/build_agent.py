@@ -6,11 +6,9 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
+from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 from tools.file_tools import enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
-
-BUILD_AGENT_SUCCESSFUL = "BUILD_AGENT SUCCESSFUL"
-BUILD_AGENT_FAILED = "BUILD_AGENT FAILED"
 
 
 class BuildAgent(SocietyOfMindAgent):
