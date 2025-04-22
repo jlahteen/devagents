@@ -14,7 +14,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
 
     _system_message = textwrap.dedent(
         """
-        You are an orchestrator agent that manages the AI agents team to complete a coding task.
+        You are an orchestrator agent that manages a team of AI agents to complete a coding task.
         """
     )
 
