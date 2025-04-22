@@ -1,5 +1,4 @@
 import os
-import shutil
 import textwrap
 
 import pytest
@@ -29,7 +28,7 @@ prompt = textwrap.dedent(
 async def test_scaffold_react_app__should_scaffold():
     # Arrange
     base_dir = os.getcwd()
-    test_run_dir = os.path.join(base_dir, "tests", "test_output", "test_scaffold_react_app")
+    test_run_dir = os.path.join(base_dir, "tests", "test_output\\scaffold_agent", "test_scaffold_react_app")
     create_test_run_dir(test_run_dir)
     os.chdir(test_run_dir)
     scaffold_agent = ScaffoldAgent(config=Config())
