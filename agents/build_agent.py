@@ -1,12 +1,8 @@
 import textwrap
-from typing import Sequence
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.base import Response
+from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
 from autogen_agentchat.conditions import TextMentionTermination
-from autogen_agentchat.messages import BaseChatMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_core import CancellationToken
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
@@ -17,10 +13,24 @@ BUILD_AGENT_SUCCESSFUL = "BUILD_AGENT SUCCESSFUL"
 BUILD_AGENT_FAILED = "BUILD_AGENT FAILED"
 
 
-class BuildAgent(AssistantAgent):
+class BuildAgent(SocietyOfMindAgent):
     """An agent that ensures the application will build."""
 
     _system_message = textwrap.dedent(
+        f"""
+        Your task is to ensure that the application in the current directory will build successfully.
+        
+        You have an inner team to do the actual work, i.e. check the build and fix the possible build errors.
+        """
+    )
+
+    _response_prompt = textwrap.dedent(
+        f"""
+        Check the build result based on the message history and respond either '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}'.
+        """
+    )
+
+    _system_message_inner_build_agent = textwrap.dedent(
         f"""
         Your task is to build the appication in the current directory. If the application does not build, you should fix it.
         Note that the application may consist of multiple components that are located in separate subdirectories.
@@ -47,29 +57,24 @@ class BuildAgent(AssistantAgent):
     def __init__(self, config: Config):
         super().__init__(
             name="build_agent",
-            system_message=self._system_message,
             model_client=ChatCompletionClient.load_component(config.model_client),
+            instruction=self._system_message,
+            response_prompt=self._response_prompt,
+            team=BuildAgent._create_team(config, self._system_message_inner_build_agent),
         )
 
-        self._inner_build_agent = AssistantAgent(
+    @staticmethod
+    def _create_team(config: Config, system_message_inner_build_agent: str) -> RoundRobinGroupChat:
+        """Creates an inner team."""
+
+        inner_build_agent = AssistantAgent(
             name="inner_build_agent",
-            system_message=self._system_message,
+            system_message=system_message_inner_build_agent,
             model_client=ChatCompletionClient.load_component(config.model_client),
             tools=[run_command, read_file, save_file, enum_subdirs, enum_files],
         )
-
-    async def on_messages(self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken) -> Response:
-        """Starts the inner agent as one agent team."""
-
         termination_condition = TextMentionTermination(BUILD_AGENT_SUCCESSFUL) or TextMentionTermination(
             BUILD_AGENT_FAILED
         )
-        team = RoundRobinGroupChat(
-            [self._inner_build_agent],
-            termination_condition=termination_condition,
-        )
-        chat_message = await team.run(
-            task="Build the application in the current directory.",
-            cancellation_token=None,
-        )
-        return chat_message
+        team = RoundRobinGroupChat([inner_build_agent], termination_condition=termination_condition)
+        return team
