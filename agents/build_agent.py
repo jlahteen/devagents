@@ -26,7 +26,7 @@ class BuildAgent(SocietyOfMindAgent):
 
     _response_prompt = textwrap.dedent(
         f"""
-        Check the build result based on the message history and respond either '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}'.
+        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the result of the inner team.
         """
     )
 
