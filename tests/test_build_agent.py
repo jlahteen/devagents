@@ -6,17 +6,18 @@ from autogen_agentchat.ui import Console
 
 from agents.build_agent import BuildAgent
 from config import Config
-from tests.test_utils import copy_test_data
+from tests.test_utils import setup_test
 
 
+@pytest.mark.parametrize(
+    "setup_test",
+    [("build_agent", "test_broken_build", "simple_console_app_broken")],
+    indirect=True,
+)
 @pytest.mark.asyncio
-async def test_broken_build__should_fix():
+async def test_broken_build__should_fix(setup_test):
     # Arrange
-    base_dir = os.getcwd()
-    test_data_dir = os.path.join(base_dir, "tests", "test_data", "simple_console_app_broken")
-    test_run_dir = os.path.join(base_dir, "tests", "test_output\\build_agent", "test_broken_build")
-    copy_test_data(test_data_dir, test_run_dir)
-    os.chdir(test_run_dir)
+    test_run_dir = setup_test
     build_agent = BuildAgent(config=Config())
 
     # Act
@@ -24,7 +25,7 @@ async def test_broken_build__should_fix():
         build_agent.on_messages_stream(
             [
                 TextMessage(
-                    content="Tell a joke. This has actually no meaning in this case.",
+                    content="Fix the build.",
                     source="user",
                 )
             ],
@@ -35,6 +36,3 @@ async def test_broken_build__should_fix():
     # Assert
     assert os.path.exists(os.path.join(test_run_dir, "bin\\Debug\\net8.0\\FinnishSSNValidator.dll"))
     assert os.path.exists(os.path.join(test_run_dir, "bin\\Debug\\net8.0\\FinnishSSNValidator.exe"))
-
-    # Clean up
-    os.chdir(base_dir)

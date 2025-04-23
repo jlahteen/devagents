@@ -7,7 +7,7 @@ from autogen_core import CancellationToken
 
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
-from tests.test_utils import create_test_run_dir
+from tests.test_utils import setup_test
 
 prompt = textwrap.dedent(
     """
@@ -24,13 +24,15 @@ prompt = textwrap.dedent(
 )
 
 
+@pytest.mark.parametrize(
+    "setup_test",
+    [("scaffold_agent", "test_scaffold_react_app", None)],
+    indirect=True,
+)
 @pytest.mark.asyncio
-async def test_scaffold_react_app__should_scaffold():
+async def test_scaffold_react_app__should_scaffold(setup_test):
     # Arrange
-    base_dir = os.getcwd()
-    test_run_dir = os.path.join(base_dir, "tests", "test_output\\scaffold_agent", "test_scaffold_react_app")
-    create_test_run_dir(test_run_dir)
-    os.chdir(test_run_dir)
+    test_run_dir = setup_test
     scaffold_agent = ScaffoldAgent(config=Config())
     cancellation_token = CancellationToken()
 
@@ -52,6 +54,3 @@ async def test_scaffold_react_app__should_scaffold():
     assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "node_modules"))
     assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "src"))
     assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend", "public"))
-
-    # Clean up
-    os.chdir(base_dir)

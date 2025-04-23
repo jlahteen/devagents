@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import pytest
+
 
 def copy_test_data(source_dir, dest_dir):
     """Copies a source directory to the destination directory."""
@@ -24,3 +26,19 @@ def create_test_run_dir(test_run_dir):
     if os.path.exists(test_run_dir):
         shutil.rmtree(test_run_dir)
     os.makedirs(test_run_dir)
+
+
+@pytest.fixture
+def setup_test(request):
+    """Sets up a test by creating a test run directory with a proper test data."""
+
+    base_dir = os.getcwd()
+    test_module, test_name, test_data_dir = request.param
+    test_run_dir = os.path.join(base_dir, "tests", "test_output", test_module, test_name)
+    create_test_run_dir(test_run_dir)
+    if test_data_dir:
+        test_data_dir = os.path.join(base_dir, "tests", "test_data", test_data_dir)
+        copy_test_data(test_data_dir, test_run_dir)
+    os.chdir(test_run_dir)
+    yield test_run_dir
+    os.chdir(base_dir)

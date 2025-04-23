@@ -5,7 +5,7 @@ import pytest
 
 from config import Config
 from scenarios.new_app.new_app_scenario import NewAppScenario
-from tests.test_utils import create_test_run_dir
+from tests.test_utils import setup_test
 
 prompt = textwrap.dedent(
     """
@@ -25,15 +25,15 @@ prompt = textwrap.dedent(
 )
 
 
+@pytest.mark.parametrize(
+    "setup_test",
+    [("new_app_scenario", "test_generate_cs_two_layer_greeting_app", None)],
+    indirect=True,
+)
 @pytest.mark.asyncio
-async def test_generate_cs_two_layer_greeting_app__creates_app():
+async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
     # Arrange
-    base_dir = os.getcwd()
-    test_run_dir = os.path.join(
-        base_dir, "tests", "test_output\\new_app_scenario", "test_generate_cs_two_layer_greeting_app"
-    )
-    create_test_run_dir(test_run_dir)
-    os.chdir(test_run_dir)
+    test_run_dir = setup_test
     scenario = NewAppScenario(config=Config())
 
     # Act
@@ -45,6 +45,3 @@ async def test_generate_cs_two_layer_greeting_app__creates_app():
     assert os.path.exists(
         os.path.join(test_run_dir, "MyGreetingApp.Backend\\bin\\Debug\\net8.0\\MyGreetingApp.Backend.dll")
     )
-
-    # Clean up
-    os.chdir(base_dir)
