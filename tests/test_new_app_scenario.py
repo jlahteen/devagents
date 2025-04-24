@@ -15,8 +15,7 @@ prompt = textwrap.dedent(
     
     The app should have a UI layer and a backend layer. The UI should get the greeting message from the backend and display it to the user.
     
-    Create a new solution with two projects as follows:
-    - MyGreetingApp.sln
+    Create a new solution MyGreetingApp.sln and add two projects to it as follows:
     - MyGreetingApp.UI
     - MyGreetingApp.Backend
     
