@@ -50,7 +50,9 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")
 
-    async def start_chat(self, coding_request):
+    async def run_team(self, coding_task: str) -> None:
+        """Runs the team with a given coding task."""
+
         self.groupchat = SelectorGroupChat(
             [
                 self._developer_agent,
@@ -63,4 +65,4 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             max_turns=self._config.max_turns,
             termination_condition=self._termination_condition,
         )
-        await Console(self.groupchat.run_stream(task=coding_request))
+        await Console(self.groupchat.run_stream(task=coding_task))

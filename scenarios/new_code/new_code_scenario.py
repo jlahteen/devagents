@@ -27,4 +27,4 @@ class NewCodeScenario(ScenarioBase):
     async def run_scenario(self, prompt: str) -> None:
         """Runs the scenario."""
 
-        await self._orchestrator_agent.start_chat(prompt)
+        await self._orchestrator_agent.run_team(prompt)

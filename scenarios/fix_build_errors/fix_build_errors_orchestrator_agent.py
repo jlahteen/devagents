@@ -30,8 +30,8 @@ class FixBuildErrorsOrchestratorAgent(OrchestratorAgentBase):
         )
         self._build_agent = build_agent
 
-    async def start_chat(self, coding_request):
-        """Starts the chat with the given coding request."""
+    async def run_team(self, coding_task: str) -> None:
+        """Runs the team with a given coding task."""
 
         termination_condition = TextMentionTermination(BUILD_AGENT_SUCCESSFUL) or TextMentionTermination(
             BUILD_AGENT_FAILED
@@ -41,4 +41,4 @@ class FixBuildErrorsOrchestratorAgent(OrchestratorAgentBase):
             max_turns=self._config.max_turns,
             termination_condition=termination_condition,
         )
-        await Console(groupchat.run_stream(task=coding_request))
+        await Console(groupchat.run_stream(task=coding_task))
