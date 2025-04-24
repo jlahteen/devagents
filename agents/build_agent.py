@@ -39,7 +39,7 @@ class BuildAgent(SocietyOfMindAgent):
         For each component, act as follows:
         - Find out the technology by investigating the file names and types in the component directory.
         - After detecting the component technology, determine the build command.
-        - Run the build command.
+        - Run the build command (debug mode is preferred).
         - Check the build output for errors.
         - If the build fails, fix the build errors.
         
