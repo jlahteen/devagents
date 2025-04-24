@@ -2,9 +2,13 @@
 
 DevAgents is an **experimental** project for using a team of AI agents to generate code for different scenarios.
 
-The currently supported scenarios are:
-- NewCode: A scenario for generating one or more code snippets e.g. specific classes, modules, scripts etc.
-- NewApp: A scenario for generating complete applications. In this scenario applications should consists of a maximum of 5 components or services.
+The currently supported scenarios are listed in the table below.
+
+| **Scenario**      | **Description**                                                                                     |
+|-------------------|-----------------------------------------------------------------------------------------------------|
+| NewCode           | A scenario for generating one or more code snippets, e.g., specific classes, modules, scripts, etc.|
+| NewApp            | A scenario for generating complete applications. Applications should consist of a maximum of 5 components or services.|
+| FixBuildErrors    | A scenario for fixing build errors in a given app.|
 
 DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
 
@@ -96,16 +100,18 @@ PS C:\_dev2\devagents>
 ```
 
 ---
-Happy coding with DevAgents! 🚀
+Happy prompting with DevAgents! 🚀
 
 ---
 
 ## Backlog
 
+- New: Add TestAgent to the NewApp scenario
+- New: Add more output about what agents are doing
 - New: Add NewSystem scenario
 - New: Add NewFeature scenario
-- New: Add FixBuild scenario with a BuildAgent
 - Bug: If a prompt file is not found, DevAgents starts to hallucinate
 - New: Pass workspace directory as an argument
 - New: Pass prompt as an argument
-- New: Implment TestAgent run and fix tests
+- New: Add FixTests scenario
+- New: Add FixBuildWarnings scenario

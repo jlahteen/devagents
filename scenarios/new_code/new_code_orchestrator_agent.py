@@ -1,10 +1,12 @@
 import textwrap
 from typing import Sequence
-from config import Config
-from autogen_agentchat.teams import SelectorGroupChat
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
-from autogen_agentchat.ui import Console
+
 from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.ui import Console
+
+from config import Config
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
 class NewCodeOrchestratorAgent(OrchestratorAgentBase):
@@ -12,7 +14,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
 
     _system_message = textwrap.dedent(
         """
-        You are an orchestrator agent that manages the AI agents team to complete a coding task.
+        You are an orchestrator agent that manages a team of AI agents to complete a coding task.
         """
     )
 
@@ -48,7 +50,9 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")
 
-    async def start_chat(self, coding_request):
+    async def run_team(self, coding_task: str) -> None:
+        """Runs the team with a given coding task."""
+
         self.groupchat = SelectorGroupChat(
             [
                 self._developer_agent,
@@ -61,4 +65,4 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             max_turns=self._config.max_turns,
             termination_condition=self._termination_condition,
         )
-        await Console(self.groupchat.run_stream(task=coding_request))
+        await Console(self.groupchat.run_stream(task=coding_task))

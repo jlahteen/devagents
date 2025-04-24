@@ -1,0 +1,4 @@
+from typing import Final
+
+BUILD_AGENT_SUCCESSFUL: Final[str] = "BUILD_AGENT SUCCESSFUL"
+BUILD_AGENT_FAILED: Final[str] = "BUILD_AGENT FAILED"

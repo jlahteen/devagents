@@ -1,7 +1,7 @@
 import itertools
 import sys
-import time
 import threading
+import time
 
 # An event for stopping the coding mode
 stop_coding_mode_event = threading.Event()

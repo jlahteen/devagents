@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from config import Config
 
 
@@ -26,6 +27,10 @@ def create_scenario(scenario_name) -> ScenarioBase:
             from scenarios.new_code.new_code_scenario import NewCodeScenario
 
             scenario = NewCodeScenario(Config())
+        case "FixBuildErrors":
+            from scenarios.fix_build_errors.fix_build_errors_scenario import FixBuildErrorsScenario
+
+            scenario = FixBuildErrorsScenario(Config())
         case _:
             print(f"Unknown scenario: '{scenario_name}'")
             exit(1)

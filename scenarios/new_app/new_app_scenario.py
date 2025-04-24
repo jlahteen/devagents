@@ -1,10 +1,11 @@
+from agents.build_agent import BuildAgent
 from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from config import Config
-from scenarios.scenario_base import ScenarioBase
 from scenarios.new_app.new_app_orchestrator_agent import NewAppOrchestratorAgent
+from scenarios.scenario_base import ScenarioBase
 
 
 class NewAppScenario(ScenarioBase):
@@ -25,12 +26,15 @@ class NewAppScenario(ScenarioBase):
         # Output Agent
         output_agent = OutputAgent(config=config)
 
+        # Build Agent
+        build_agent = BuildAgent(config=config)
+
         # Create an Orchestrator Agent
         self._orchestrator_agent = NewAppOrchestratorAgent(
-            config, scaffold_agent, developer_agent, reviewer_agent, output_agent
+            config, scaffold_agent, developer_agent, reviewer_agent, output_agent, build_agent
         )
 
     async def run_scenario(self, prompt: str) -> None:
         """Runs the scenario."""
 
-        await self._orchestrator_agent.start_chat(prompt)
+        await self._orchestrator_agent.run_team(prompt)

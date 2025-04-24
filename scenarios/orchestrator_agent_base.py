@@ -1,9 +1,11 @@
 import re
-from config import Config
+
 from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-from agents.termination_agent import TerminationAgent
 from autogen_agentchat.conditions import TextMentionTermination
+from autogen_core.models import ChatCompletionClient
+
+from agents.termination_agent import TerminationAgent
+from config import Config
 
 
 class OrchestratorAgentBase(AssistantAgent):

@@ -1,8 +1,10 @@
 import textwrap
-from config import Config
+
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
-from tools.shell_tools import run_script, run_command
+
+from config import Config
+from tools.shell_tools import run_command
 
 
 class ScaffoldAgent(AssistantAgent):
@@ -11,6 +13,8 @@ class ScaffoldAgent(AssistantAgent):
     _system_message = textwrap.dedent(
         """
         Your task is to scaffold a directory structure for the requested solution.
+        
+        Scaffold the solution for Windows OS.
         
         Use the current directory as the solution root so do not create a directory for the
         solution.
@@ -21,9 +25,9 @@ class ScaffoldAgent(AssistantAgent):
         
         Scaffold the directory structure by using appropriate CLI commands.
         
-        Run all necessary install commands when scaffolding the solution.
+        Pass such options to commands that do not require user input.
         
-        Run the commands as Windows OS compatible commands.
+        Run all necessary install commands when scaffolding the solution.
         
         Run each command with the run_command tool.
         """
