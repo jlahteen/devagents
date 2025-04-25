@@ -12,7 +12,7 @@ from tools.shell_tools import run_command
 
 
 class TestAgent(SocietyOfMindAgent):
-    """An agent that ensures the application's unit tests will pass."""
+    """An agent that ensures the application's tests will pass."""
 
     _system_message = textwrap.dedent(
         f"""
@@ -40,6 +40,7 @@ class TestAgent(SocietyOfMindAgent):
         - Run the tests.
         - Check the test results for failed tests.
         - If some tests fail, fix the failed tests.
+        - If there are no tests for the component, skip the component.
         
         If you managed to fix all tests of the application, say '{TEST_AGENT_SUCCESSFUL}' without any other content.
         If you failed to fix some tests, say '{TEST_AGENT_FAILED}' without any other content.
