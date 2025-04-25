@@ -27,7 +27,7 @@ class BuildAgent(SocietyOfMindAgent):
         Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the result from the inner team.
         Note:
         - There may be build errors in the conversation, so it is important to check the end result.
-        - Do not treat build errors as a failure.
+        - Do not treat build warnings as a failure.
         """
     )
 
