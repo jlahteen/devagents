@@ -24,3 +24,6 @@ if __name__ == "__main__":
 
     # FixBuildErrorsScenario tests
     # pytest.main(["-s", "tests\\test_fix_build_errors_scenario.py"])
+
+    # TestAgent tests
+    # pytest.main(["-s", "tests\\test_test_agent.py"])
