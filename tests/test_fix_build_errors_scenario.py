@@ -9,7 +9,7 @@ from tests.test_utils import setup_test
 
 @pytest.mark.parametrize(
     "setup_test",
-    [("fix_build_errors_scenario", "test_broken_build", "simple_console_app_broken")],
+    [("fix_build_errors_scenario", "test_broken_build", "simple_cs_console_app_broken")],
     indirect=True,
 )
 @pytest.mark.asyncio
