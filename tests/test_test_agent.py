@@ -29,6 +29,38 @@ class Tee:
 
 @pytest.mark.parametrize(
     "setup_test",
+    [("test_agent", "test_no_tests", "hello_world_cs_console_app")],
+    indirect=True,
+)
+@pytest.mark.asyncio
+async def test_no_tests__should_pass(setup_test):
+    # Arrange
+    test_run_dir = setup_test
+    test_agent = TestAgent(config=Config())
+    console_output = io.StringIO()
+    tee = Tee(sys.stdout, console_output)
+
+    # Act
+    with redirect_stdout(tee):
+        await Console(
+            test_agent.on_messages_stream(
+                [
+                    TextMessage(
+                        content="Run and fix the tests.",
+                        source="user",
+                    )
+                ],
+                cancellation_token=None,
+            )
+        )
+    output = console_output.getvalue()
+
+    # Assert
+    assert TEST_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
+
+
+@pytest.mark.parametrize(
+    "setup_test",
     [("test_agent", "test_passing_tests", "greeting_cs_console_app")],
     indirect=True,
 )
