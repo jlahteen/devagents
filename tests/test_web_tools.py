@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from tests.test_utils import setup_test
