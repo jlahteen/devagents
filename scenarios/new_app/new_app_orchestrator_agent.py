@@ -61,6 +61,8 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
             return self._termination_agent.name
         elif messages[-1].source == self._test_agent.name:
             return self._termination_agent.name
+        elif messages[-1].source == self._termination_agent.name:
+            return self._termination_agent.name
         else:
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")
