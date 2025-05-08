@@ -4,6 +4,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
+from tools.web_tools import google_search, load_page
 
 
 class DeveloperAgent(AssistantAgent):
@@ -37,6 +38,10 @@ class DeveloperAgent(AssistantAgent):
         
         Use the conversation history to ensure that all the files you have generated are in the
         review response.
+        
+        You have the following tools:
+        - google_search tool for searching the web for latest information
+        - load_page tool for loading a web page found by the google_search tool
         """
     )
 
@@ -45,4 +50,5 @@ class DeveloperAgent(AssistantAgent):
             name="developer_agent",
             model_client=ChatCompletionClient.load_component(config.model_client),
             system_message=self._system_message,
+            tools=[google_search, load_page],
         )
