@@ -80,3 +80,21 @@ def enum_files(dir_path: str) -> list:
         return files
     except Exception as e:
         return f"enum_files ERROR: Failed to enumerate the files of '{dir_path}': {e}"
+
+
+def delete_file(file_path: str) -> str:
+    """
+    Deletes a file.
+
+    If the file does not exist, the function returns an error message.
+    """
+    try:
+        # Allow only one thread to access the file deletion section
+        with file_lock:
+            if not os.path.exists(file_path):
+                return f"delete_file ERROR: The file '{file_path}' does not exist"
+            os.remove(file_path)
+        print(f"delete_file OK: The file '{file_path}' was deleted")
+        return f"delete_file OK: The file '{file_path}' was deleted"
+    except Exception as e:
+        return f"delete_file ERROR: Failed to delete the file '{file_path}': {e}"
