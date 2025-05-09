@@ -1,14 +1,16 @@
 import textwrap
 
 from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
+from autogen_agentchat.base import OrTerminationCondition
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
-from tools.file_tools import enum_files, enum_subdirs, read_file, save_file
+from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
+from tools.web_tools import google_search, load_page
 
 
 class BuildAgent(SocietyOfMindAgent):
@@ -35,16 +37,23 @@ class BuildAgent(SocietyOfMindAgent):
         f"""
         Your task is to build the appication in the current directory. If the application does not build, you should fix it.
         Note that the application may consist of multiple components that are located in separate subdirectories.
+        For test projects, just make sure the project builds successfully, do not run the tests.
 
         For each component, act as follows:
-        - Find out the technology by investigating the file names and types in the component directory.
-        - After detecting the component technology, determine the build command.
-        - Run the build command (debug mode is preferred).
-        - Check the build output for errors.
-        - If the build fails, fix the build errors.
+        - Find out the technology by investigating the file names and types in the component directory
+        - After detecting the component technology, determine the build command
+        - Run the build command (debug mode is preferred)
+        - Check the build output for errors
+        - If the build fails, fix the build errors
+        - When fixing the build errors:
+          - Locate the errors in the code by the file references in the build output
+          - Use your knowledge to fix the errors but if that is not enough, use google_search and load_page tools
+            to find the latest information about the errors
+          - When googling, use build error codes and messages as search queries
         
         If you managed to build the application, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
-        If you failed to fix the build errors, say '{BUILD_AGENT_FAILED}' without any other content.
+        You should do everything you can to build the application, but if you feel you are facing overwhelming obstacles and want to give up,
+        say '{BUILD_AGENT_FAILED}' without any other content.
         
         You have the following tools:
         - run_command tool running commands
@@ -52,6 +61,9 @@ class BuildAgent(SocietyOfMindAgent):
         - save_file tool for saving files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
+        - delete_file tool for deleting files
+        - google_search tool for searching the web for latest information
+        - load_page tool for loading web pages found by the google_search tool
         """
     )
 
@@ -72,10 +84,10 @@ class BuildAgent(SocietyOfMindAgent):
             name="inner_build_agent",
             system_message=system_message_inner_build_agent,
             model_client=ChatCompletionClient.load_component(config.model_client),
-            tools=[run_command, read_file, save_file, enum_subdirs, enum_files],
+            tools=[run_command, read_file, save_file, enum_subdirs, enum_files, delete_file, google_search, load_page],
         )
-        termination_condition = TextMentionTermination(BUILD_AGENT_SUCCESSFUL) or TextMentionTermination(
-            BUILD_AGENT_FAILED
+        termination_condition = OrTerminationCondition(
+            TextMentionTermination(BUILD_AGENT_SUCCESSFUL), TextMentionTermination(BUILD_AGENT_FAILED)
         )
         team = RoundRobinGroupChat([inner_build_agent], termination_condition=termination_condition)
         return team
