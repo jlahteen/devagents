@@ -24,7 +24,7 @@ def load_page(url: str) -> str:
     """
     Loads a specifed web page and return its text content from the HTML body.
     """
-    
+
     response = requests.get(url, timeout=10)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
