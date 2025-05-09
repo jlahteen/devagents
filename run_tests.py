@@ -27,3 +27,6 @@ if __name__ == "__main__":
 
     # TestAgent tests
     # pytest.main(["-s", "tests\\test_test_agent.py"])
+
+    # Web tools tests
+    # pytest.main(["-s", "tests\\test_web_tools.py"])
