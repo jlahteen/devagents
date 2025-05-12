@@ -165,7 +165,6 @@ class TestAgent(SocietyOfMindAgent):
             # A jump into this agent from another agent, so let's start testing
             return TESTER_AGENT_NAME
 
-
     @staticmethod
     def _create_team(
         config: Config,
