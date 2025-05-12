@@ -66,6 +66,7 @@ class TestAgent(SocietyOfMindAgent):
     _system_message_tester_agent = textwrap.dedent(
         f"""
         Your task is to run the tests of the application in the current directory.
+        Always run the tests when your turn comes.
         Do not analyze or fix the failed tests, neither ask questions about failed tests, it is not your job.
         Just run the tests and report the results.
         
@@ -161,7 +162,9 @@ class TestAgent(SocietyOfMindAgent):
             else:
                 return FIXER_AGENT_NAME
         else:
-            raise ValueError(f"Unknown message source: {messages[-1].source}")
+            # A jump into this agent from another agent, so let's start testing
+            return TESTER_AGENT_NAME
+
 
     @staticmethod
     def _create_team(
