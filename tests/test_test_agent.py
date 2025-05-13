@@ -10,24 +10,9 @@ from autogen_agentchat.ui import Console
 from agents.test_agent import TestAgent
 from config import Config
 from constants import TEST_AGENT_SUCCESSFUL
-from tests.test_utils import setup_test
+from tests.test_utils import Tee, setup_test
 
 SKIP_TESTS = False
-
-
-class Tee:
-    """A class to write to multiple streams simultaneously."""
-
-    def __init__(self, *streams):
-        self.streams = streams
-
-    def write(self, data):
-        for stream in self.streams:
-            stream.write(data)
-
-    def flush(self):
-        for stream in self.streams:
-            stream.flush()
 
 
 @pytest.mark.skipif(condition=SKIP_TESTS, reason="Skipping test")
