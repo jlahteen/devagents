@@ -9,8 +9,8 @@ from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
-class FixBuildErrorsOrchestratorAgent(OrchestratorAgentBase):
-    """An orchestrator to run a FixBuildErrors scenario."""
+class FixBuildOrchestratorAgent(OrchestratorAgentBase):
+    """An orchestrator to run a FixBuild scenario."""
 
     _system_message = textwrap.dedent(
         """
