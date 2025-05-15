@@ -4,6 +4,7 @@ from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
+from constants import SCAFFOLD_AGENT_DONE
 from tools.shell_tools import run_command
 
 
@@ -11,7 +12,7 @@ class ScaffoldAgent(AssistantAgent):
     """An agent that scaffolds a directory structure for the requested solution."""
 
     _system_message = textwrap.dedent(
-        """
+        f"""
         Your task is to scaffold a directory structure for the requested solution.
         
         Scaffold the solution for Windows OS.
@@ -30,6 +31,8 @@ class ScaffoldAgent(AssistantAgent):
         Run all necessary install commands when scaffolding the solution.
         
         Run each command with the run_command tool.
+
+        When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
         """
     )
 
