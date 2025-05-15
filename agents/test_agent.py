@@ -75,9 +75,11 @@ class TestAgent(SocietyOfMindAgent):
         For each found component, run the tests as follows:
         - Find out the technology by investigating the files (names, types, contents) in the component directory.
         - After detecting the component technology, determine the "run tests" command.
+        - Ensure that the testing framework is configured for CI/CD (e.g. no user input, no interactive prompts).
+          - Especially for npm test use the "-- --ci --watchAll=false" options.
         - Run the tests.
         - If there are no tests for the component, do not suggest to add tests, just skip the component.
-        
+
         When all tests are run, say '{TESTER_AGENT_DONE}' without any other content.
         
         You have the following tools:
