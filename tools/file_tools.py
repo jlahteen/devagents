@@ -6,7 +6,7 @@ file_lock = threading.Lock()
 
 def save_file(file_path: str, file_content: str) -> str:
     """
-    Saves a file content to a file.
+    Saves a file content to a file as UTF-8.
 
     If the file path contains a directory and it does not exist, the function creates it.
     """
@@ -17,7 +17,7 @@ def save_file(file_path: str, file_content: str) -> str:
         with file_lock:
             if directory and not os.path.exists(directory):
                 os.makedirs(directory)
-            with open(file_path, "w") as file:
+            with open(file_path, "w", encoding="utf-8") as file:
                 file.write(file_content)
                 file.flush()
                 os.fsync(file.fileno())
@@ -29,7 +29,7 @@ def save_file(file_path: str, file_content: str) -> str:
 
 def read_file(file_path: str) -> str:
     """
-    Reads the content of a file.
+    Reads the content of a file as UTF-8.
 
     If the file does not exist, the function returns an error message.
     """
@@ -38,7 +38,7 @@ def read_file(file_path: str) -> str:
         with file_lock:
             if not os.path.exists(file_path):
                 return f"read_file ERROR: The file '{file_path}' does not exist"
-            with open(file_path, "r") as file:
+            with open(file_path, "r", encoding="utf-8") as file:
                 file_content = file.read()
         print(f"read_file OK: Content of the file '{file_path}' was read")
         return file_content
