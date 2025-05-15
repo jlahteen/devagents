@@ -5,7 +5,7 @@ file_lock = threading.Lock()
 
 
 def run_command(command: str) -> str:
-    """Runs a specified command."""
+    """Runs a specified command and captures all output, including errors."""
 
     with file_lock:
         print(f"run_command: Running command '{command}'...")
@@ -21,6 +21,10 @@ def run_command(command: str) -> str:
             return result.stdout
         except subprocess.CalledProcessError as e:
             print(f"run_command ERROR: Command '{command}' reported an error")
-            return f"run_command ERROR: Command '{command}' reported an error: {e.output}"
+            return (
+                f"run_command ERROR: Command '{command}' reported an error:\n"
+                f"STDOUT: {e.stdout}\n"
+                f"STDERR: {e.stderr}"
+            )
         except Exception as e:
             return f"run_command ERROR: Failed to run the command '{command}': {str(e)}"
