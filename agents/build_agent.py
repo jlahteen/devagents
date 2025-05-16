@@ -37,7 +37,9 @@ class BuildAgent(SocietyOfMindAgent):
         f"""
         Your task is to build the appication in the current directory. If the application does not build, you should fix it.
         Note that the application may consist of multiple components that are located in separate subdirectories.
-        For test projects, just make sure the project builds successfully, do not run the tests.
+        The application should already exist, so you should not create any new files or directories.
+        However, when fixing the build errors, you may need to modify existing files or delete unnecessary files.
+        Do not run the tests, it is not your task.
 
         For each component, act as follows:
         - Find out the technology by investigating the file names and types in the component directory
