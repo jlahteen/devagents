@@ -31,6 +31,8 @@ class ScaffoldAgent(AssistantAgent):
         Run all necessary install commands when scaffolding the solution.
         
         Run each command with the run_command tool.
+        
+        Document the directory structure after scaffolding the solution.
 
         When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
         """
