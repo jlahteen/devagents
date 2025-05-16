@@ -1,11 +1,16 @@
+import io
 import os
+import sys
 import textwrap
+from contextlib import redirect_stdout
 
 import pytest
 
 from config import Config
+from constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
 from scenarios.new_app.new_app_scenario import NewAppScenario
 from tests.test_utils import setup_test
+from utils.misc import Tee
 
 SKIP_TESTS = False
 
@@ -71,6 +76,42 @@ prompt_cs_fi_ssn_validator_lib = textwrap.dedent(
     """
 )
 
+prompt_react_weather_app = textwrap.dedent(
+    """
+    Create a React app that displays the current weather in a given city.
+    The user should be able to enter a city name and get the current weather information.
+    
+    Use the OpenWeatherMap API to get the weather data (API key fa14cac89ac69ef69f67f55b7ecd1dbb).
+    
+    The app should be responsive and work on mobile devices.
+    Design the user interface to be user-friendly and visually appealing.
+    The user interface should also be accessible to users with disabilities.
+    Use rounded corners and shadows to make the app look modern and clean.
+    Use appropriate icons to show the weather information, e.g. sun, rain, snow, etc.
+    
+    Scaffold the app to the directory city-weather-now.
+    Use the latest version of React and TypeScript.
+    
+    Write comprehensive tests for the app to confirm that it works as expected.
+    
+    Name the app as City Weather Now.
+    Add a footer to the app with the following text: "Created by DevAgents".
+    """
+)
+
+
+prompt_react_hello_world_app = textwrap.dedent(
+    """
+    Create a simple React app that displays "Hello World" and the current time.
+    Scaffold the app using create-react-app and use TypeScript.
+    Scaffold the app for Windows.
+    Use the latest version of React and TypeScript.
+    Use the working directory as the root of the app.
+    Write also necessary tests for the app to confirm that it works as expected.
+    Name the app HelloWorldFromReact.
+    """
+)
+
 
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
@@ -116,3 +157,51 @@ async def test_generate_cs_fi_ssn_validator_lib__creates_app(setup_test):
     assert os.path.exists(
         os.path.join(test_run_dir, "MyBase.FiSsnValidator.Tests\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.Tests.dll")
     )
+
+
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
+@pytest.mark.parametrize(
+    "setup_test",
+    [("new_app_scenario", "test_generate_react_weather_app", None)],
+    indirect=True,
+)
+@pytest.mark.asyncio
+async def test_generate_react_weather_app__creates_app(setup_test):
+    # Arrange
+    test_run_dir = setup_test
+    console_output = io.StringIO()
+    tee = Tee(sys.stdout, console_output)
+    scenario = NewAppScenario(config=Config())
+
+    # Act
+    with redirect_stdout(tee):
+        await scenario.run_scenario(prompt=prompt_react_weather_app)
+    output = console_output.getvalue()
+
+    # Assert
+    assert BUILD_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
+    assert TEST_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
+
+
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
+@pytest.mark.parametrize(
+    "setup_test",
+    [("new_app_scenario", "test_generate_react_hello_world_app", None)],
+    indirect=True,
+)
+@pytest.mark.asyncio
+async def test_generate_react_hello_world_app__creates_app(setup_test):
+    # Arrange
+    test_run_dir = setup_test
+    console_output = io.StringIO()
+    tee = Tee(sys.stdout, console_output)
+    scenario = NewAppScenario(config=Config())
+
+    # Act
+    with redirect_stdout(tee):
+        await scenario.run_scenario(prompt=prompt_react_hello_world_app)
+    output = console_output.getvalue()
+
+    # Assert
+    assert BUILD_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
+    assert TEST_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
