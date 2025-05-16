@@ -30,3 +30,6 @@ if __name__ == "__main__":
 
     # Web tools tests
     # pytest.main(["-s", "tests\\test_web_tools.py"])
+
+    # FixTestsScenario tests
+    # pytest.main(["-s", "tests\\test_fix_tests_scenario.py"])
