@@ -10,7 +10,7 @@ from autogen_core.models import ChatCompletionClient
 
 from config import Config
 from constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
-from tools.file_tools import enum_files, enum_subdirs, read_file, save_file
+from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
 
@@ -124,6 +124,7 @@ class TestAgent(SocietyOfMindAgent):
         - save_file tool for saving files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
+        - delete_file tool for deleting files
         """
     )
 
@@ -199,7 +200,7 @@ class TestAgent(SocietyOfMindAgent):
             name=FIXER_AGENT_NAME,
             system_message=system_message_fixer_agent,
             model_client=model_client,
-            tools=[read_file, save_file, enum_subdirs, enum_files],
+            tools=[read_file, save_file, enum_subdirs, enum_files, delete_file],
         )
         termination_condition = OrTerminationCondition(
             TextMentionTermination(TEST_AGENT_SUCCESSFUL), TextMentionTermination(TEST_AGENT_FAILED)
