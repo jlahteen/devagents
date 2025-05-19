@@ -8,7 +8,8 @@ The currently supported scenarios are listed in the table below.
 |-------------------|-----------------------------------------------------------------------------------------------------|
 | NewCode           | A scenario for generating one or more code snippets, e.g., specific classes, modules, scripts, etc.|
 | NewApp            | A scenario for generating complete applications. Applications should consist of a maximum of 5 components or services.|
-| FixBuildErrors    | A scenario for fixing build errors in a given app.|
+| FixBuild          | A scenario to ensure an application builds successfully. Build errors will be fixed if necessary. |
+| FixTests          | A scenario to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
 DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
 
@@ -39,11 +40,13 @@ Set the following environment variables in a `.env` file located in the root dir
 ```
 TRACE_DIR=<directory path for saving trace files>
 MAX_TURNS=<mamimum number of turns in conversations>
-MODEL=<LLM model name>
-API_KEY=<API key for LLM calls>
+AZURE_MODEL=<LLM model name>
+AZURE_API_KEY=<API key for LLM calls>
 AZURE_ENDPOINT=<Azure OpenAI endpoint to use>
 AZURE_DEPLOYMENT=<Azure OpenAI model deployment name>
 API_VERSION=<API version to use>
+GOOGLE_API_KEY = <Google API key>
+GOOGLE_CSE_ID = "<Google Custom Search Engine ID>"
 ```
 
 These variables are required to connect to your Azure OpenAI Service instance.
@@ -104,14 +107,23 @@ Happy prompting with DevAgents! 🚀
 
 ---
 
-## Backlog
+## Current Iteration
++ New: Add TestAgent to the NewApp scenario
++ Change: Rename FixBuildErrors as FixBuild
++ Bug: ScaffoldAgent should work in a loop
+- New: Add FixTests scenario
 
-- New: Add TestAgent to the NewApp scenario
-- New: Add more output about what agents are doing
-- New: Add NewSystem scenario
+
+## Backlog
+- New: Implement a generic base orchestrator for serving most scenarios
+- Change: Refactor BuildAgent to use an inner team
+- New: Add FixBug scenario
+- New: Add NewSolution scenario
 - New: Add NewFeature scenario
+- New: Add ChangeFeature scenario
+- New: Add NewComponent scenario
+- Change: Refactor google_search as intelligent (free question)
 - Bug: If a prompt file is not found, DevAgents starts to hallucinate
 - New: Pass workspace directory as an argument
 - New: Pass prompt as an argument
-- New: Add FixTests scenario
 - New: Add FixBuildWarnings scenario
