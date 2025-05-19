@@ -115,7 +115,7 @@ async def test_fi_ssn_validator_lib_broken_tests_with_valid_test_data__should_fi
                 cancellation_token=None,
             )
         )
-    test_output = console_output.getvalue()
+    output = console_output.getvalue()
 
     # Assert
     unit_test_file = os.path.join(test_run_dir, "MyBase.FiSsnValidator.Tests", "ValidatorTests.cs")
@@ -147,6 +147,4 @@ async def test_fi_ssn_validator_lib_broken_tests_with_valid_test_data__should_fi
     assert '[DataRow("240332-943K", true)]' in unit_test_code, "Expected SSN result not fixed"
     assert '[DataRow("210268-931R", true)]' in unit_test_code, "Expected SSN result not fixed"
     assert '[DataRow("150776-947F", true)]' in unit_test_code, "Expected SSN result not fixed"
-    assert (
-        "Passed!  - Failed:     0, Passed:    26, Skipped:     0, Total:    26" in test_output
-    ), "Expected test result not found"
+    assert TEST_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
