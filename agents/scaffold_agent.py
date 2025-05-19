@@ -32,7 +32,7 @@ class ScaffoldAgent(AssistantAgent):
         
         Run each command with the run_command tool.
         
-        Document the directory structure after scaffolding the solution.
+        Document the directory structure after scaffolding the solution. Do not list the files in the directories.
 
         When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
         """
