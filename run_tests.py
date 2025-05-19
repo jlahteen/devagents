@@ -22,5 +22,14 @@ if __name__ == "__main__":
     # NewAppScenario tests
     # pytest.main(["-s", "tests\\test_new_app_scenario.py"])
 
-    # FixBuildErrorsScenario tests
-    # pytest.main(["-s", "tests\\test_fix_build_errors_scenario.py"])
+    # FixBuildScenario tests
+    # pytest.main(["-s", "tests\\test_fix_build_scenario.py"])
+
+    # TestAgent tests
+    # pytest.main(["-s", "tests\\test_test_agent.py"])
+
+    # Web tools tests
+    # pytest.main(["-s", "tests\\test_web_tools.py"])
+
+    # FixTestsScenario tests
+    # pytest.main(["-s", "tests\\test_fix_tests_scenario.py"])

@@ -27,10 +27,14 @@ def create_scenario(scenario_name) -> ScenarioBase:
             from scenarios.new_code.new_code_scenario import NewCodeScenario
 
             scenario = NewCodeScenario(Config())
-        case "FixBuildErrors":
-            from scenarios.fix_build_errors.fix_build_errors_scenario import FixBuildErrorsScenario
+        case "FixBuild":
+            from scenarios.fix_build.fix_build_scenario import FixBuildScenario
 
-            scenario = FixBuildErrorsScenario(Config())
+            scenario = FixBuildScenario(Config())
+        case "FixTests":
+            from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
+
+            scenario = FixTestsScenario(Config())
         case _:
             print(f"Unknown scenario: '{scenario_name}'")
             exit(1)

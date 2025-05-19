@@ -46,6 +46,8 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
                 return self._developer_agent.name
         elif messages[-1].source == self._output_agent.name:
             return self._termination_agent.name
+        elif messages[-1].source == self._termination_agent.name:
+            return self._termination_agent.name
         else:
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")

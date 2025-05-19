@@ -3,6 +3,7 @@ from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
+from agents.test_agent import TestAgent
 from config import Config
 from scenarios.new_app.new_app_orchestrator_agent import NewAppOrchestratorAgent
 from scenarios.scenario_base import ScenarioBase
@@ -29,9 +30,12 @@ class NewAppScenario(ScenarioBase):
         # Build Agent
         build_agent = BuildAgent(config=config)
 
+        # Test Agent
+        test_agent = TestAgent(config=config)
+
         # Create an Orchestrator Agent
         self._orchestrator_agent = NewAppOrchestratorAgent(
-            config, scaffold_agent, developer_agent, reviewer_agent, output_agent, build_agent
+            config, scaffold_agent, developer_agent, reviewer_agent, output_agent, build_agent, test_agent
         )
 
     async def run_scenario(self, prompt: str) -> None:

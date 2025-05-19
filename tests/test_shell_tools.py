@@ -8,7 +8,7 @@ from tools.shell_tools import run_command
 
 @pytest.mark.parametrize(
     "setup_test",
-    [("shell_tools", "test_dotnet_build", "hello_world_console_app")],
+    [("shell_tools", "test_dotnet_build", "hello_world_cs_console_app")],
     indirect=True,
 )
 @pytest.mark.asyncio

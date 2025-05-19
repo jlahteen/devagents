@@ -6,6 +6,7 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_agentchat.ui import Console
 
 from config import Config
+from constants import BUILD_AGENT_SUCCESSFUL, SCAFFOLD_AGENT_DONE
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
 
 
@@ -26,6 +27,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         reviewer_agent,
         output_agent,
         build_agent,
+        test_agent,
     ):
         super().__init__(
             name="orchestrator_agent",
@@ -37,12 +39,16 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         self._reviewer_agent = reviewer_agent
         self._output_agent = output_agent
         self._build_agent = build_agent
+        self._test_agent = test_agent
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
             return self._scaffold_agent.name
         elif messages[-1].source == self._scaffold_agent.name:
-            return self._developer_agent.name
+            if SCAFFOLD_AGENT_DONE in messages[-1].content:
+                return self._developer_agent.name
+            else:
+                return self._scaffold_agent.name
         elif messages[-1].source == self._developer_agent.name:
             return self._reviewer_agent.name
         elif messages[-1].source is self._reviewer_agent.name:
@@ -53,6 +59,12 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         elif messages[-1].source == self._output_agent.name:
             return self._build_agent.name
         elif messages[-1].source == self._build_agent.name:
+            if BUILD_AGENT_SUCCESSFUL in messages[-1].content:
+                return self._test_agent.name
+            return self._termination_agent.name
+        elif messages[-1].source == self._test_agent.name:
+            return self._termination_agent.name
+        elif messages[-1].source == self._termination_agent.name:
             return self._termination_agent.name
         else:
             # Raise an error if the source is not recognized
@@ -68,6 +80,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
                 self._reviewer_agent,
                 self._output_agent,
                 self._build_agent,
+                self._test_agent,
                 self._termination_agent,
             ],
             model_client=self._model_client,
