@@ -40,11 +40,11 @@ Set the following environment variables in a `.env` file located in the root dir
 ```
 TRACE_DIR=<directory path for saving trace files>
 MAX_TURNS=<mamimum number of turns in conversations>
-AZURE_MODEL=<LLM model name>
-AZURE_API_KEY=<API key for LLM calls>
+AZURE_MODEL=<Azure LLM model name>
+AZURE_API_KEY=<Azure API key for LLM calls>
 AZURE_ENDPOINT=<Azure OpenAI endpoint to use>
 AZURE_DEPLOYMENT=<Azure OpenAI model deployment name>
-API_VERSION=<API version to use>
+AZURE_API_VERSION=<Azure API version to use>
 GOOGLE_API_KEY = <Google API key>
 GOOGLE_CSE_ID = "<Google Custom Search Engine ID>"
 ```
