@@ -24,8 +24,8 @@ async def main():
     # Get the prompt from the user
     prompt = get_prompt()
 
-    # Set the workspace directory
-    set_workspace_directory()
+    # Set the workspace
+    set_workspace(args.workspace)
 
     # Start the coding mode
     start_coding_mode()
@@ -85,22 +85,20 @@ def restore_stdout():
     sys.stdout = sys.__stdout__
 
 
-def set_workspace_directory():
-    """Sets the workspace directory."""
+def set_workspace(workspace=None):
+    """Sets the workspace."""
 
-    # Build the default directory
-    default_dir = os.path.join(os.getcwd(), "output")
+    # Use the argument if provided, otherwise ask the user
+    if not workspace:
+        workspace = input(f"Enter the workspace:\n> ")
 
-    # Ask for the workspace directory
-    workspace_dir = input(f"Enter the workspace directory [{default_dir}]:\n> ") or default_dir
-
-    # Check if the workspace directory exists
-    if not os.path.exists(workspace_dir):
-        print(f"Workspace directory '{workspace_dir}' does not exist.")
+    # Check if the workspace exists
+    if not os.path.exists(workspace):
+        print(f"Workspace '{workspace}' does not exist.")
         sys.exit(1)
 
-    # Change to the workspace directory
-    os.chdir(workspace_dir)
+    # Change the current directory to the workspace
+    os.chdir(workspace)
 
 
 def parse_args():
@@ -109,7 +107,7 @@ def parse_args():
 
     # Add arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
-    parser.add_argument("--workspace_dir", type=str, default=None, help="A workspace directory to use")
+    parser.add_argument("--workspace", type=str, default=None, help="A directory specifying the workspace to use")
 
     # Parse the arguments
     args = parser.parse_args()
