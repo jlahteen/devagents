@@ -18,8 +18,11 @@ async def main():
     # Parse the command line args
     args = parse_args()
 
-    # Create a scenario
-    scenario = create_scenario(args.scenario)
+    # Get the scenario
+    scenario_name = get_scenario(args.scenario)
+
+    # Create the scenario
+    scenario = create_scenario(scenario_name)
 
     # Get the prompt
     prompt = get_prompt(args.prompt)
@@ -66,6 +69,16 @@ def get_prompt(prompt=None):
             print(f"An error occurred: {e}")
 
     return prompt
+
+
+def get_scenario(scenario=None):
+    """
+    Gets the scenario to run. If not provided, asks the user.
+    """
+
+    if not scenario:
+        scenario = input("Enter the scenario to run:\n> ")
+    return scenario
 
 
 def redirect_stdout():
