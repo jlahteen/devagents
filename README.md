@@ -56,15 +56,15 @@ These variables are required to connect to your Azure OpenAI Service instance.
 To start DevAgents, use the following command:
 
 ```bash
-python devagents.py --scenario <ScenarioName>
+python devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
 ```
 
-When DevAgents starts, you will be asked to enter a prompt and a workspace directory. You can give a prompt as a raw prompt or as a file path to a file containing a prompt.
+When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
 
 
 ## Output
 
-Generated code and other artifacts are saved in the given workspace directory.
+Generated or modified code and other artifacts are saved in the given workspace.
 
 
 ## License
@@ -94,9 +94,11 @@ PS C:\_dev2\devagents> python devagents.py --scenario NewApp
  ✨  Hey! We are a software team of AI agents.  ✨
  ✨       Let's build something together!       ✨
 
+Enter the scenario to run:
+> NewApp
 Enter a prompt or a prompt file:
 > my-simple-console-calculator.txt
-Enter the workspace directory [C:\_dev2\devagents\output]:
+Enter the workspace:
 > C:\_dev2\devagents\output\my-simple-console-calculator
 Coding... Done
 PS C:\_dev2\devagents> 
@@ -108,10 +110,7 @@ Happy prompting with DevAgents! 🚀
 ---
 
 ## Current Iteration
-+ New: Add TestAgent to the NewApp scenario
-+ Change: Rename FixBuildErrors as FixBuild
-+ Bug: ScaffoldAgent should work in a loop
-- New: Add FixTests scenario
+- Change: All arguments can be passed as command line arguments; missing arguments will be asked
 
 
 ## Backlog
@@ -124,6 +123,4 @@ Happy prompting with DevAgents! 🚀
 - New: Add NewComponent scenario
 - Change: Refactor google_search as intelligent (free question)
 - Bug: If a prompt file is not found, DevAgents starts to hallucinate
-- New: Pass workspace directory as an argument
-- New: Pass prompt as an argument
 - New: Add FixBuildWarnings scenario
