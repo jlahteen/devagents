@@ -6,7 +6,7 @@ import sys
 
 from hello import say_hello
 from scenarios.scenario_base import create_scenario
-from utils.coding_mode import start_coding_mode, stop_coding_mode
+from utils.misc import Tee
 
 
 async def main():
@@ -30,20 +30,14 @@ async def main():
     # Set the workspace
     set_workspace(args.workspace)
 
-    # Start the coding mode
-    start_coding_mode()
-
-    # Redirect stdout
-    redirect_stdout()
+    # Redirect the console streams
+    redirect_stdout_stderr()
 
     # Run the scenario
     await scenario.run_scenario(prompt=prompt)
 
-    # Restore stdout
-    restore_stdout()
-
-    # Stop the coding mode
-    stop_coding_mode()
+    # Restore the console streams
+    restore_stdout_stderr
 
 
 def get_prompt(prompt=None):
@@ -81,18 +75,22 @@ def get_scenario(scenario=None):
     return scenario
 
 
-def redirect_stdout():
-    """Redirects stdout to a trace file."""
+def redirect_stdout_stderr():
+    """Redirects stdout and stderr."""
 
-    trace_file = os.getenv("TRACE_DIR") + "/trace-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".md"
-    sys.stdout = open(trace_file, "w", encoding="utf-8")
+    trace_file_path = os.getenv("TRACE_DIR") + "/trace-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".md"
+    trace_file = open(trace_file_path, "w", encoding="utf-8")
+    sys.stdout = Tee(sys.stdout, trace_file)
+    sys.stderr = Tee(sys.stderr, trace_file)
 
 
-def restore_stdout():
-    """Restores stdout."""
+def restore_stdout_stderr():
+    """Restores stdout and stderr."""
 
     sys.stdout.close()
+    sys.stderr.close()
     sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
 
 
 def set_workspace(workspace=None):
@@ -117,7 +115,12 @@ def parse_args():
 
     # Add arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
-    parser.add_argument("--prompt", type=str, default=None, help="A prompt as a raw prompt or as a file path to a file containing a prompt")
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default=None,
+        help="A prompt as a raw prompt or as a file path to a file containing a prompt",
+    )
     parser.add_argument("--workspace", type=str, default=None, help="A directory specifying the workspace to use")
 
     # Parse the arguments
