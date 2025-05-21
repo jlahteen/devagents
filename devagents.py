@@ -21,8 +21,8 @@ async def main():
     # Create a scenario
     scenario = create_scenario(args.scenario)
 
-    # Get the prompt from the user
-    prompt = get_prompt()
+    # Get the prompt
+    prompt = get_prompt(args.prompt)
 
     # Set the workspace
     set_workspace(args.workspace)
@@ -43,7 +43,7 @@ async def main():
     stop_coding_mode()
 
 
-def get_prompt():
+def get_prompt(prompt=None):
     """
     Gets a prompt containing a coding task.
 
@@ -51,22 +51,19 @@ def get_prompt():
     In the latter case the file content will be returned.
     """
 
-    user_input = input("Enter a prompt or a prompt file:\n> ")
-    prompt = ""
+    if not prompt:
+        prompt = input("Enter a prompt or a prompt file:\n> ")
 
-    if os.path.isfile(user_input):
-        # The input is a valid file path
+    if os.path.isfile(prompt):
+        # The prompt is a valid file path
         try:
-            with open(user_input, "r", encoding="utf-8") as file:
+            with open(prompt, "r", encoding="utf-8") as file:
                 prompt = file.read()
         except FileNotFoundError:
             print("File was not found.")
             sys.exit(1)
         except Exception as e:
             print(f"An error occurred: {e}")
-    else:
-        # The input is a prompt
-        prompt = user_input
 
     return prompt
 
@@ -107,6 +104,7 @@ def parse_args():
 
     # Add arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
+    parser.add_argument("--prompt", type=str, default=None, help="A prompt as a raw prompt or as a file path to a file containing a prompt")
     parser.add_argument("--workspace", type=str, default=None, help="A directory specifying the workspace to use")
 
     # Parse the arguments
