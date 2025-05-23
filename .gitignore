@@ -173,3 +173,6 @@ trace/
 
 # Test output results
 tests/test_output/
+
+# Temporary docker build files
+deploy/devagents/
