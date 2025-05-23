@@ -106,22 +106,3 @@ PS C:\_dev2\devagents>
 
 ---
 Happy prompting with DevAgents! 🚀
-
----
-
-## Current Iteration
-- Change: All arguments can be passed as command line arguments; missing arguments will be asked
-- Change: Conversation between agents changed to be streamed both to the console and to a trace file
-- New: Support for Docker image releases added
-
-## Backlog
-- New: Implement a generic base orchestrator for serving most scenarios
-- Change: Refactor BuildAgent to use an inner team
-- New: Add FixBug scenario
-- New: Add NewSolution scenario
-- New: Add NewFeature scenario
-- New: Add ChangeFeature scenario
-- New: Add NewComponent scenario
-- Change: Refactor google_search as intelligent (free question)
-- Bug: If a prompt file is not found, DevAgents starts to hallucinate
-- New: Add FixBuildWarnings scenario
