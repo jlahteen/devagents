@@ -111,7 +111,8 @@ Happy prompting with DevAgents! 🚀
 
 ## Current Iteration
 - Change: All arguments can be passed as command line arguments; missing arguments will be asked
-
+- Change: Conversation between agents changed to be streamed both to the console and to a trace file
+- New: Support for Docker image releases added
 
 ## Backlog
 - New: Implement a generic base orchestrator for serving most scenarios
