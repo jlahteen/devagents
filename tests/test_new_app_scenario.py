@@ -10,6 +10,7 @@ from config import Config
 from constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
 from scenarios.new_app.new_app_scenario import NewAppScenario
 from tests.test_utils import setup_test
+from tools.os_tools import to_os_path
 from utils.misc import Tee
 
 SKIP_TESTS = False
@@ -129,9 +130,11 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
     await scenario.run_scenario(prompt=prompt_cs_two_layer_greeting_app)
 
     # Assert
-    assert os.path.exists(os.path.join(test_run_dir, "MyGreetingApp.UI\\bin\\Debug\\net8.0\\MyGreetingApp.UI.exe"))
     assert os.path.exists(
-        os.path.join(test_run_dir, "MyGreetingApp.Backend\\bin\\Debug\\net8.0\\MyGreetingApp.Backend.dll")
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.UI\\bin\\Debug\\net8.0\\MyGreetingApp.UI.exe"))
+    )
+    assert os.path.exists(
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.Backend\\bin\\Debug\\net8.0\\MyGreetingApp.Backend.dll"))
     )
 
 
@@ -152,10 +155,12 @@ async def test_generate_cs_fi_ssn_validator_lib__creates_app(setup_test):
 
     # Assert
     assert os.path.exists(
-        os.path.join(test_run_dir, "MyBase.FiSsnValidator\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.dll")
+        os.path.join(test_run_dir, to_os_path("MyBase.FiSsnValidator\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.dll"))
     )
     assert os.path.exists(
-        os.path.join(test_run_dir, "MyBase.FiSsnValidator.Tests\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.Tests.dll")
+        os.path.join(
+            test_run_dir, to_os_path("MyBase.FiSsnValidator.Tests\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.Tests.dll")
+        )
     )
 
 
