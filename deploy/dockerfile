@@ -29,5 +29,9 @@ WORKDIR /app/devagents
 RUN echo "source /app/venv/bin/activate" >> ~/.bashrc && \
     echo "alias devagents='python devagents.py'" >> ~/.bashrc
 
+# Set the necessary environment variables
+# npm_config_yes avoids prompts during npm installs
+ENV npm_config_yes=true
+
 # Start an interactive login shell
 CMD ["/bin/bash", "--login"]
