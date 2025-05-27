@@ -1,4 +1,3 @@
-import platform
 import sys
 
 
@@ -8,9 +7,12 @@ def to_os_path(windows_path: str) -> str:
     Also removes the .exe extension if present.
     """
 
-    if platform.system() != "Windows":
+    if get_os_type() != "Windows":
         # Replace backslashes with forward slashes
         unix_path = windows_path.replace("\\", "/")
+        # Remove the drive letter from the path
+        if unix_path[1] == ":":
+            unix_path = unix_path[2:]
         # Remove the .exe extension if present
         if unix_path.endswith(".exe"):
             unix_path = unix_path[:-4]
@@ -24,8 +26,10 @@ def get_os_type() -> str:
     Returns the current operating system type.
     """
 
-    os_name = platform.system()
-    if os_name == "Darwin":
+    os_name = sys.platform.lower()
+    if os_name.startswith("nt") or os_name.startswith("win"):
+        return "Windows"
+    elif os_name.startswith("darwin") or os_name.startswith("mac"):
         return "macOS"
     else:
-        return os_name
+        return "Linux"
