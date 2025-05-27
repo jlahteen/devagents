@@ -3,6 +3,7 @@ import textwrap
 
 import pytest
 from autogen_agentchat.messages import TextMessage
+from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
 
 from agents.scaffold_agent import ScaffoldAgent
@@ -34,19 +35,19 @@ async def test_scaffold_react_app__should_scaffold(setup_test):
     # Arrange
     test_run_dir = setup_test
     scaffold_agent = ScaffoldAgent(config=Config())
-    cancellation_token = CancellationToken()
 
     # Act
-    response = await scaffold_agent.on_messages(
-        [
-            TextMessage(
-                content=prompt,
-                source="user",
-            )
-        ],
-        cancellation_token,
+    await Console(
+        scaffold_agent.on_messages_stream(
+            [
+                TextMessage(
+                    content=prompt,
+                    source="user",
+                )
+            ],
+            cancellation_token=None,
+        )
     )
-    print(response)
 
     # Assert
     assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend"))
