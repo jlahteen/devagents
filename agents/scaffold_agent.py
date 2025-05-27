@@ -5,6 +5,7 @@ from autogen_core.models import ChatCompletionClient
 
 from config import Config
 from constants import SCAFFOLD_AGENT_DONE
+from tools.os_tools import get_os_type
 from tools.shell_tools import run_command
 
 
@@ -15,26 +16,28 @@ class ScaffoldAgent(AssistantAgent):
         f"""
         Your task is to scaffold a directory structure for the requested solution.
         
-        Scaffold the solution for Windows OS.
-        
-        Use the current directory as the solution root so do not create a directory for the
-        solution.
+        Use the current directory as the solution root so do not create a directory for the solution.
         
         Do not write code for the requested solution excluding necessary placeholder files.
         
         Place each project in a separate subfolder under the solution root.
         
         Scaffold the directory structure by using appropriate CLI commands.
-        
-        Pass such options to commands that do not require user input.
-        
+
+        Pass such options to commands that work in the CI/CD mode, so they do not use interactive prompts.
+        - Especially, use the --yes option for appropriate npm and npx commmands.
+
         Run all necessary install commands when scaffolding the solution.
-        
-        Run each command with the run_command tool.
+
+        If some scaffold command fails, analyze the error and fix it.
         
         Document the directory structure after scaffolding the solution. Do not list the files in the directories.
 
         When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
+        
+        You have the following tools:
+        - run_command tool for running commands
+        - get_os_type tool for determining the operating system type
         """
     )
 
@@ -43,5 +46,5 @@ class ScaffoldAgent(AssistantAgent):
             name="scaffold_agent",
             system_message=self._system_message,
             model_client=ChatCompletionClient.load_component(config.model_client),
-            tools=[run_command],
+            tools=[run_command, get_os_type],
         )
