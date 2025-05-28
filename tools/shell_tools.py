@@ -30,8 +30,11 @@ def run_command(command: str) -> str:
                 errors="replace",
             )
 
-            for line in iter(process.stdout.readline, ""):
-                tee.write(line)
+            while True:
+                char = process.stdout.read(1)
+                if not char:
+                    break
+                tee.write(char)
                 tee.flush()
 
             return_code = process.wait()
