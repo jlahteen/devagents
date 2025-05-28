@@ -33,5 +33,5 @@ RUN echo "source /app/venv/bin/activate" >> ~/.bashrc && \
 # npm_config_yes avoids prompts during npm installs
 ENV npm_config_yes=true
 
-# Start an interactive login shell
-CMD ["/bin/bash", "--login"]
+# Start an interactive login shell, run hello.py, then stay in the shell
+CMD ["/bin/bash", "--login", "-c", "python3 hello.py; exec bash"]
