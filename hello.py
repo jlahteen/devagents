@@ -1,5 +1,6 @@
 import pyfiglet
 
+VERSION = "Version 0.7"
 BUILD = "Build __BUILD__"
 
 
@@ -19,6 +20,7 @@ def say_hello():
     for line in ascii_art.splitlines():
         print(f"/ {line.ljust(width)} \\")
     print(f"/ {''.ljust(width)} \\")
+    print(f"/ {VERSION.center(width)} \\")
     print(f"/ {BUILD.center(width)} \\")
     print(border_line)
     print(" ✨  Hey! We are a software team of AI agents.  ✨")
