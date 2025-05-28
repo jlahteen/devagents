@@ -21,5 +21,8 @@ MKDIR devagents\tests
 COPY ..\tests\*.* devagents\tests
 XCOPY ..\tests\test_data\* devagents\tests\test_data /I /Y /S
 
+REM Update the Build number
+python update_build.py
+
 REM Build the Docker image
 docker build -t devagents .

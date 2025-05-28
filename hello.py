@@ -1,5 +1,7 @@
 import pyfiglet
 
+BUILD = "Build __BUILD__"
+
 
 def say_hello():
     """Prints a welcome message with ASCII art for "DevAgents"."""
@@ -12,10 +14,17 @@ def say_hello():
     border_line = "=" * (width + 4)
 
     # Print the box and message with some fancy formatting
+    print()
     print(border_line)
     for line in ascii_art.splitlines():
         print(f"/ {line.ljust(width)} \\")
+    print(f"/ {''.ljust(width)} \\")
+    print(f"/ {BUILD.center(width)} \\")
     print(border_line)
     print(" ✨  Hey! We are a software team of AI agents.  ✨")
-    print(" ✨       Let's build something together!       ✨")
+    print(" ✨       Let's create something together!      ✨")
     print()
+
+
+if __name__ == "__main__":
+    say_hello()
