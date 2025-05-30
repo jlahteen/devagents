@@ -25,9 +25,18 @@ COPY devagents /app/devagents
 # Set the working directory to /app/devagents
 WORKDIR /app/devagents
 
-# Add the "devagents" alias and activate the virtual environment in the interactive shell
-RUN echo "source /app/venv/bin/activate" >> ~/.bashrc && \
-    echo "alias devagents='python devagents.py'" >> ~/.bashrc
+# Activate the virtual environment in the shell
+RUN echo "source /app/venv/bin/activate" >> ~/.bashrc
+
+# Add the "devagents" aliases
+RUN echo "alias devagents='python devagents.py'" >> ~/.bashrc && \
+    echo "alias new-code='devagents --scenario NewCode'" >> ~/.bashrc && \
+    echo "alias new-app='devagents --scenario NewApp'" >> ~/.bashrc && \
+    echo "alias fix-build='devagents --scenario FixBuild'" >> ~/.bashrc && \
+    echo "alias fix-tests='devagents --scenario FixTests'" >> ~/.bashrc
+
+# Set the shell prompt
+RUN echo "export PS1='\[\033[0;32m\]devagents# \[\033[0m\]'" >> ~/.bashrc
 
 # Set the necessary environment variables
 # npm_config_yes avoids prompts during npm installs
