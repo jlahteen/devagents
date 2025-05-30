@@ -11,7 +11,7 @@ from utils.misc import Tee
 
 async def main():
     """The main program to run DevAgents."""
-    
+
     print("\n** DevAgents **\n")
 
     # Parse the command line args
