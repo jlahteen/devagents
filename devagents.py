@@ -6,7 +6,7 @@ import sys
 
 from hello import say_hello
 from scenarios.scenario_base import create_scenario
-from utils.misc import Tee
+from utils.misc import Tee, print_yellow
 
 
 async def main():
@@ -29,6 +29,10 @@ async def main():
     # Set the workspace
     set_workspace(args.workspace)
 
+    # Report the start time
+    start_time = datetime.datetime.now().astimezone()
+    print_yellow(f"\n** Coding task started at {start_time.strftime('%H.%M.%S')} **\n")
+
     # Redirect the console streams
     redirect_stdout_stderr()
 
@@ -36,7 +40,12 @@ async def main():
     await scenario.run_scenario(prompt=prompt)
 
     # Restore the console streams
-    restore_stdout_stderr
+    restore_stdout_stderr()
+
+    # Report the end time and elapsed time
+    end_time = datetime.datetime.now().astimezone()
+    elapsed = end_time - start_time
+    print_yellow(f"\n** Coding task finished at {end_time.strftime('%H.%M.%S')}, elapsed time {str(elapsed)[:-7]} **\n")
 
 
 def get_prompt(prompt=None):

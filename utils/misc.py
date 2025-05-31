@@ -23,3 +23,9 @@ class Tee:
                     stream.close()
                 except Exception:
                     pass
+
+
+def print_yellow(text: str) -> None:
+    """Prints a given text in yellow color to the console."""
+
+    print(f"\033[93m{text}\033[0m")
