@@ -7,6 +7,7 @@ from autogen_agentchat.ui import Console
 from agents.build_agent import BuildAgent
 from config import Config
 from tests.test_utils import setup_test
+from tools.os_tools import to_os_path
 
 
 @pytest.mark.parametrize(
@@ -34,5 +35,5 @@ async def test_broken_build__should_fix(setup_test):
     )
 
     # Assert
-    assert os.path.exists(os.path.join(test_run_dir, "bin\\Debug\\net8.0\\FinnishSSNValidator.dll"))
-    assert os.path.exists(os.path.join(test_run_dir, "bin\\Debug\\net8.0\\FinnishSSNValidator.exe"))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.dll")))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.exe")))

@@ -56,15 +56,15 @@ These variables are required to connect to your Azure OpenAI Service instance.
 To start DevAgents, use the following command:
 
 ```bash
-python devagents.py --scenario <ScenarioName>
+python devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
 ```
 
-When DevAgents starts, you will be asked to enter a prompt and a workspace directory. You can give a prompt as a raw prompt or as a file path to a file containing a prompt.
+When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
 
 
 ## Output
 
-Generated code and other artifacts are saved in the given workspace directory.
+Generated or modified code and other artifacts are saved in the given workspace.
 
 
 ## License
@@ -81,49 +81,26 @@ DevAgents is currently tested only on Windows with Azure OpenAI Service.
 
 Below is a sample output of running a NewApp scenario.
 
-```bash
-PS C:\_dev2\devagents> python devagents.py --scenario NewApp
-====================================================
-/  ____              _                    _        \
-/ |  _ \  _____   __/ \   __ _  ___ _ __ | |_ ___  \
-/ | | | |/ _ \ \ / / _ \ / _` |/ _ \ '_ \| __/ __| \
-/ | |_| |  __/\ V / ___ \ (_| |  __/ | | | |_\__ \ \
-/ |____/ \___| \_/_/   \_\__, |\___|_| |_|\__|___/ \
-/                        |___/                     \
-====================================================
- ✨  Hey! We are a software team of AI agents.  ✨
- ✨       Let's build something together!       ✨
+```text
+PS C:\_dev2\devagents> python devagents.py --scenario NewCode
 
+** DevAgents **
+
+Enter the scenario to run:
+> NewApp
 Enter a prompt or a prompt file:
-> my-simple-console-calculator.txt
-Enter the workspace directory [C:\_dev2\devagents\output]:
+> Write a CSharp Hello World app as a console app, the app needs just to say "Hello".
+Enter the workspace:
 > C:\_dev2\devagents\output\my-simple-console-calculator
-Coding... Done
+
+** Coding task started at 18.52.21 **
+
+[... agent conversation ...]
+
+** Coding task finished at 18.52.32, elapsed time 0:00:11 **
+
 PS C:\_dev2\devagents> 
 ```
 
 ---
 Happy prompting with DevAgents! 🚀
-
----
-
-## Current Iteration
-+ New: Add TestAgent to the NewApp scenario
-+ Change: Rename FixBuildErrors as FixBuild
-+ Bug: ScaffoldAgent should work in a loop
-- New: Add FixTests scenario
-
-
-## Backlog
-- New: Implement a generic base orchestrator for serving most scenarios
-- Change: Refactor BuildAgent to use an inner team
-- New: Add FixBug scenario
-- New: Add NewSolution scenario
-- New: Add NewFeature scenario
-- New: Add ChangeFeature scenario
-- New: Add NewComponent scenario
-- Change: Refactor google_search as intelligent (free question)
-- Bug: If a prompt file is not found, DevAgents starts to hallucinate
-- New: Pass workspace directory as an argument
-- New: Pass prompt as an argument
-- New: Add FixBuildWarnings scenario

@@ -1,5 +1,18 @@
 import pyfiglet
 
+VERSION = "Version 0.7"
+BUILD = "Build __BUILD__"
+HOME_PAGE = "https://github.com/jlahteen/devagents"
+
+
+def print_home_page(width):
+    """Prints the HOME_PAGE centered within the given width."""
+
+    home_page_link = f"\033[38;2;59;110;234m{HOME_PAGE}\033[0m"
+    left_padding = (width - len(HOME_PAGE)) // 2
+    right_padding = width - len(HOME_PAGE) - left_padding
+    print(f"/ {' ' * left_padding}{home_page_link}{' ' * right_padding} \\")
+
 
 def say_hello():
     """Prints a welcome message with ASCII art for "DevAgents"."""
@@ -12,10 +25,19 @@ def say_hello():
     border_line = "=" * (width + 4)
 
     # Print the box and message with some fancy formatting
+    print()
     print(border_line)
     for line in ascii_art.splitlines():
         print(f"/ {line.ljust(width)} \\")
+    print(f"/ {''.ljust(width)} \\")
+    print(f"/ {VERSION.center(width)} \\")
+    print(f"/ {BUILD.center(width)} \\")
+    print_home_page(width)
     print(border_line)
     print(" ✨  Hey! We are a software team of AI agents.  ✨")
-    print(" ✨       Let's build something together!       ✨")
+    print(" ✨       Let's create something together!      ✨")
     print()
+
+
+if __name__ == "__main__":
+    say_hello()
