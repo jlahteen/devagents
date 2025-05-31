@@ -5,7 +5,7 @@ def update_build(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         now = datetime.datetime.now()
-        timestamp = now.strftime('%Y.%m%d.%H%M.%S')
+        timestamp = now.strftime('%Y.%m%d.%H%M')
         if '__BUILD__' not in content:
             print(f'No __BUILD__ token found in {filepath}')
             return
