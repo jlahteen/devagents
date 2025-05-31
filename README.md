@@ -81,26 +81,24 @@ DevAgents is currently tested only on Windows with Azure OpenAI Service.
 
 Below is a sample output of running a NewApp scenario.
 
-```bash
-PS C:\_dev2\devagents> python devagents.py --scenario NewApp
-====================================================
-/  ____              _                    _        \
-/ |  _ \  _____   __/ \   __ _  ___ _ __ | |_ ___  \
-/ | | | |/ _ \ \ / / _ \ / _` |/ _ \ '_ \| __/ __| \
-/ | |_| |  __/\ V / ___ \ (_| |  __/ | | | |_\__ \ \
-/ |____/ \___| \_/_/   \_\__, |\___|_| |_|\__|___/ \
-/                        |___/                     \
-====================================================
- ✨  Hey! We are a software team of AI agents.  ✨
- ✨       Let's build something together!       ✨
+```text
+PS C:\_dev2\devagents> python devagents.py --scenario NewCode
+
+** DevAgents **
 
 Enter the scenario to run:
 > NewApp
 Enter a prompt or a prompt file:
-> my-simple-console-calculator.txt
+> Write a CSharp Hello World app as a console app, the app needs just to say "Hello".
 Enter the workspace:
 > C:\_dev2\devagents\output\my-simple-console-calculator
-Coding... Done
+
+** Coding task started at 18.52.21 **
+
+[... agent conversation ...]
+
+** Coding task finished at 18.52.32, elapsed time 0:00:11 **
+
 PS C:\_dev2\devagents> 
 ```
 
