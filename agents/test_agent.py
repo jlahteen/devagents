@@ -116,8 +116,8 @@ class TestAgent(SocietyOfMindAgent):
         Do not comment on the suggested fixes, just implement them.
         Do not suggest new fixes, just implement the suggested ones.
         Do not run the tests, there is another agent for that.
-        
-        When you have implemented the suggested fixes or there is nothing to fix, say '{FIXER_AGENT_DONE}' without any other content.
+
+        Say '{FIXER_AGENT_DONE}' when you have implemented all the suggested fixes or there is nothing to fix.
 
         You have the following tools:
         - read_file tool for reading files
