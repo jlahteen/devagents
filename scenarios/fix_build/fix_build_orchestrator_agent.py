@@ -33,12 +33,4 @@ class FixBuildOrchestratorAgent(OrchestratorAgentBase):
     async def run_team(self, coding_task: str) -> None:
         """Runs the team with a given coding task."""
 
-        termination_condition = TextMentionTermination(BUILD_AGENT_SUCCESSFUL) or TextMentionTermination(
-            BUILD_AGENT_FAILED
-        )
-        groupchat = RoundRobinGroupChat(
-            [self._build_agent],
-            max_turns=self._config.max_turns,
-            termination_condition=termination_condition,
-        )
-        await Console(groupchat.run_stream(task=coding_task))
+        await Console(self._build_agent.run_stream(task=coding_task))

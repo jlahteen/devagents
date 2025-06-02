@@ -1,9 +1,11 @@
 import textwrap
+from typing import Sequence
 
 from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
 from autogen_agentchat.base import OrTerminationCondition
 from autogen_agentchat.conditions import TextMentionTermination
-from autogen_agentchat.teams import RoundRobinGroupChat
+from autogen_agentchat.messages import AgentEvent, ChatMessage
+from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
@@ -12,60 +14,120 @@ from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, s
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
 
+TEAM_LEAD_AGENT_NAME = "team_lead_agent"
+BUILDER_AGENT_NAME = "builder_agent"
+ANALYST_AGENT_NAME = "analyst_agent"
+FIXER_AGENT_NAME = "fixer_agent"
+BUILDER_AGENT_DONE = "BUILDER_AGENT DONE"
+FIXER_AGENT_DONE = "FIXER_AGENT DONE"
+
 
 class BuildAgent(SocietyOfMindAgent):
     """An agent that ensures the application will build."""
 
     _system_message = textwrap.dedent(
         f"""
-        Your task is to ensure that the application in the current directory will build successfully.
+        You are a build agent, and your task is to ensure that the application in the current directory will build successfully.
         
-        You have an inner team to do the actual work, i.e. check the build and fix the possible build errors.
+        You have an inner team to do the actual work, i.e. check the build results and fix the possible build errors.
         """
     )
 
     _response_prompt = textwrap.dedent(
         f"""
-        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the result from the inner team.
+        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the response from the inner team.
         Note:
-        - There may be build errors in the conversation, so it is important to check the end result.
+        - There may be build errors in the early conversation, so it is important to check the end result.
         - Do not treat build warnings as a failure.
         """
     )
 
-    _system_message_inner_build_agent = textwrap.dedent(
+    _system_message_team_lead_agent = textwrap.dedent(
         f"""
-        Your task is to build the appication in the current directory. If the application does not build, you should fix it.
-        Note that the application may consist of multiple components that are located in separate subdirectories.
-        The application should already exist, so you should not create any new files or directories.
-        However, when fixing the build errors, you may need to modify existing files or delete unnecessary files.
-        Do not run the tests, it is not your task.
+        You run the team that builds the application in the current directory.
 
-        For each component, act as follows:
-        - Find out the technology by investigating the file names and types in the component directory
-        - After detecting the component technology, determine the build command
-        - Run the build command (debug mode is preferred)
-        - Check the build output for errors
-        - If the build fails, fix the build errors
-        - When fixing the build errors:
-          - Locate the errors in the code by the file references in the build output
-          - Use your knowledge to fix the errors but if that is not enough, use google_search and load_page tools
-            to find the latest information about the errors
-          - When googling, use build error codes and messages as search queries
-        
-        If you managed to build the application, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
-        You should do everything you can to build the application, but if you feel you are facing overwhelming obstacles and want to give up,
-        say '{BUILD_AGENT_FAILED}' without any other content.
-        
+        Your task is to control how long the build process will continue.
+        Do not comment the build process or the build results. There are other agents for that.
+
+        The team runs on iterations. Each iteration goes as follows:
+        - The builder agent builds the application and reports the results.
+        - The analyst agent analyzes the build results and suggests fixes for the build errors.
+        - The fixer agent implements the suggested fixes.
+
+        When the iteration is done, check the build results and decide whether to continue or not.
+        If you decide to take a new iteration, end your response with 'Please rebuild the application.'
+        You should give up only in very rare circumstances where the fixes don't seem to resolve build errors after several iterations.
+
+        You should end the conversation in the following cases:
+        - If there is no application to build, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
+        - If the build was successful, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
+        - If you feel the team is facing overwhelming obstacles fixing the build errors, response with a short explanation why you
+          decided to end the build process. End your response with '{BUILD_AGENT_FAILED}' in a separate line.
+        """
+    )
+
+    _system_message_builder_agent = textwrap.dedent(
+        f"""
+        Your task is to build the appication in the current directory.
+        Note that the application may consist of multiple components that are located in separate subdirectories.
+        The application should already exist, so do not create any new files or directories.
+        Always build the application when your turn comes.
+        Do not analyze or fix the build errors, neither ask questions, it is not your job.
+        Just build the application and report the results.
+
+        For each found component, run the build as follows:
+        - Find out the technology by investigating the files (names, types, contents) in the component directory.
+        - After detecting the component technology, determine the build command.
+        - Run the build command (debug mode is preferred).
+          Use options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
+
+        When the build has been run for all components, say '{BUILDER_AGENT_DONE}' without any other content.
+
         You have the following tools:
-        - run_command tool running commands
+        - run_command tool for running commands
+        - read_file tool for reading files
+        - enum_subdirs tool for enumerating subdirectories in a directory
+        - enum_files tool for enumerating files in a directory
+        """
+    )
+
+    _system_message_analyst_agent = textwrap.dedent(
+        f"""
+        Your task is to analyze the build results and suggest fixes for the build errors.
+        Build warnings are not in the scope of the task, so do not suggest fixes for them.
+
+        Act as follows:
+        - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools
+          to find the latest information about the errors.
+          When googling, use build error codes and messages as search queries.
+        - Do not ask questions, just suggest specific fixes.
+
+        You have the following tools:
+        - read_file tool for reading files
+        - enum_subdirs tool for enumerating subdirectories in a directory
+        - enum_files tool for enumerating files in a directory
+        - google_search tool for searching the web for latest information
+        - load_page tool for loading a web page found by the google_search tool
+        """
+    )
+
+    _system_message_fixer_agent = textwrap.dedent(
+        f"""
+        You are a developer. Your task is to fix the build errors according to the suggested fixes.
+
+        Do not comment the suggested fixes, just implement them.
+        Do not suggest new fixes, just implement the suggested ones.
+        Do not build the application, there is another agent for that.
+
+        When you have implemented the suggested fixes or there is nothing to fix, say '{FIXER_AGENT_DONE}' without any other content.
+
+        You have the following tools:
         - read_file tool for reading files
         - save_file tool for saving files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
         - delete_file tool for deleting files
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading web pages found by the google_search tool
+        - run_command tool for running commands
         """
     )
 
@@ -75,21 +137,78 @@ class BuildAgent(SocietyOfMindAgent):
             model_client=ChatCompletionClient.load_component(config.model_client),
             instruction=self._system_message,
             response_prompt=self._response_prompt,
-            team=BuildAgent._create_team(config, self._system_message_inner_build_agent),
+            team=BuildAgent._create_team(
+                config,
+                self._system_message_team_lead_agent,
+                self._system_message_builder_agent,
+                self._system_message_analyst_agent,
+                self._system_message_fixer_agent,
+            ),
         )
 
     @staticmethod
-    def _create_team(config: Config, system_message_inner_build_agent: str) -> RoundRobinGroupChat:
+    def select_next_speaker(messages: Sequence[AgentEvent | ChatMessage]):
+        if len(messages) == 1:
+            return BUILDER_AGENT_NAME
+        elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
+            return BUILDER_AGENT_NAME
+        elif messages[-1].source == BUILDER_AGENT_NAME:
+            if BUILDER_AGENT_DONE in messages[-1].content:
+                return ANALYST_AGENT_NAME
+            else:
+                return BUILDER_AGENT_NAME
+        elif messages[-1].source == ANALYST_AGENT_NAME:
+            return FIXER_AGENT_NAME
+        elif messages[-1].source == FIXER_AGENT_NAME:
+            if FIXER_AGENT_DONE in messages[-1].content:
+                return TEAM_LEAD_AGENT_NAME
+            else:
+                return FIXER_AGENT_NAME
+        else:
+            # A jump into this agent from another agent, so let's start building
+            return BUILDER_AGENT_NAME
+
+    @staticmethod
+    def _create_team(
+        config: Config,
+        system_message_team_lead_agent: str,
+        system_message_builder_agent: str,
+        system_message_analyst_agent: str,
+        system_message_fixer_agent: str,
+    ) -> SelectorGroupChat:
         """Creates an inner team."""
 
-        inner_build_agent = AssistantAgent(
-            name="inner_build_agent",
-            system_message=system_message_inner_build_agent,
-            model_client=ChatCompletionClient.load_component(config.model_client),
-            tools=[run_command, read_file, save_file, enum_subdirs, enum_files, delete_file, google_search, load_page],
+        model_client = ChatCompletionClient.load_component(config.model_client)
+        team_lead_agent = AssistantAgent(
+            name=TEAM_LEAD_AGENT_NAME,
+            system_message=system_message_team_lead_agent,
+            model_client=model_client,
+        )
+        builder_agent = AssistantAgent(
+            name=BUILDER_AGENT_NAME,
+            system_message=system_message_builder_agent,
+            model_client=model_client,
+            tools=[run_command, read_file, enum_subdirs, enum_files],
+        )
+        analyst_agent = AssistantAgent(
+            name=ANALYST_AGENT_NAME,
+            system_message=system_message_analyst_agent,
+            model_client=model_client,
+            tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+        )
+        fixer_agent = AssistantAgent(
+            name=FIXER_AGENT_NAME,
+            system_message=system_message_fixer_agent,
+            model_client=model_client,
+            tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
         )
         termination_condition = OrTerminationCondition(
             TextMentionTermination(BUILD_AGENT_SUCCESSFUL), TextMentionTermination(BUILD_AGENT_FAILED)
         )
-        team = RoundRobinGroupChat([inner_build_agent], termination_condition=termination_condition)
+        team = SelectorGroupChat(
+            [team_lead_agent, builder_agent, analyst_agent, fixer_agent],
+            model_client=model_client,
+            selector_func=BuildAgent.select_next_speaker,
+            termination_condition=termination_condition,
+        )
         return team
