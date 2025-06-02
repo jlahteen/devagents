@@ -5,7 +5,7 @@ from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
 from autogen_agentchat.base import OrTerminationCondition
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
+from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
@@ -14,7 +14,7 @@ from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, s
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
 
-ORCHESTRATOR_AGENT_NAME = "orchestrator_agent"
+TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 TESTER_AGENT_NAME = "tester_agent"
 ANALYST_AGENT_NAME = "analyst_agent"
 FIXER_AGENT_NAME = "fixer_agent"
@@ -39,7 +39,7 @@ class TestAgent(SocietyOfMindAgent):
         """
     )
 
-    _system_message_orchestrator_agent = textwrap.dedent(
+    _system_message_team_lead_agent = textwrap.dedent(
         f"""
         You run the team that tests the application in the current directory.
 
@@ -140,7 +140,7 @@ class TestAgent(SocietyOfMindAgent):
             response_prompt=self._response_prompt,
             team=TestAgent._create_team(
                 config,
-                self._system_message_orchestrator_agent,
+                self._system_message_team_lead_agent,
                 self._system_message_tester_agent,
                 self._system_message_analyst_agent,
                 self._system_message_fixer_agent,
@@ -151,7 +151,7 @@ class TestAgent(SocietyOfMindAgent):
     def select_next_speaker(messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
             return TESTER_AGENT_NAME
-        elif messages[-1].source == ORCHESTRATOR_AGENT_NAME:
+        elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
             return TESTER_AGENT_NAME
         elif messages[-1].source == TESTER_AGENT_NAME:
             if TESTER_AGENT_DONE in messages[-1].content:
@@ -162,7 +162,7 @@ class TestAgent(SocietyOfMindAgent):
             return FIXER_AGENT_NAME
         elif messages[-1].source == FIXER_AGENT_NAME:
             if FIXER_AGENT_DONE in messages[-1].content:
-                return ORCHESTRATOR_AGENT_NAME
+                return TEAM_LEAD_AGENT_NAME
             else:
                 return FIXER_AGENT_NAME
         else:
@@ -172,17 +172,17 @@ class TestAgent(SocietyOfMindAgent):
     @staticmethod
     def _create_team(
         config: Config,
-        system_message_orchestrator_agent: str,
+        system_message_team_lead_agent: str,
         system_message_tester_agent: str,
         system_message_analyst_agent: str,
         system_message_fixer_agent: str,
-    ) -> RoundRobinGroupChat:
+    ) -> SelectorGroupChat:
         """Creates an inner team."""
 
         model_client = ChatCompletionClient.load_component(config.model_client)
-        orchestrator_agent = AssistantAgent(
-            name=ORCHESTRATOR_AGENT_NAME,
-            system_message=system_message_orchestrator_agent,
+        team_lead_agent = AssistantAgent(
+            name=TEAM_LEAD_AGENT_NAME,
+            system_message=system_message_team_lead_agent,
             model_client=model_client,
         )
         tester_agent = AssistantAgent(
@@ -207,7 +207,7 @@ class TestAgent(SocietyOfMindAgent):
             TextMentionTermination(TEST_AGENT_SUCCESSFUL), TextMentionTermination(TEST_AGENT_FAILED)
         )
         team = SelectorGroupChat(
-            [orchestrator_agent, tester_agent, analyst_agent, fixer_agent],
+            [team_lead_agent, tester_agent, analyst_agent, fixer_agent],
             model_client=model_client,
             selector_func=TestAgent.select_next_speaker,
             termination_condition=termination_condition,
