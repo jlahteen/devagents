@@ -119,7 +119,7 @@ class BuildAgent(SocietyOfMindAgent):
         Do not suggest new fixes, just implement the suggested ones.
         Do not build the application, there is another agent for that.
 
-        Say '{FIXER_AGENT_DONE}' when or you have implemented all the suggested fixes or there is nothing to fix.
+        Say '{FIXER_AGENT_DONE}' when you have implemented all the suggested fixes or there is nothing to fix.
 
         You have the following tools:
         - read_file tool for reading files
