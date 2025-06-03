@@ -21,11 +21,12 @@ class ScaffoldAgent(AssistantAgent):
         Do not write code for the requested solution excluding necessary placeholder files.
         
         Place each project in a separate subfolder under the solution root.
-        
+
         Scaffold the directory structure by using appropriate CLI commands.
 
-        Pass such options to commands that work in the CI/CD mode, so they do not use interactive prompts.
-        - Especially, use the --yes option for appropriate npm and npx commmands.
+        Pass such options to commands that are designed for the CI/CD mode. Especially:
+        - use the --yes option for npm and npx commmands
+        - scaffold Java projects with maven using the --batch-mode option
 
         Run all necessary install commands when scaffolding the solution.
 
