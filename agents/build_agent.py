@@ -77,7 +77,7 @@ class BuildAgent(SocietyOfMindAgent):
 
         For each found component, run the build as follows:
         - Find out the technology by investigating the files (names, types, contents) in the component directory.
-        - After detecting the component technology, determine the build command.
+        - After detecting the component technology, determine the build command. Skip the tests, just build the component.
         - Run the build command (debug mode is preferred).
           Use options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
 
@@ -119,7 +119,7 @@ class BuildAgent(SocietyOfMindAgent):
         Do not suggest new fixes, just implement the suggested ones.
         Do not build the application, there is another agent for that.
 
-        Say '{FIXER_AGENT_DONE}' when you have implemented all the suggested fixes or there is nothing to fix.
+        Say '{FIXER_AGENT_DONE}' when you have implemented the suggested fixes or there is nothing to fix.
 
         You have the following tools:
         - read_file tool for reading files
