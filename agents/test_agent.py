@@ -13,6 +13,7 @@ from constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
+from utils.misc import over_to
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 TESTER_AGENT_NAME = "tester_agent"
@@ -113,11 +114,16 @@ class TestAgent(SocietyOfMindAgent):
         f"""
         You are a developer. Your task is to fix the failed tests according to the suggested fixes.
 
-        Do not comment on the suggested fixes, just implement them.
-        Do not suggest new fixes, just implement the suggested ones.
-        Do not run the tests, there is another agent for that.
+        Act as follows:
+        - Check the last message from the analyst agent for suggested fixes.
+        - Implement the suggested fixes.
+        - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
+        - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
 
-        Say '{FIXER_AGENT_DONE}' when you have implemented all the suggested fixes or there is nothing to fix.
+        Important notes:
+        - Do not comment the suggested fixes, just implement them.
+        - Do not suggest new fixes, just implement the suggested ones.
+        - Do not run the tests, there is another agent for that.
 
         You have the following tools:
         - read_file tool for reading files
@@ -149,25 +155,27 @@ class TestAgent(SocietyOfMindAgent):
 
     @staticmethod
     def select_next_speaker(messages: Sequence[AgentEvent | ChatMessage]):
+        """Selects the next speaker based on the last speaker and message in the conversation."""
+
         if len(messages) == 1:
-            return TESTER_AGENT_NAME
+            return over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
-            return TESTER_AGENT_NAME
+            return over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == TESTER_AGENT_NAME:
             if TESTER_AGENT_DONE in messages[-1].content:
-                return ANALYST_AGENT_NAME
+                return over_to(ANALYST_AGENT_NAME)
             else:
-                return TESTER_AGENT_NAME
+                return over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == ANALYST_AGENT_NAME:
-            return FIXER_AGENT_NAME
+            return over_to(FIXER_AGENT_NAME)
         elif messages[-1].source == FIXER_AGENT_NAME:
             if FIXER_AGENT_DONE in messages[-1].content:
-                return TEAM_LEAD_AGENT_NAME
+                return over_to(TEAM_LEAD_AGENT_NAME)
             else:
-                return FIXER_AGENT_NAME
+                return over_to(FIXER_AGENT_NAME)
         else:
             # A jump into this agent from another agent, so let's start testing
-            return TESTER_AGENT_NAME
+            return over_to(TESTER_AGENT_NAME)
 
     @staticmethod
     def _create_team(
