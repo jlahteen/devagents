@@ -21,6 +21,7 @@ ANALYST_AGENT_NAME = "analyst_agent"
 FIXER_AGENT_NAME = "fixer_agent"
 TESTER_AGENT_DONE = "TESTER_AGENT DONE"
 FIXER_AGENT_DONE = "FIXER_AGENT DONE"
+ALL_TESTS_PASSED = "ALL TESTS PASSED"
 
 
 class TestAgent(SocietyOfMindAgent):
@@ -100,6 +101,7 @@ class TestAgent(SocietyOfMindAgent):
           to find the latest information about the errors.
         - Do not ask questions, just suggest specific fixes.
         - If there no tests found, do not suggest to add tests.
+        - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
 
         You have the following tools:
         - read_file tool for reading files
@@ -167,7 +169,10 @@ class TestAgent(SocietyOfMindAgent):
             else:
                 return over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == ANALYST_AGENT_NAME:
-            return over_to(FIXER_AGENT_NAME)
+            if ALL_TESTS_PASSED in messages[-1].content:
+                return over_to(TEAM_LEAD_AGENT_NAME)
+            else:
+                return over_to(FIXER_AGENT_NAME)
         elif messages[-1].source == FIXER_AGENT_NAME:
             if FIXER_AGENT_DONE in messages[-1].content:
                 return over_to(TEAM_LEAD_AGENT_NAME)
