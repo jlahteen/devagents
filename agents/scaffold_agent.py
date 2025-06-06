@@ -24,9 +24,11 @@ class ScaffoldAgent(AssistantAgent):
 
         Scaffold the directory structure by using appropriate CLI commands.
 
+        Scaffold Java projects using maven.
+
         Pass such options to commands that are designed for the CI/CD mode. Especially:
-        - use the --yes option for npm and npx commmands
-        - scaffold Java projects with maven using the --batch-mode option
+        - use the --yes option with npm and npx
+        - use the --batch-mode option with maven
 
         Run all necessary install commands when scaffolding the solution.
 
