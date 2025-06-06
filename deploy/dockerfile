@@ -46,6 +46,7 @@ RUN echo "source /app/venv/bin/activate" >> ~/.bashrc
 
 # Add the "devagents" aliases
 RUN echo "alias devagents='python devagents.py'" >> ~/.bashrc && \
+    echo "alias run-tests='python run_tests.py'" >> ~/.bashrc && \
     echo "alias new-code='devagents --scenario NewCode'" >> ~/.bashrc && \
     echo "alias new-app='devagents --scenario NewApp'" >> ~/.bashrc && \
     echo "alias fix-build='devagents --scenario FixBuild'" >> ~/.bashrc && \
