@@ -56,6 +56,20 @@ class ConsoleMonitor:
         """Sets the current agent name."""
 
         self._current_agent = agent_name
+        
+    def wrap_lines(self, lines, max_width):
+        """
+        Wraps each line in the input lines to the specified max_width.
+        Returns a new list of wrapped lines.
+        """
+
+        wrapped = []
+        for line in lines:
+            if len(line) <= max_width:
+                wrapped.append(line)
+            else:
+                wrapped.extend(textwrap.wrap(line, max_width))
+        return wrapped
 
     def _render_content(self, new_wrapped_lines):
         """Renders new wrapped lines to the console, scrolls if needed."""
@@ -147,30 +161,34 @@ class ConsoleMonitor:
             # For the rest of the lines, add as new entries
             if len(new_lines) > 1:
                 self.original_lines.extend(new_lines[1:])
-            # Update the wrapped lines with the new lines
-            # Wrap the new lines by the current terminal width
-            new_wrapped_lines = []
-            for i in range(len(new_lines)):
-                if i == 0 and self.wrapped_lines:
-                    combined = self.wrapped_lines[-1] + new_lines[0]
-                    if len(combined) <= wrap_width:
-                        self.wrapped_lines[-1] = combined
-                    else:
-                        self.wrapped_lines.pop()
-                        new_wrapped_lines.extend(textwrap.wrap(combined, wrap_width))
+            # Wrap the lines by the current terminal width
+            new_wrapped_lines = self.wrap_lines(new_lines, wrap_width)
+            # Render the first wrapped line            
+            if not self.wrapped_lines:
+                start = 0
+            else:            
+                if len(self.wrapped_lines[-1]) + len(new_wrapped_lines[0]) <= wrap_width:
+                    # The first wrapped line fits in the last line
+                    self._render_chars(new_wrapped_lines[0])
+                    self.wrapped_lines[-1] += new_wrapped_lines[0]
+                    if len(new_wrapped_lines) > 1:
+                        self._render_new_line()
                 else:
-                    # For all other lines, wrap them normally
-                    new_line = new_lines[i]
-                    if len(new_line) <= wrap_width:
-                        new_wrapped_lines.append(new_line)
-                    else:
-                        new_wrapped_lines.extend(textwrap.wrap(new_line, wrap_width))
-            self.wrapped_lines.extend(new_wrapped_lines)
-            # Render the new wrapped lines
-            for i in range(len(new_wrapped_lines)):
+                    # Weed need an additional line to render the first wrapped line
+                    space_left = wrap_width - len(self.wrapped_lines[-1])
+                    self.wrapped_lines[-1] += new_wrapped_lines[0][:space_left]
+                    self._render_chars(new_wrapped_lines[0][:space_left])
+                    remainder = new_wrapped_lines[0][space_left:]
+                    if remainder:
+                        self.wrapped_lines.append(remainder)
+                        self._render_new_line()
+                        self._render_chars(remainder)
+                start = 1
+            # Render the rest of the wrapped lines
+            for i in range(start, len(new_wrapped_lines)):
+                self.wrapped_lines.append(new_wrapped_lines[i])
                 self._render_chars(new_wrapped_lines[i])
                 if i < len(new_wrapped_lines) - 1:
-                    # If this is not the last line, render a new line
                     self._render_new_line()
 
     def flush(self):

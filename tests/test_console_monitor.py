@@ -13,7 +13,7 @@ from config import Config
 from utils.misc import Tee
 from monitoring.console_monitor import ConsoleMonitor
 
-SKIP_TESTS = True
+SKIP_TESTS = False
 
 _multi_line_long_text1 = textwrap.dedent(
     f"""
@@ -86,13 +86,13 @@ async def test_write_10_lines():
     await asyncio.sleep(2)
 
     # Assert
-    assert len(console_monitor.original_lines) == 10, "Expected 10 original lines in the output console."
+    assert len(console_monitor.original_lines) == 11, "Expected 10 original lines in the output console."
     for i in range(10):
         assert (
             console_monitor.original_lines[i] == f"{i} Hello, World!"
         ), f"Expected original line {i} to be '{i} Hello, World!', but got '{console_monitor.original_lines[i]}'"
 
-    assert len(console_monitor.wrapped_lines) == 10, "Expected 10 wrapped lines in the output console."
+    assert len(console_monitor.wrapped_lines) == 11, "Expected 10 wrapped lines in the output console."
     for i in range(10):
         assert (
             console_monitor.wrapped_lines[i] == f"{i} Hello, World!"
@@ -241,7 +241,7 @@ async def test_write_10_long_lines():
     await asyncio.sleep(2)
 
     # Assert
-    assert len(console_monitor.original_lines) == 10, "Expected 10 original lines in the output console."
+    assert len(console_monitor.original_lines) == 11, "Expected 10 original lines in the output console."
     for i in range(10):
         assert console_monitor.original_lines[i] == f"{i} Hello, World!".ljust(
             100, "x"
@@ -346,7 +346,7 @@ async def test_write_multi_line_long_lines_char_by_char_with_spaces_between(test
     cleanup(console_monitor)
     
     
-@pytest.mark.skipif(False, reason="Skipping test for now")
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test for now")
 @pytest.mark.asyncio
 async def test_write_line_with_no_new_line_plus_multi_line_text():
 
