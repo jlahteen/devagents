@@ -9,9 +9,9 @@ class ConsoleMonitor:
     """A monitor that uses console for showing the agent conversation with a fixed status line at the bottom."""
 
     def __init__(self):
-        """Initializes the OutputConsole instance."""
+        """Initializes the ConsoleMonitor instance."""
 
-        self._status_console_running = True
+        self._console_monitor_running = True
         self._started = time.time()
 
         self._spinner_chars = ["|", "/", "-", "\\"]
@@ -34,7 +34,7 @@ class ConsoleMonitor:
         # Set up color for status line
         if curses.has_colors():
             curses.start_color()
-            curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_GREEN)
+            curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
         # Store original unwrapped text and wrapped lines separately
         self.original_lines = []
@@ -200,7 +200,7 @@ class ConsoleMonitor:
         """Listens for resize events and resizes the console window when such events are received."""
 
         self.stdscr.nodelay(True)
-        while self._status_console_running:
+        while self._console_monitor_running:
             try:
                 key = self.stdscr.getch()
                 if key == curses.KEY_RESIZE:
@@ -242,7 +242,7 @@ class ConsoleMonitor:
     def _status_line_thread_main(self):
         """Thread to update the status line with a spinner."""
 
-        while self._status_console_running:
+        while self._console_monitor_running:
             with self._screen_lock:
                 self._update_status_line()
                 self.stdscr.refresh()
@@ -252,7 +252,7 @@ class ConsoleMonitor:
         """Closes the console and restores terminal settings."""
 
         # Stop the threads
-        self._status_console_running = False
+        self._console_monitor_running = False
         self._status_updater_thread.join()
         self._resize_thread.join()
         # Clear the status line
