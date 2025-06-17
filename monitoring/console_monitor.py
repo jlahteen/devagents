@@ -125,7 +125,7 @@ class ConsoleMonitor:
         """Prints a specified text to the console."""
 
         _, width = self.stdscr.getmaxyx()
-        wrap_width = max(10, width - 1)
+        wrap_width = width - 1
         if text == "":
             # If the text is empty, do nothing
             return
@@ -201,14 +201,23 @@ class ConsoleMonitor:
 
         self.stdscr.nodelay(True)
         while self._console_monitor_running:
-            try:
-                key = self.stdscr.getch()
-                if key == curses.KEY_RESIZE:
-                    self.handle_resize()
-                    self._render_content()
-                time.sleep(0.05)
-            except Exception:
-                pass
+            key = self.stdscr.getch()
+            if key == curses.KEY_RESIZE:
+                # Get the new size of the console
+                new_height, new_width = self.stdscr.getmaxyx()
+                with self._screen_lock:
+                    # Rewrap the original lines to the new width
+                    self.wrapped_lines = self.wrap_lines(self.original_lines, new_width - 1)
+                    # Clear the screen and render the last new_height - 1 lines
+                    self.stdscr.clear()
+                    self.stdscr.move(0, 0)
+                    first_line_to_render = max(0, len(self.wrapped_lines) - (new_height - 1))                
+                    for i in range(first_line_to_render, len(self.wrapped_lines)):
+                        self._render_chars(self.wrapped_lines[i])
+                        if i < len(self.wrapped_lines) - 1:
+                            self._render_new_line()
+            time.sleep(0.05)
+
 
     def _get_status_line(self):
         """Gets the current status line text."""
