@@ -153,7 +153,7 @@ class ConsoleMonitor:
             if len(line) <= max_width:
                 wrapped_lines.append(line)
             else:
-                wrapped_lines.extend(textwrap.wrap(line, max_width, break_long_words=False))
+                wrapped_lines.extend(textwrap.wrap(line, max_width, break_long_words=True))
         return wrapped_lines
 
     def _render_new_line(self):
