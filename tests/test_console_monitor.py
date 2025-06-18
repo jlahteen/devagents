@@ -384,3 +384,29 @@ async def test_write_multi_line_long_lines_resize_window():
 
     # Clean up
     cleanup(console_monitor)
+
+
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test for now")
+@pytest.mark.asyncio
+async def test_write_long_lines_with_wrapping():
+
+    # Arrange
+    console_monitor = ConsoleMonitor()
+    sys.stdout = Tee(console_monitor)
+    sys.stderr = Tee(console_monitor)
+    height, _ = console_monitor.stdscr.getmaxyx()
+
+    # Act
+    print(
+        "Now we test line wrapping which should happen in whitespaces. let's see what happens: these_are_words_tight_together and normal text continues."
+    )
+    print(
+        "This is some text before a long word AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxO"
+    )
+    print(
+        "xAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxO"
+    )
+    await asyncio.sleep(4)
+
+    # Clean up
+    cleanup(console_monitor)
