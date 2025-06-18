@@ -6,20 +6,17 @@ import time
 
 
 class ConsoleMonitor:
-    """A monitor that uses console for showing the agent conversation with a fixed status line at the bottom."""
+    """A monitor that uses the console for showing the agent conversation with a fixed status line at the bottom."""
 
     def __init__(self):
         """Initializes the ConsoleMonitor instance."""
 
         self._console_monitor_running = True
         self._started = time.time()
-
         self._spinner_chars = ["|", "/", "-", "\\"]
         self._spinner_idx = 0
-
         self._current_agent = "<no agent>"
-
-        # Set up curses properly
+        # Set up curses
         self.stdscr = curses.initscr()
         self.stdscr.clear()
         curses.noecho()
@@ -31,14 +28,15 @@ class ConsoleMonitor:
 
         # Hide the cursor
         curses.curs_set(0)
-        # Set up color for status line
+
+        # Set up the color for the status line
         if curses.has_colors():
             curses.start_color()
             curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-        # Store original unwrapped text and wrapped lines separately
-        self.original_lines = []
-        self.wrapped_lines = []
+        # Store original unwrapped lines and wrapped lines separately
+        self.original_lines = [""]
+        self.wrapped_lines = [""]
 
         # Threading lock for screen updates
         self._screen_lock = threading.RLock()
@@ -52,80 +50,33 @@ class ConsoleMonitor:
         self._status_updater_thread = threading.Thread(target=self._status_line_thread_main, daemon=True)
         self._status_updater_thread.start()
 
-    def set_current_agent(self, agent_name):
-        """Sets the current agent name."""
+    def set_current_agent(self, current_agent):
+        """Sets the currently working agent."""
 
-        self._current_agent = agent_name
+        self._current_agent = current_agent
 
     def write(self, text):
-        """Prints a specified text to the console."""
+        """Writes a specified text to the console."""
 
-        _, width = self.stdscr.getmaxyx()
-        wrap_width = width - 1
         if text == "":
-            # If the text is empty, do nothing
+            # Text is empty, do nothing
             return
         elif text == "\n":
-            # Render a new line
-            self._render_new_line()
-            self.original_lines.append("")
-            self.wrapped_lines.append("")
+            # Write a new line
+            self._write_new_line()
             return
-        elif len(text) == 1:
-            # If the text is a single character, add it to the last line
-            if len(self.original_lines) == 0:
-                self.original_lines.append(text)
-                self.wrapped_lines.append(text)
-            else:
-                self.original_lines[-1] += text
-                if len(self.wrapped_lines[-1]) >= wrap_width:
-                    self.wrapped_lines.append(text)
-                    self._render_new_line()
-                else:
-                    self.wrapped_lines[-1] += text
-            self._render_chars(text)
+        elif "\n" not in text:
+            # Write just chars without new lines
+            self._write_chars(text)
             return
         else:
-            # Split text into lines by a new line character
+            # Write a multi-line text
             new_lines = text.split("\n")
-            # Add the new lines to the original lines
-            # The first line should be appended to the last line if it exists
-            if self.original_lines:
-                self.original_lines[-1] += new_lines[0]
-            else:
-                self.original_lines.append(new_lines[0])
-            # For the rest of the lines, add as new entries
-            if len(new_lines) > 1:
-                self.original_lines.extend(new_lines[1:])
-            # Wrap the lines by the current terminal width
-            new_wrapped_lines = self._wrap_lines(new_lines, wrap_width)
-            # Render the first wrapped line
-            if not self.wrapped_lines:
-                start = 0
-            else:
-                if len(self.wrapped_lines[-1]) + len(new_wrapped_lines[0]) <= wrap_width:
-                    # The first wrapped line fits in the last line
-                    self._render_chars(new_wrapped_lines[0])
-                    self.wrapped_lines[-1] += new_wrapped_lines[0]
-                    if len(new_wrapped_lines) > 1:
-                        self._render_new_line()
-                else:
-                    # Weed need an additional line to render the first wrapped line
-                    space_left = wrap_width - len(self.wrapped_lines[-1])
-                    self.wrapped_lines[-1] += new_wrapped_lines[0][:space_left]
-                    self._render_chars(new_wrapped_lines[0][:space_left])
-                    remainder = new_wrapped_lines[0][space_left:]
-                    if remainder:
-                        self.wrapped_lines.append(remainder)
-                        self._render_new_line()
-                        self._render_chars(remainder)
-                start = 1
-            # Render the rest of the wrapped lines
-            for i in range(start, len(new_wrapped_lines)):
-                self.wrapped_lines.append(new_wrapped_lines[i])
-                self._render_chars(new_wrapped_lines[i])
-                if i < len(new_wrapped_lines) - 1:
-                    self._render_new_line()
+            for i in range(len(new_lines)):
+                self._write_chars(new_lines[i])
+                if i < len(new_lines) - 1:
+                    # This is not the last line, write a new line
+                    self._write_new_line()
 
     def flush(self):
         """Flushes the console output. This is a no-op for this console."""
@@ -133,14 +84,14 @@ class ConsoleMonitor:
         pass
 
     def close(self):
-        """Closes the console and restores terminal settings."""
+        """Closes the console and restores the terminal settings."""
 
         # Stop the threads
         self._console_monitor_running = False
         self._status_updater_thread.join()
         self._resize_thread.join()
         # Clear the status line
-        height, _ = self.stdscr.getmaxyx()
+        height = self.stdscr.getmaxyx()[0]
         self.stdscr.move(height - 1, 0)
         self.stdscr.clrtoeol()
         self.stdscr.refresh()
@@ -150,85 +101,92 @@ class ConsoleMonitor:
         curses.echo()
         curses.curs_set(1)
         curses.endwin()
-        # Print the original lines to the console
+        # Print the wrapped lines to the console
         sys.__stdout__.write("\n")
         for line in self.wrapped_lines:
             sys.__stdout__.write(line + "\n")
 
+    def _write_new_line(self):
+        """Writes a new line to the console."""
+
+        self.original_lines.append("")
+        self.wrapped_lines.append("")
+        self._render_new_line()
+
+    def _write_chars(self, chars):
+        """
+        Writes chars to the console, wrapping them to the next line, if necessary.
+        The chars are not assumed to contain any new line characters.
+        """
+
+        # Set the wrap width
+        wrap_width = self.stdscr.getmaxyx()[1] - 1
+        # Update the original lines
+        self.original_lines[-1] += chars
+        # Update the wrapped lines and render the chars
+        if len(self.wrapped_lines[-1]) + len(chars) <= wrap_width:
+            # The chars fit in the current line
+            self.wrapped_lines[-1] += chars
+            self._render_chars(chars)
+        else:
+            # The chars wrap to the next line
+            space_left = wrap_width - len(self.wrapped_lines[-1])
+            self.wrapped_lines[-1] += chars[:space_left]
+            self._render_chars(chars[:space_left])
+            left_over = chars[space_left:]
+            self.wrapped_lines.append(left_over)
+            self._render_new_line()
+            self._render_chars(left_over)
+
     def _wrap_lines(self, lines, max_width):
         """
-        Wraps each line in the input lines to the specified max_width.
-        Returns a new list of wrapped lines.
+        Wraps the specified input lines to the specified max_width.
+        Returns a list of the wrapped lines.
         """
 
-        wrapped = []
+        wrapped_lines = []
         for line in lines:
             if len(line) <= max_width:
-                wrapped.append(line)
+                wrapped_lines.append(line)
             else:
-                wrapped.extend(textwrap.wrap(line, max_width))
-        return wrapped
-
-    def _render_content(self, new_wrapped_lines):
-        """Renders new wrapped lines to the console, scrolls if needed."""
-
-        with self._screen_lock:
-            height, _ = self.stdscr.getmaxyx()
-            usable_height = height - 1
-            for line in new_wrapped_lines:
-                cur_y, _ = self.stdscr.getyx()
-                if cur_y == usable_height - 1:
-                    # The console is full, scroll up
-                    self.stdscr.scroll(1)
-                    # self.stdscr.move(cur_y - 1, 0)
-                    self.stdscr.clrtoeol()
-                    self.stdscr.addstr(line)
-                    self.stdscr.move(cur_y, 0)
-                else:
-                    # There is still space below, move down
-                    # self.stdscr.move(cur_y + 1, 0)
-                    self.stdscr.clrtoeol()
-                    self.stdscr.addstr(line)
-                    self.stdscr.move(cur_y + 1, 0)
-            self._update_status_line()
-            self.stdscr.refresh()
+                wrapped_lines.extend(textwrap.wrap(line, max_width))
+        return wrapped_lines
 
     def _render_new_line(self):
-        """Renders a new line feed in the console, scrolling if needed."""
+        """Renders a new line to the console."""
 
-        with self._screen_lock:
-            height, _ = self.stdscr.getmaxyx()
-            cur_y, _ = self.stdscr.getyx()
-            if cur_y >= height - 2:
-                # The cursor is at the last line or even below
-                # Scroll up
-                self.stdscr.scroll(1)
-                # Set the cursor at the beginning of the last line
-                self.stdscr.move(height - 2, 0)
-                self.stdscr.clrtoeol()
-            else:
-                self.stdscr.move(cur_y + 1, 0)
-            self._update_status_line()
-            self.stdscr.refresh()
+        height = self.stdscr.getmaxyx()[0]
+        cur_y = self.stdscr.getyx()[0]
+        if cur_y >= height - 2:
+            # The cursor is at the last line or even below
+            # Scroll up
+            self.stdscr.scroll(1)
+            # Set the cursor at the beginning of the last line
+            self.stdscr.move(height - 2, 0)
+            self.stdscr.clrtoeol()
+        else:
+            # There are still lines below
+            self.stdscr.move(cur_y + 1, 0)
+        # Update the scrolled status line
+        self._update_status_line()
+        self.stdscr.refresh()
 
     def _render_chars(self, chars):
-        """Renders chars to the console, chars are not assumed to contain newlines."""
+        """Renders chars to the console, chars are not assumed to contain new lines."""
 
-        with self._screen_lock:
-            self.stdscr.addstr(chars)
-            self._update_status_line()
-            self.stdscr.refresh()
+        self.stdscr.addstr(chars)
+        self.stdscr.refresh()
 
     def _resize_thread_main(self):
-        """Listens for resize events and resizes the console window when such events are received."""
+        """A main function for the resize thread. Listens for resize events and resizes the console window if necessary."""
 
         self.stdscr.nodelay(True)
         while self._console_monitor_running:
             key = self.stdscr.getch()
             if key == curses.KEY_RESIZE:
-                # Get the new size of the console
-                new_height, new_width = self.stdscr.getmaxyx()
                 with self._screen_lock:
+                    # Get the new size of the console
+                    new_height, new_width = self.stdscr.getmaxyx()
                     # Rewrap the original lines to the new width
                     self.wrapped_lines = self._wrap_lines(self.original_lines, new_width - 1)
                     # Clear the screen and render the last new_height - 1 lines
@@ -259,19 +217,19 @@ class ConsoleMonitor:
 
         status_line = self._get_status_line()
         height, width = self.stdscr.getmaxyx()
-        # Save current cursor position
+        # Save the current cursor position
         orig_y, orig_x = self.stdscr.getyx()
         self.stdscr.move(height - 1, 0)
-        # Fill the line with spaces in the color
+        # Fill the line with spaces to clear it
         self.stdscr.addstr(" " * (width - 1), curses.color_pair(1))
         self.stdscr.move(height - 1, 0)
-        # Write the status text, truncated to width-1
+        # Write the status text, truncated to width - 1
         self.stdscr.addstr(status_line[: width - 1], curses.color_pair(1))
         # Restore original cursor position
         self.stdscr.move(orig_y, orig_x)
 
     def _status_line_thread_main(self):
-        """Thread to update the status line with a spinner."""
+        """A main function for the status line updater thread. The thread keeps updating the status line with a spinner."""
 
         while self._console_monitor_running:
             with self._screen_lock:
