@@ -129,14 +129,18 @@ class ConsoleMonitor:
             self.wrapped_lines[-1] += chars
             self._render_chars(chars)
         else:
-            # The chars wrap to the next line
-            space_left = wrap_width - len(self.wrapped_lines[-1])
-            self.wrapped_lines[-1] += chars[:space_left]
-            self._render_chars(chars[:space_left])
-            left_over = chars[space_left:]
-            self.wrapped_lines.append(left_over)
-            self._render_new_line()
-            self._render_chars(left_over)
+            # The chars will wrap to several lines
+            wrapped_lines = self._wrap_lines([self.wrapped_lines[-1] + chars], wrap_width)
+            # Remove the last line from the wrapped lines, it will be added later
+            self.wrapped_lines.pop()
+            # Move the cursor to the beginning of the current line
+            self.stdscr.move(self.stdscr.getyx()[0], 0)
+            # Update and render the wrapped lines
+            for i in range(len(wrapped_lines)):
+                self.wrapped_lines.append(wrapped_lines[i])
+                self._render_chars(wrapped_lines[i])
+                if i < len(wrapped_lines) - 1:
+                    self._render_new_line()
 
     def _wrap_lines(self, lines, max_width):
         """
@@ -149,7 +153,7 @@ class ConsoleMonitor:
             if len(line) <= max_width:
                 wrapped_lines.append(line)
             else:
-                wrapped_lines.extend(textwrap.wrap(line, max_width))
+                wrapped_lines.extend(textwrap.wrap(line, max_width, break_long_words=False))
         return wrapped_lines
 
     def _render_new_line(self):
