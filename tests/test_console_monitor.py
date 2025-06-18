@@ -2,6 +2,7 @@ import asyncio
 import io
 import sys
 import textwrap
+
 import pytest
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
@@ -10,8 +11,8 @@ from autogen_core import CancellationToken
 from autogen_core.models import ChatCompletionClient
 
 from config import Config
-from utils.misc import Tee
 from monitoring.console_monitor import ConsoleMonitor
+from utils.misc import Tee
 
 SKIP_TESTS = False
 
@@ -63,6 +64,7 @@ _multi_line_long_text3 = textwrap.dedent(
     Adapters are the glue between components and the outside world. They tailor the exchanges between the external world and the ports that represent the requirements of the inside of the application component. There can be several adapters for one port, for example, data can be provided by a user through a GUI or a command-line interface, by an automated data source, or by test scripts.
     """
 )
+
 
 def cleanup(console_monitor: ConsoleMonitor):
 
@@ -332,9 +334,9 @@ async def test_write_multi_line_long_lines_char_by_char_with_spaces_between(test
     # Act
     for i in range(len(test_text)):
         c = test_text[i]
-        if c == '\n':
+        if c == "\n":
             print()
-        elif c != ' ':
+        elif c != " ":
             print(c, end="", flush=True)
             print(" ", end="", flush=True)
         else:
@@ -344,8 +346,8 @@ async def test_write_multi_line_long_lines_char_by_char_with_spaces_between(test
 
     # Clean up
     cleanup(console_monitor)
-    
-    
+
+
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test for now")
 @pytest.mark.asyncio
 async def test_write_line_with_no_new_line_plus_multi_line_text():
@@ -359,6 +361,26 @@ async def test_write_line_with_no_new_line_plus_multi_line_text():
     print("Where is the cat? ", end="", flush=True)
     print("The cat is in the moon! (This should be in the same line.)\nAt least it was...\nI think.")
     await asyncio.sleep(4)
+
+    # Clean up
+    cleanup(console_monitor)
+
+
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test for now")
+@pytest.mark.asyncio
+async def test_write_multi_line_long_lines_resize_window():
+
+    # Arrange
+    console_monitor = ConsoleMonitor()
+    sys.stdout = Tee(console_monitor)
+    sys.stderr = Tee(console_monitor)
+
+    # Act
+    print(_multi_line_long_text1)
+    print(_multi_line_long_text2)
+    print(_multi_line_long_text3)
+    print("You have now 30 seconds to play with resize...")
+    await asyncio.sleep(30)
 
     # Clean up
     cleanup(console_monitor)
