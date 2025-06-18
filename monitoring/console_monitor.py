@@ -58,25 +58,26 @@ class ConsoleMonitor:
     def write(self, text):
         """Writes a specified text to the console."""
 
-        if text == "":
-            # Text is empty, do nothing
-            return
-        elif text == "\n":
-            # Write a new line
-            self._write_new_line()
-            return
-        elif "\n" not in text:
-            # Write just chars without new lines
-            self._write_chars(text)
-            return
-        else:
-            # Write a multi-line text
-            new_lines = text.split("\n")
-            for i in range(len(new_lines)):
-                self._write_chars(new_lines[i])
-                if i < len(new_lines) - 1:
-                    # This is not the last line, write a new line
-                    self._write_new_line()
+        with self._screen_lock:
+            if text == "":
+                # Text is empty, do nothing
+                return
+            elif text == "\n":
+                # Write a new line
+                self._write_new_line()
+                return
+            elif "\n" not in text:
+                # Write just chars without new lines
+                self._write_chars(text)
+                return
+            else:
+                # Write a multi-line text
+                new_lines = text.split("\n")
+                for i in range(len(new_lines)):
+                    self._write_chars(new_lines[i])
+                    if i < len(new_lines) - 1:
+                        # This is not the last line, write a new line
+                        self._write_new_line()
 
     def flush(self):
         """Flushes the console output. This is a no-op for this console."""
