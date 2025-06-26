@@ -12,16 +12,16 @@ class ConsoleMonitor2(MonitorBase):
 
     def __init__(self):
         self._stdout = sys.__stdout__
-        self.start_time = time.time()
-        self.running = True
-        self.lock = threading.RLock()
-        self.terminal_height = 0
-        self.terminal_width = 0
-        self.current_row = 1
-        self.buffered_lines = []
+        self._start_time = time.time()
+        self._running = True
+        self._lock = threading.RLock()
+        self._terminal_height = 0
+        self._terminal_width = 0
+        self._current_row = 1
+        self._buffered_lines = []
         self._clear_screen()
         self._handle_resize()
-        self.current_row = 1
+        self._current_row = 1
         threading.Thread(target=self._resize_watcher, daemon=True).start()
         threading.Thread(target=self._update_status_line, daemon=True).start()
 
@@ -42,20 +42,20 @@ class ConsoleMonitor2(MonitorBase):
         self._stdout.flush()
 
     def _handle_resize(self):
-        with self.lock:
+        with self._lock:
             size = shutil.get_terminal_size()
-            self.terminal_height = size.lines
-            self.terminal_width = size.columns
+            self._terminal_height = size.lines
+            self._terminal_width = size.columns
             # Set scroll region to exclude the last row (status row)
-            self._set_scroll_region(1, self.terminal_height - 1)
-            self._move_cursor(self.terminal_height, 1)
+            self._set_scroll_region(1, self._terminal_height - 1)
+            self._move_cursor(self._terminal_height, 1)
             self._clear_line()
             self._stdout.flush()
 
     def _resize_watcher(self):
-        while self.running:
+        while self._running:
             size = shutil.get_terminal_size()
-            if size.lines != self.terminal_height or size.columns != self.terminal_width:
+            if size.lines != self._terminal_height or size.columns != self._terminal_width:
                 self._handle_resize()
             time.sleep(0.5)
 
@@ -65,16 +65,16 @@ class ConsoleMonitor2(MonitorBase):
         self._stdout.flush()
 
         try:
-            while self.running:
-                elapsed = int(time.time() - self.start_time)
+            while self._running:
+                elapsed = int(time.time() - self._start_time)
                 mins, secs = divmod(elapsed, 60)
                 status = f"Elapsed: {mins:02d}:{secs:02d}"
-                with self.lock:
-                    self._move_cursor(self.terminal_height, 1)
+                with self._lock:
+                    self._move_cursor(self._terminal_height, 1)
                     self._clear_line()
                     # Fill line with white background
-                    self._stdout.write(f"{self.ESC}[47m{' ' * self.terminal_width}{self.ESC}[0m")
-                    self._move_cursor(self.terminal_height, 1)
+                    self._stdout.write(f"{self.ESC}[47m{' ' * self._terminal_width}{self.ESC}[0m")
+                    self._move_cursor(self._terminal_height, 1)
                     self._stdout.write(f"{self.ESC}[30;47m{status}{self.ESC}[0m")
                     self._stdout.flush()
                 time.sleep(1)
@@ -84,29 +84,29 @@ class ConsoleMonitor2(MonitorBase):
             self._stdout.flush()
 
     def write(self, data):
-        with self.lock:
-            wrapped_lines = textwrap.wrap(data, width=self.terminal_width, break_long_words=True)
+        with self._lock:
+            wrapped_lines = textwrap.wrap(data, width=self._terminal_width, break_long_words=True)
             for line in wrapped_lines:
-                self.buffered_lines.append(line)  # Buffer the line
-                if self.current_row >= self.terminal_height:
+                self._buffered_lines.append(line)  # Buffer the line
+                if self._current_row >= self._terminal_height:
                     self._stdout.write(f"{self.ESC}[1S")
-                    self.current_row = self.terminal_height - 1
-                self._move_cursor(self.current_row, 1)
+                    self._current_row = self._terminal_height - 1
+                self._move_cursor(self._current_row, 1)
                 self._clear_line()
                 self._stdout.write(line)
-                self.current_row += 1
+                self._current_row += 1
             self._stdout.flush()
 
     def close(self):
-        self.running = False
+        self._running = False
         time.sleep(0.2)
-        with self.lock:
+        with self._lock:
             self._reset_scroll_region()
             self._clear_screen()
             self._stdout.write(f"{self.ESC}[?25h")
             # Print all buffered lines for scrolling, much faster
-            if self.buffered_lines:
-                self._stdout.write('\n'.join(self.buffered_lines) + '\n')
+            if self._buffered_lines:
+                self._stdout.write('\n'.join(self._buffered_lines) + '\n')
             self._stdout.flush()
             
     def flush(self):
