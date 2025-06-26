@@ -83,18 +83,60 @@ class ConsoleMonitor2(MonitorBase):
             self._stdout.write(f"{self.ESC}[?25h")
             self._stdout.flush()
 
+    def _write_and_buffer(self, line):
+        if self._current_row - 1 < len(self._buffered_lines):
+            self._buffered_lines[self._current_row - 1] = line
+        else:
+            self._buffered_lines.append(line)
+        self._move_cursor(self._current_row, 1)
+        self._clear_line()
+        self._stdout.write(line)
+
+    def _advance_row(self):
+        self._current_row += 1
+        if self._current_row >= self._terminal_height:
+            self._stdout.write(f"{self.ESC}[1S")
+            self._current_row = self._terminal_height - 1
+
     def write(self, data):
         with self._lock:
-            wrapped_lines = textwrap.wrap(data, width=self._terminal_width, break_long_words=True)
-            for line in wrapped_lines:
-                self._buffered_lines.append(line)  # Buffer the line
-                if self._current_row >= self._terminal_height:
-                    self._stdout.write(f"{self.ESC}[1S")
-                    self._current_row = self._terminal_height - 1
+            if data == '\n':
+                # Move to next line, scroll if necessary, and clear the new line
+                self._advance_row()
                 self._move_cursor(self._current_row, 1)
                 self._clear_line()
-                self._stdout.write(line)
-                self._current_row += 1
+                self._stdout.flush()
+                return
+            self._move_cursor(self._current_row, 1)
+            if self._current_row - 1 < len(self._buffered_lines):
+                current_line = self._buffered_lines[self._current_row - 1]
+            else:
+                current_line = ""
+            lines = data.splitlines() or [""]
+            first_line = lines[0]
+            appended = current_line + first_line
+            wrapped = textwrap.wrap(appended, width=self._terminal_width, break_long_words=True)
+            # Write and buffer the first wrapped line
+            self._write_and_buffer(wrapped[0])
+            # Handle any wrapped overflow from the first line
+            for wline in wrapped[1:]:
+                self._advance_row()
+                self._write_and_buffer(wline)
+            # Now handle the rest of the lines, except the last
+            for line in lines[1:-1]:
+                self._advance_row()
+                wrapped_rest = textwrap.wrap(line, width=self._terminal_width, break_long_words=True)
+                for wline in wrapped_rest:
+                    self._write_and_buffer(wline)
+                    self._advance_row()
+            # For the last line, just append to the buffer but do not move the row after
+            if len(lines) > 1:
+                last_line = lines[-1]
+                wrapped_last = textwrap.wrap(last_line, width=self._terminal_width, break_long_words=True)
+                for idx, wline in enumerate(wrapped_last):
+                    if idx == 0:
+                        self._advance_row()
+                    self._write_and_buffer(wline)
             self._stdout.flush()
 
     def close(self):
@@ -116,6 +158,12 @@ class ConsoleMonitor2(MonitorBase):
         """Sets the current agent in the monitor."""
         # This method can be implemented if needed for tracking agents
         pass
+
+    def get_terminal_height_width(self):
+        """Returns the current terminal height and width as a tuple."""
+
+        with self._lock:
+            return (self._terminal_height, self._terminal_width)
 
 
 # Example usage
