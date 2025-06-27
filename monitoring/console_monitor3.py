@@ -37,6 +37,44 @@ class ConsoleMonitor3(MonitorBase):
         self._status_updater_thread.start()
         self._hide_cursor()
         self._stdout.flush()
+
+    def set_current_agent(self, current_agent):
+        self._current_agent = current_agent
+
+    def write(self, text):
+        with self._lock:
+            if text == "":
+                return
+            elif text == "\n":
+                self._write_new_line()
+                return
+            elif "\n" not in text:
+                self._write_chars(text)
+                return
+            else:
+                new_lines = text.split("\n")
+                for i in range(len(new_lines)):
+                    self._write_chars(new_lines[i])
+                    if i < len(new_lines) - 1:
+                        self._write_new_line()
+
+    def flush(self):
+        pass
+
+    def close(self):
+        self._running = False
+        self._status_updater_thread.join()
+        self._resize_thread.join()
+        self._reset_scroll_region()
+        self._clear_screen()
+        self._show_cursor()
+        if self._wrapped_lines:
+            self._stdout.write('\n'.join(self._wrapped_lines) + '\n')
+        self._stdout.flush()
+
+    def get_terminal_height_width(self):
+        with self._lock:
+            return (self._terminal_height, self._terminal_width)
         
     def _hide_cursor(self):
         self._stdout.write(f"{self.ESC}[?25l")
@@ -91,44 +129,6 @@ class ConsoleMonitor3(MonitorBase):
             self._render_line(self._wrapped_lines[i])
             if i < len(self._wrapped_lines) - 1:
                 self._render_new_line()
-
-    def set_current_agent(self, current_agent):
-        self._current_agent = current_agent
-
-    def write(self, text):
-        with self._lock:
-            if text == "":
-                return
-            elif text == "\n":
-                self._write_new_line()
-                return
-            elif "\n" not in text:
-                self._write_chars(text)
-                return
-            else:
-                new_lines = text.split("\n")
-                for i in range(len(new_lines)):
-                    self._write_chars(new_lines[i])
-                    if i < len(new_lines) - 1:
-                        self._write_new_line()
-
-    def flush(self):
-        pass
-
-    def close(self):
-        self._running = False
-        self._status_updater_thread.join()
-        self._resize_thread.join()
-        self._reset_scroll_region()
-        self._clear_screen()
-        self._show_cursor()
-        if self._wrapped_lines:
-            self._stdout.write('\n'.join(self._wrapped_lines) + '\n')
-        self._stdout.flush()
-
-    def get_terminal_height_width(self):
-        with self._lock:
-            return (self._terminal_height, self._terminal_width)
 
     def _write_new_line(self):
         self._original_lines.append("")
