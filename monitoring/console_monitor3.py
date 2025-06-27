@@ -31,7 +31,7 @@ class ConsoleMonitor3(MonitorBase):
         self._terminal_height = 0
         self._terminal_width = 0
         self._clear_screen()
-        self._handle_resize()
+        self._init_terminal()
         self._current_row = 1
         self._resize_thread = threading.Thread(target=self._resize_thread_main, daemon=True)
         self._resize_thread.start()
@@ -104,28 +104,24 @@ class ConsoleMonitor3(MonitorBase):
         self._stdout.write(f"{self.ESC}[2J")
         self._stdout.flush()
 
-    def _handle_resize(self):
+    def _init_terminal(self):
         size = shutil.get_terminal_size()
         self._terminal_height = size.lines
         self._terminal_width = size.columns
         self._set_scroll_region(1, self._terminal_height - 1)
-        self._move_cursor(self._terminal_height, 1)
-        self._clear_line()
-        self._stdout.flush()
 
     def _resize_thread_main(self):
         while self._running:
             size = shutil.get_terminal_size()
             if size.lines != self._terminal_height or size.columns != self._terminal_width:
                 with self._lock:
-                    self._handle_resize()
+                    self._init_terminal()
                     self._wrapped_lines = self._wrap_lines(self._original_lines, self._terminal_width)
                     self._render_terminal()
             time.sleep(self.THREAD_SLEEP_TIME)
 
     def _render_terminal(self):
         self._clear_screen()
-        self._move_cursor(1, 1)
         first_line_to_render = max(0, len(self._wrapped_lines) - (self._terminal_height - 1))
         self._current_row = 1
         for i in range(first_line_to_render, len(self._wrapped_lines)):
