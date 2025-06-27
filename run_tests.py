@@ -36,5 +36,5 @@ if __name__ == "__main__":
     # FixTestsScenario tests
     # pytest.main(["-s", to_os_path("tests\\test_fix_tests_scenario.py")])
 
-    # ConsoleMonitor tests
+    # MonitorBase tests
     # pytest.main(["-s", to_os_path("tests\\test_monitor_base.py")])
