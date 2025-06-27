@@ -6,32 +6,33 @@ import shutil
 from monitoring.monitor import MonitorBase
 
 class ConsoleMonitor3(MonitorBase):
-    """A monitor that uses the console for showing the agent conversation with a fixed status line at the bottom, using ANSI codes (no curses)."""
+    """
+    A monitor that uses the console for showing the agent conversation with a fixed status line at the bottom.
+    
+    The monitor uses ANSI escape codes for controlling the terminal.
+    """
 
     ESC = "\033"
+    THREAD_SLEEP_TIME = 0.25
 
     def __init__(self):
-        """Initializes the ConsoleMonitor instance."""
         self._running = True
         self._started = time.time()
         self._spinner_chars = ["|", "/", "-", "\\"]
         self._spinner_idx = 0
         self._current_agent = "<no agent>"
         self._stdout = sys.__stdout__
-        self._screen_lock = threading.RLock()
+        self._lock = threading.RLock()
         self._spinner_char_last_updated = 0
-        self.original_lines = [""]
-        self.wrapped_lines = [""]
+        self._original_lines = [""]
+        self._wrapped_lines = [""]
         self._terminal_height = 0
         self._terminal_width = 0
-        self._current_row = 1
         self._clear_screen()
         self._handle_resize()
         self._current_row = 1
-        # Start the resize listener thread
         self._resize_thread = threading.Thread(target=self._resize_thread_main, daemon=True)
         self._resize_thread.start()
-        # Start the status updater thread
         self._status_updater_thread = threading.Thread(target=self._status_updater_thread_main, daemon=True)
         self._status_updater_thread.start()
         self._hide_cursor()
@@ -66,7 +67,6 @@ class ConsoleMonitor3(MonitorBase):
         size = shutil.get_terminal_size()
         self._terminal_height = size.lines
         self._terminal_width = size.columns
-        # Set scroll region to exclude the last row (status row)
         self._set_scroll_region(1, self._terminal_height - 1)
         self._move_cursor(self._terminal_height, 1)
         self._clear_line()
@@ -76,29 +76,27 @@ class ConsoleMonitor3(MonitorBase):
         while self._running:
             size = shutil.get_terminal_size()
             if size.lines != self._terminal_height or size.columns != self._terminal_width:
-                with self._screen_lock:
+                with self._lock:
                     self._handle_resize()
-                    self.wrapped_lines = self._wrap_lines(self.original_lines, self._terminal_width)
+                    self._wrapped_lines = self._wrap_lines(self._original_lines, self._terminal_width)
                     self._render_terminal()
-            time.sleep(0.5)
+            time.sleep(self.THREAD_SLEEP_TIME)
 
     def _render_terminal(self):
         self._clear_screen()
         self._move_cursor(1, 1)
-        first_line_to_render = max(0, len(self.wrapped_lines) - (self._terminal_height - 1))
+        first_line_to_render = max(0, len(self._wrapped_lines) - (self._terminal_height - 1))
         self._current_row = 1
-        for i in range(first_line_to_render, len(self.wrapped_lines)):
-            self._render_line(self.wrapped_lines[i])
-            if i < len(self.wrapped_lines) - 1:
+        for i in range(first_line_to_render, len(self._wrapped_lines)):
+            self._render_line(self._wrapped_lines[i])
+            if i < len(self._wrapped_lines) - 1:
                 self._render_new_line()
-        self._stdout.flush()
 
     def set_current_agent(self, current_agent):
         self._current_agent = current_agent
 
     def write(self, text):
-        """Writes a specified text to the console."""
-        with self._screen_lock:
+        with self._lock:
             if text == "":
                 return
             elif text == "\n":
@@ -121,64 +119,60 @@ class ConsoleMonitor3(MonitorBase):
         self._running = False
         self._status_updater_thread.join()
         self._resize_thread.join()
-        with self._screen_lock:
-            self._reset_scroll_region()
-            self._clear_screen()
-            self._show_cursor()
-            # Print the wrapped lines to the console
-            if self.wrapped_lines:
-                self._stdout.write('\n'.join(self.wrapped_lines) + '\n')
-            self._stdout.flush()
+        self._reset_scroll_region()
+        self._clear_screen()
+        self._show_cursor()
+        if self._wrapped_lines:
+            self._stdout.write('\n'.join(self._wrapped_lines) + '\n')
+        self._stdout.flush()
 
     def get_terminal_height_width(self):
-        """Returns the current terminal height and width as a tuple."""
-
-        with self._screen_lock:
+        with self._lock:
             return (self._terminal_height, self._terminal_width)
 
     def _write_new_line(self):
-        self.original_lines.append("")
-        self.wrapped_lines.append("")
+        self._original_lines.append("")
+        self._wrapped_lines.append("")
         self._render_new_line()
-        self._move_cursor(self._current_row, 1)
-        self._clear_line()
-        self._stdout.flush()
 
     def _write_chars(self, chars):
         wrap_width = self._terminal_width
-        self.original_lines[-1] += chars
-        if len(self.wrapped_lines[-1]) + len(chars) <= wrap_width:
-            self.wrapped_lines[-1] += chars
-            self._render_line(self.wrapped_lines[-1])
+        self._original_lines[-1] += chars
+        if len(self._wrapped_lines[-1]) + len(chars) <= wrap_width:
+            self._wrapped_lines[-1] += chars
+            self._render_line(self._wrapped_lines[-1])
         else:
-            wrapped_lines = self._wrap_lines([self.wrapped_lines[-1] + chars], wrap_width)
-            self.wrapped_lines.pop()
-            for i, wline in enumerate(wrapped_lines):
-                self.wrapped_lines.append(wline)
+            _wrapped_lines = self._wrap_lines([self._wrapped_lines[-1] + chars], wrap_width)
+            self._wrapped_lines.pop()
+            for i, wline in enumerate(_wrapped_lines):
+                self._wrapped_lines.append(wline)
                 self._render_line(wline)
-                if i < len(wrapped_lines) - 1:
+                if i < len(_wrapped_lines) - 1:
                     self._render_new_line()
-        self._stdout.flush()
 
     def _wrap_lines(self, lines, max_width):
-        wrapped_lines = []
+        _wrapped_lines = []
         for line in lines:
             if len(line) <= max_width:
-                wrapped_lines.append(line)
+                _wrapped_lines.append(line)
             else:
-                wrapped_lines.extend(textwrap.wrap(line, max_width, break_long_words=True))
-        return wrapped_lines
+                _wrapped_lines.extend(textwrap.wrap(line, max_width, break_long_words=True))
+        return _wrapped_lines
 
     def _render_line(self, line):
         self._move_cursor(self._current_row, 1)
         self._clear_line()
         self._stdout.write(line)
+        self._stdout.flush()
 
     def _render_new_line(self):
         self._current_row += 1
         if self._current_row >= self._terminal_height:
             self._scroll_up()
             self._current_row = self._terminal_height - 1
+        self._move_cursor(self._current_row, 1)
+        self._clear_line()
+        self._stdout.flush()
 
     def _get_status_line(self):
         if time.time() - self._spinner_char_last_updated > 0.25:
@@ -193,7 +187,7 @@ class ConsoleMonitor3(MonitorBase):
 
     def _update_status_line(self):
         status_line = self._get_status_line()
-        with self._screen_lock:
+        with self._lock:
             self._move_cursor(self._terminal_height, 1)
             self._clear_line()
             # Fill line with white background
@@ -205,5 +199,4 @@ class ConsoleMonitor3(MonitorBase):
     def _status_updater_thread_main(self):
         while self._running:
             self._update_status_line()
-            time.sleep(0.25)
-
+            time.sleep(self.THREAD_SLEEP_TIME)
