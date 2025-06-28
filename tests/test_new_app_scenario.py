@@ -11,7 +11,7 @@ from constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
 from scenarios.new_app.new_app_scenario import NewAppScenario
 from tests.test_utils import setup_test
 from tools.os_tools import to_os_path
-from utils.misc import Tee
+from utils.tee import Tee
 
 SKIP_TESTS = False
 
@@ -49,6 +49,41 @@ prompt_cs_fi_ssn_validator_lib = textwrap.dedent(
     - Remove unnecessary code files created by the project templ
     
     Generate unit tests with xUnit for the following test cases:
+        "010101-123N": valid
+        "010101A123P": not valid
+        "290202-1234": not valid
+        "301299-123Y": not valid
+        "150500-123A": not valid
+        "151200A123B": not valid
+        "060400-123C": not valid
+        "290200-123D": not valid
+        "290299-123E": not valid
+        "100100A123F": not valid
+        "010198A123G": not valid
+        "010399A123H": not valid
+        "010101-123M": not valid
+        "010101-123Z": not valid
+        "010101-123W": not valid
+        "310232-123K": not valid
+        "010101-123X": not valid
+        "010101-123Y": not valid
+        "010101-123Q": not valid
+        "010101-123R": not valid
+        "130593-935K": valid
+        "250757-969R": valid
+        "090222-987X": valid
+        "240332-943K": valid
+        "210268-931R": valid
+    """
+)
+
+prompt_java_fi_ssn_validator_console_app = textwrap.dedent(
+    """
+    Write a Java console app that validates Finnish Social Security Numbers (SSN).
+
+    Name the app ssn-validator.
+
+    Generate unit tests for the following test cases:
         "010101-123N": valid
         "010101A123P": not valid
         "290202-1234": not valid
@@ -145,7 +180,7 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
     indirect=True,
 )
 @pytest.mark.asyncio
-async def test_generate_cs_fi_ssn_validator_lib__creates_app(setup_test):
+async def test_generate_cs_fi_ssn_validator_lib__creates_lib(setup_test):
     # Arrange
     test_run_dir = setup_test
     scenario = NewAppScenario(config=Config())
@@ -210,3 +245,24 @@ async def test_generate_react_hello_world_app__creates_app(setup_test):
     # Assert
     assert BUILD_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
     assert TEST_AGENT_SUCCESSFUL in output, "Expected text not found in console output."
+
+
+@pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
+@pytest.mark.parametrize(
+    "setup_test",
+    [("new_app_scenario", "test_generate_java_fi_ssn_validator_console_app", None)],
+    indirect=True,
+)
+@pytest.mark.asyncio
+async def test_generate_java_fi_ssn_validator_console_app__creates_app(setup_test):
+    # Arrange
+    test_run_dir = setup_test
+    scenario = NewAppScenario(config=Config())
+
+    # Act
+    await scenario.run_scenario(prompt=prompt_java_fi_ssn_validator_console_app)
+
+    # Assert
+    assert os.path.exists(
+        os.path.join(test_run_dir, to_os_path("ssn-validator\\target\\ssn-validator-1.0-SNAPSHOT.jar"))
+    )
