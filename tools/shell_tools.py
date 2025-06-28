@@ -3,7 +3,7 @@ import sys
 import threading
 from io import StringIO
 
-from utils.misc import Tee
+from utils.tee import Tee
 
 file_lock = threading.Lock()
 

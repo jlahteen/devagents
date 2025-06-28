@@ -11,7 +11,7 @@ from agents.test_agent import TestAgent
 from config import Config
 from constants import TEST_AGENT_SUCCESSFUL
 from tests.test_utils import setup_test
-from utils.misc import Tee
+from utils.tee import Tee
 
 SKIP_TESTS = False
 

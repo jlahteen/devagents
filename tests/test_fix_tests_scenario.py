@@ -9,7 +9,7 @@ from config import Config
 from constants import TEST_AGENT_SUCCESSFUL
 from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
 from tests.test_utils import setup_test
-from utils.misc import Tee
+from utils.tee import Tee
 
 
 @pytest.mark.parametrize(
