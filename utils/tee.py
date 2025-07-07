@@ -2,7 +2,7 @@ import sys
 
 
 class Tee:
-    """A class to write to multiple streams simultaneously."""
+    """A class that redirects stdout and stderr to multiple streams simultaneously."""
 
     def __init__(self, *streams):
         for s in streams:
@@ -14,8 +14,13 @@ class Tee:
                 and hasattr(s, "close")
                 and callable(s.close)
             ):
-                raise TypeError(f"All streams must have write(data), flush(), and close() methods, got {type(s)}")
+                raise TypeError(
+                    f"A stream must have the write(), flush(), and close() methods. '{type(s)}' does not have at least one of these methods."
+                )
         self.streams = streams
+        # Redirect sys.stdout and sys.stderr to this Tee instance
+        sys.stdout = self
+        sys.stderr = self
 
     def write(self, data):
         for stream in self.streams:
@@ -27,6 +32,9 @@ class Tee:
 
     def close(self):
         for stream in self.streams:
-            # Do not close sys.stdout/sys.stderr streams
+            # Do not close the original sys.stdout/sys.stderr streams
             if stream not in (sys.__stdout__, sys.__stderr__):
                 stream.close()
+        # Restore sys.stdout and sys.stderr to their original values
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
