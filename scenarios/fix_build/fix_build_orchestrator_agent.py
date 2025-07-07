@@ -30,7 +30,7 @@ class FixBuildOrchestratorAgent(OrchestratorAgentBase):
         )
         self._build_agent = build_agent
 
-    async def run_team(self, coding_task: str) -> None:
-        """Runs the team with a given coding task."""
+    async def run_team(self, prompt: str) -> None:
+        """Runs the team with a given prompt."""
 
-        await Console(self._build_agent.run_stream(task=coding_task))
+        await Console(self._build_agent.run_stream(task=prompt))
