@@ -1,6 +1,6 @@
 import pytest
 
-from tools.os_tools import to_os_path
+from utils.misc import to_os_path
 
 if __name__ == "__main__":
     # Run all tests
