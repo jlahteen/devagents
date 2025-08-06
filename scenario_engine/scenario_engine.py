@@ -1,5 +1,6 @@
-from scenario_engine.scenario_task import ScenarioTask, ScenarioTaskResult
 import datetime
+
+from scenario_engine.scenario_task import ScenarioTask, ScenarioTaskResult
 
 
 class ScenarioEngine:
