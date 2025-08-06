@@ -39,6 +39,12 @@ class OrchestratorAgentBase(AssistantAgent):
 
         self._monitor = monitor
 
+    def _over_to(self, agent_name: str) -> str:
+        """Handles the over_to event."""
+
+        self._monitor.set_current_agent(agent_name)
+        return agent_name
+
     def _is_code_approved(self, message):
         """Checks whether the code is approved in the given message."""
 
