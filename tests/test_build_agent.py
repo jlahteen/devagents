@@ -7,7 +7,7 @@ from autogen_agentchat.ui import Console
 from agents.build_agent import BuildAgent
 from config import Config
 from tests.test_utils import setup_test
-from tools.os_tools import to_os_path
+from utils.misc import to_os_path
 
 
 @pytest.mark.parametrize(

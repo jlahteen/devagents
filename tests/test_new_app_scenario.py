@@ -10,7 +10,7 @@ from config import Config
 from constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
 from scenarios.new_app.new_app_scenario import NewAppScenario
 from tests.test_utils import setup_test
-from tools.os_tools import to_os_path
+from utils.misc import to_os_path
 from utils.tee import Tee
 
 SKIP_TESTS = False

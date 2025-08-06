@@ -5,7 +5,7 @@ import pytest
 from config import Config
 from scenarios.fix_build.fix_build_scenario import FixBuildScenario
 from tests.test_utils import setup_test
-from tools.os_tools import to_os_path
+from utils.misc import to_os_path
 
 
 @pytest.mark.parametrize(

@@ -3,8 +3,8 @@ import os
 import pytest
 
 from tests.test_utils import setup_test
-from tools.os_tools import to_os_path
 from tools.shell_tools import run_command
+from utils.misc import to_os_path
 
 
 @pytest.mark.parametrize(
