@@ -65,9 +65,12 @@ class ScenarioTask:
         self._orchestrator_agent = self._scenario.create_orchestrator_agent(config=Config())
 
         # Create a Tee instance for monitoring and tracing
-        trace_file = self._create_trace_file()
         monitor = ConsoleMonitorAnsi()
+        trace_file = self._create_trace_file()
         self._tee = Tee(monitor, trace_file)
+
+        # Set the monitor also for the orchestrator agent
+        self._orchestrator_agent.set_monitor(monitor)
 
         # Run the orchestrator agent with the specified prompt
         original_dir = os.getcwd()
