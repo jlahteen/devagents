@@ -13,7 +13,6 @@ from constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
-from utils.misc import over_to
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 TESTER_AGENT_NAME = "tester_agent"
@@ -160,27 +159,27 @@ class TestAgent(SocietyOfMindAgent):
         """Selects the next speaker based on the last speaker and message in the conversation."""
 
         if len(messages) == 1:
-            return over_to(TESTER_AGENT_NAME)
+            return self._over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
-            return over_to(TESTER_AGENT_NAME)
+            return self._over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == TESTER_AGENT_NAME:
             if TESTER_AGENT_DONE in messages[-1].content:
-                return over_to(ANALYST_AGENT_NAME)
+                return self._over_to(ANALYST_AGENT_NAME)
             else:
-                return over_to(TESTER_AGENT_NAME)
+                return self._over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == ANALYST_AGENT_NAME:
             if ALL_TESTS_PASSED in messages[-1].content:
-                return over_to(TEAM_LEAD_AGENT_NAME)
+                return self._over_to(TEAM_LEAD_AGENT_NAME)
             else:
-                return over_to(FIXER_AGENT_NAME)
+                return self._over_to(FIXER_AGENT_NAME)
         elif messages[-1].source == FIXER_AGENT_NAME:
             if FIXER_AGENT_DONE in messages[-1].content:
-                return over_to(TEAM_LEAD_AGENT_NAME)
+                return self._over_to(TEAM_LEAD_AGENT_NAME)
             else:
-                return over_to(FIXER_AGENT_NAME)
+                return self._over_to(FIXER_AGENT_NAME)
         else:
             # A jump into this agent from another agent, so let's start testing
-            return over_to(TESTER_AGENT_NAME)
+            return self._over_to(TESTER_AGENT_NAME)
 
     @staticmethod
     def _create_team(

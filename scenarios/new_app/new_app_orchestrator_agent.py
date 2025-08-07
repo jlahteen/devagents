@@ -8,7 +8,6 @@ from autogen_agentchat.ui import Console
 from config import Config
 from constants import BUILD_AGENT_SUCCESSFUL, SCAFFOLD_AGENT_DONE
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
-from utils.misc import over_to
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):
@@ -44,29 +43,29 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
-            return over_to(self._scaffold_agent.name)
+            return self._over_to(self._scaffold_agent.name)
         elif messages[-1].source == self._scaffold_agent.name:
             if SCAFFOLD_AGENT_DONE in messages[-1].content:
-                return over_to(self._developer_agent.name)
+                return self._over_to(self._developer_agent.name)
             else:
-                return over_to(self._scaffold_agent.name)
+                return self._over_to(self._scaffold_agent.name)
         elif messages[-1].source == self._developer_agent.name:
-            return over_to(self._reviewer_agent.name)
+            return self._over_to(self._reviewer_agent.name)
         elif messages[-1].source is self._reviewer_agent.name:
             if self._is_code_approved(messages[-1].content):
-                return over_to(self._output_agent.name)
+                return self._over_to(self._output_agent.name)
             else:
-                return over_to(self._developer_agent.name)
+                return self._over_to(self._developer_agent.name)
         elif messages[-1].source == self._output_agent.name:
-            return over_to(self._build_agent.name)
+            return self._over_to(self._build_agent.name)
         elif messages[-1].source == self._build_agent.name:
             if BUILD_AGENT_SUCCESSFUL in messages[-1].content:
-                return over_to(self._test_agent.name)
-            return over_to(self._termination_agent.name)
+                return self._over_to(self._test_agent.name)
+            return self._over_to(self._termination_agent.name)
         elif messages[-1].source == self._test_agent.name:
-            return over_to(self._termination_agent.name)
+            return self._over_to(self._termination_agent.name)
         elif messages[-1].source == self._termination_agent.name:
-            return over_to(self._termination_agent.name)
+            return self._over_to(self._termination_agent.name)
         else:
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")

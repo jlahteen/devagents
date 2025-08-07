@@ -7,7 +7,6 @@ from autogen_agentchat.ui import Console
 
 from config import Config
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase
-from utils.misc import over_to
 
 
 class NewCodeOrchestratorAgent(OrchestratorAgentBase):
@@ -37,18 +36,18 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
 
     def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
-            return over_to(self._developer_agent.name)
+            return self._over_to(self._developer_agent.name)
         elif messages[-1].source == self._developer_agent.name:
-            return over_to(self._reviewer_agent.name)
+            return self._over_to(self._reviewer_agent.name)
         elif messages[-1].source is self._reviewer_agent.name:
             if self._is_code_approved(messages[-1].content):
-                return over_to(self._output_agent.name)
+                return self._over_to(self._output_agent.name)
             else:
-                return over_to(self._developer_agent.name)
+                return self._over_to(self._developer_agent.name)
         elif messages[-1].source == self._output_agent.name:
-            return over_to(self._termination_agent.name)
+            return self._over_to(self._termination_agent.name)
         elif messages[-1].source == self._termination_agent.name:
-            return over_to(self._termination_agent.name)
+            return self._over_to(self._termination_agent.name)
         else:
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")
