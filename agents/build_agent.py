@@ -1,7 +1,7 @@
 import textwrap
 from typing import Sequence
 
-from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
+from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import OrTerminationCondition
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
