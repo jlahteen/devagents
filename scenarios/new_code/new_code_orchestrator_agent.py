@@ -9,7 +9,7 @@ from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from config import Config
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 
 
 class NewCodeOrchestratorAgent(OrchestratorAgentBase):
@@ -24,7 +24,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
     def __init__(
         self,
         config: Config,
-        context: OrchestratorAgentContext = None,
+        context: OrchestratorContext = None,
     ):
         super().__init__(
             name="orchestrator_agent",

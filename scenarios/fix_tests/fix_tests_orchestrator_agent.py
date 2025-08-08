@@ -4,7 +4,7 @@ from autogen_agentchat.ui import Console
 
 from agents.test_agent import TestAgent
 from config import Config
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 
 
 class FixTestsOrchestratorAgent(OrchestratorAgentBase):
@@ -19,7 +19,7 @@ class FixTestsOrchestratorAgent(OrchestratorAgentBase):
     def __init__(
         self,
         config: Config,
-        context: OrchestratorAgentContext = None,
+        context: OrchestratorContext = None,
     ):
         super().__init__(
             name="orchestrator_agent",

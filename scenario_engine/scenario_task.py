@@ -4,7 +4,7 @@ import os
 from config import Config
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from monitoring.monitor import MonitorBase
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
 from utils.misc import generate_timestamp, to_os_path
 from utils.tee import Tee
@@ -67,7 +67,7 @@ class ScenarioTask:
 
         # Create an orchestrator agent
         orchestrator_agent = scenario.create_orchestrator_agent(
-            config=Config(), context=OrchestratorAgentContext(monitor=monitor, errors=errors)
+            config=Config(), context=OrchestratorContext(monitor=monitor, errors=errors)
         )
 
         # Run the orchestrator agent

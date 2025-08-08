@@ -13,7 +13,7 @@ from agents.scaffold_agent import ScaffoldAgent
 from agents.test_agent import TestAgent
 from config import Config
 from constants import BUILD_AGENT_SUCCESSFUL, SCAFFOLD_AGENT_DONE
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):
@@ -28,7 +28,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
     def __init__(
         self,
         config: Config,
-        context: OrchestratorAgentContext = None,
+        context: OrchestratorContext = None,
     ):
         super().__init__(
             name="orchestrator_agent",

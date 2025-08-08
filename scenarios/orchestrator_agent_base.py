@@ -12,9 +12,9 @@ from monitoring.monitor import MonitorBase
 
 
 @dataclass
-class OrchestratorAgentContext:
+class OrchestratorContext:
     """
-    Defines a context for orchestrator agents. This context includes properties for reporting the execution of the
+    Defines a context for orchestrators. This context includes properties for reporting the execution of the
     orchestrator agent.
     """
 
@@ -30,7 +30,7 @@ class OrchestratorAgentBase(AssistantAgent):
         name,
         system_message,
         config: Config,
-        context: OrchestratorAgentContext = None,
+        context: OrchestratorContext = None,
     ):
         super().__init__(
             name=name,
@@ -38,7 +38,7 @@ class OrchestratorAgentBase(AssistantAgent):
             model_client=ChatCompletionClient.load_component(config.model_client),
         )
         self._config: Config = config
-        self._context: OrchestratorAgentContext = context
+        self._context: OrchestratorContext = context
         self._termination_agent = TerminationAgent(config=config)
         self._termination_condition = TextMentionTermination("TERMINATE")
 
