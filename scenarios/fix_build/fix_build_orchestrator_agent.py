@@ -21,7 +21,7 @@ class FixBuildOrchestratorAgent(OrchestratorAgentBase):
 
     def __init__(self, config: Config, context: OrchestratorContext = None):
         super().__init__(name="orchestrator_agent", system_message=self._system_message, config=config, context=context)
-        self._build_agent = BuildAgent(config=config)
+        self._build_agent = BuildAgent(config=config, context=context)
 
     async def run_team(self, prompt: str) -> None:
         """Runs the team with a given prompt."""

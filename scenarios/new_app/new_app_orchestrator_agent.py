@@ -40,8 +40,8 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         self._developer_agent = DeveloperAgent(config=config)
         self._reviewer_agent = ReviewerAgent(config=config)
         self._output_agent = OutputAgent(config=config)
-        self._build_agent = BuildAgent(config=config)
-        self._test_agent = TestAgent(config=config)
+        self._build_agent = BuildAgent(config=config, context=context)
+        self._test_agent = TestAgent(config=config, context=context)
 
     def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:

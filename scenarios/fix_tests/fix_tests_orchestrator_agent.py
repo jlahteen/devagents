@@ -27,7 +27,7 @@ class FixTestsOrchestratorAgent(OrchestratorAgentBase):
             config=config,
             context=context,
         )
-        self._test_agent = TestAgent(config=config)
+        self._test_agent = TestAgent(config=config, context=context)
 
     async def run_team(self, prompt: str) -> None:
         """Runs the team with a given prompt."""
