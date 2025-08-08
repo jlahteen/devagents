@@ -55,7 +55,7 @@ class OrchestratorAgentBase(AssistantAgent):
         return agent_name
 
     def _add_error(self, error: Exception):
-        """Adds an error to the orchestrator agent context."""
+        """Adds an error to the orchestrator context."""
 
         if self._context is not None:
             self._context.errors.append(error)
