@@ -36,7 +36,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
         self._reviewer_agent = ReviewerAgent(config=config)
         self._output_agent = OutputAgent(config=config)
 
-    def select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
+    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
             return self._over_to(self._developer_agent.name)
         elif messages[-1].source == self._developer_agent.name:
@@ -65,7 +65,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
                 self._termination_agent,
             ],
             model_client=self._model_client,
-            selector_func=self.select_next_speaker,
+            selector_func=self._select_next_speaker,
             max_turns=self._config.max_turns,
             termination_condition=self._termination_condition,
         )
