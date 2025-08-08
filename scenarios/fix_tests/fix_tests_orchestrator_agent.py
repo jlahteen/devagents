@@ -2,8 +2,9 @@ import textwrap
 
 from autogen_agentchat.ui import Console
 
+from agents.test_agent import TestAgent
 from config import Config
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
 
 
 class FixTestsOrchestratorAgent(OrchestratorAgentBase):
@@ -18,14 +19,15 @@ class FixTestsOrchestratorAgent(OrchestratorAgentBase):
     def __init__(
         self,
         config: Config,
-        test_agent,
+        context: OrchestratorAgentContext = None,
     ):
         super().__init__(
             name="orchestrator_agent",
             system_message=self._system_message,
             config=config,
+            context=context,
         )
-        self._test_agent = test_agent
+        self._test_agent = TestAgent(config=config)
 
     async def run_team(self, prompt: str) -> None:
         """Runs the team with a given prompt."""
