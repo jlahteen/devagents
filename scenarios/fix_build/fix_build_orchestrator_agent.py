@@ -4,9 +4,10 @@ from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
 
+from agents.build_agent import BuildAgent
 from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
 
 
 class FixBuildOrchestratorAgent(OrchestratorAgentBase):
@@ -18,17 +19,9 @@ class FixBuildOrchestratorAgent(OrchestratorAgentBase):
         """
     )
 
-    def __init__(
-        self,
-        config: Config,
-        build_agent,
-    ):
-        super().__init__(
-            name="orchestrator_agent",
-            system_message=self._system_message,
-            config=config,
-        )
-        self._build_agent = build_agent
+    def __init__(self, config: Config, context: OrchestratorAgentContext = None):
+        super().__init__(name="orchestrator_agent", system_message=self._system_message, config=config, context=context)
+        self._build_agent = BuildAgent(config=config)
 
     async def run_team(self, prompt: str) -> None:
         """Runs the team with a given prompt."""
