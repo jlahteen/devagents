@@ -1,15 +1,15 @@
 from autogen_agentchat.agents import SocietyOfMindAgent
-from autogen_agentchat.teams import Team
-from autogen_core.models import ChatCompletionClient, ChatCompletionContext
+from autogen_agentchat.teams import SelectorGroupChat
+from autogen_core.models import ChatCompletionClient
 
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from scenarios.orchestrator_agent_base import OrchestratorContext
 
 
 class InnerTeamAgentBase(SocietyOfMindAgent):
     def __init__(
         self,
         name: str,
-        team: Team,
+        team: SelectorGroupChat,
         model_client: ChatCompletionClient,
         instruction: str,
         response_prompt: str,
