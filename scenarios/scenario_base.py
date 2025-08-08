@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from config import Config
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
 
 
 class ScenarioBase(ABC):
@@ -11,7 +11,9 @@ class ScenarioBase(ABC):
         pass
 
     @abstractmethod
-    async def create_orchestrator_agent(self, config: Config) -> OrchestratorAgentBase:
+    async def create_orchestrator_agent(
+        self, config: Config, context: OrchestratorAgentContext = None
+    ) -> OrchestratorAgentBase:
         """Creates an orchestrator agent for the scenario."""
         pass
 

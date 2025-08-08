@@ -4,7 +4,7 @@ import os
 from config import Config
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from monitoring.monitor import MonitorBase
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase
+from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorAgentContext
 from scenarios.scenario_base import ScenarioBase
 from utils.misc import generate_timestamp, to_os_path
 from utils.tee import Tee
@@ -45,10 +45,6 @@ class ScenarioTask:
         self.id = generate_timestamp()
         self.started_at: datetime.datetime = None
         self.finished_at: datetime.datetime = None
-        self._tee: Tee = None
-        self._monitor: MonitorBase = None
-        self._scenario: ScenarioBase = None
-        self._orchestrator_agent: OrchestratorAgentBase = None
 
     async def run(self) -> ScenarioTaskResult:
         """Runs the scenario task."""
@@ -59,27 +55,29 @@ class ScenarioTask:
         self._validate_workspace(self.workspace)
 
         # Create the scenario
-        self._scenario = ScenarioBase.create_scenario(self.scenario_name)
+        scenario = ScenarioBase.create_scenario(self.scenario_name)
+
+        # Create a Monitor, errors list and trace file
+        monitor = ConsoleMonitorAnsi()
+        errors: list[Exception] = []
+        trace_file = self._create_trace_file()
+
+        # Create a Tee instance
+        tee = Tee(monitor, trace_file)
 
         # Create an orchestrator agent
-        self._orchestrator_agent = self._scenario.create_orchestrator_agent(config=Config())
+        orchestrator_agent = scenario.create_orchestrator_agent(
+            config=Config(), context=OrchestratorAgentContext(monitor=monitor, errors=errors)
+        )
 
-        # Create a Tee instance for monitoring and tracing
-        monitor = ConsoleMonitorAnsi()
-        trace_file = self._create_trace_file()
-        self._tee = Tee(monitor, trace_file)
-
-        # Set the monitor also for the orchestrator agent
-        self._orchestrator_agent.set_monitor(monitor)
-
-        # Run the orchestrator agent with the specified prompt
+        # Run the orchestrator agent
         original_dir = os.getcwd()
         try:
             os.chdir(self.workspace)
-            await self._orchestrator_agent.run_team(self._prompt)
+            await orchestrator_agent.run_team(self._prompt)
         finally:
             os.chdir(original_dir)
-            self._tee.close()
+            tee.close()
             self.finished_at = datetime.datetime.now()
 
         return ScenarioTaskResult(
@@ -88,7 +86,7 @@ class ScenarioTask:
             finished_at=self.finished_at,
             task_id=self.id,
             workspace=self.workspace,
-            errors=self._orchestrator_agent.errors if hasattr(self._orchestrator_agent, "errors") else [],
+            errors=errors,
         )
 
     def _validate_workspace(self, workspace):
