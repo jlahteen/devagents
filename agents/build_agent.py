@@ -8,7 +8,7 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from agents.inner_team_agent import InnerTeamAgent
+from agents.inner_team_agent import InnerTeamAgentBase
 from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 from scenarios.orchestrator_agent_base import OrchestratorContext
@@ -25,7 +25,7 @@ FIXER_AGENT_DONE = "FIXER_AGENT DONE"
 BUILD_SUCCEEDED = "BUILD SUCCEEDED"
 
 
-class BuildAgent(InnerTeamAgent):
+class BuildAgent(InnerTeamAgentBase):
     """An agent that ensures the application will build."""
 
     _system_message = textwrap.dedent(
