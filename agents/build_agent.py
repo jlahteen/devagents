@@ -8,8 +8,10 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
+from agents.inner_team_agent import InnerTeamAgent
 from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
+from scenarios.orchestrator_agent_base import OrchestratorContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
@@ -23,7 +25,7 @@ FIXER_AGENT_DONE = "FIXER_AGENT DONE"
 BUILD_SUCCEEDED = "BUILD SUCCEEDED"
 
 
-class BuildAgent(SocietyOfMindAgent):
+class BuildAgent(InnerTeamAgent):
     """An agent that ensures the application will build."""
 
     _system_message = textwrap.dedent(
@@ -139,23 +141,23 @@ class BuildAgent(SocietyOfMindAgent):
         """
     )
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, context: OrchestratorContext = None):
         super().__init__(
             name="build_agent",
             model_client=ChatCompletionClient.load_component(config.model_client),
             instruction=self._system_message,
             response_prompt=self._response_prompt,
-            team=BuildAgent._create_team(
+            team=self._create_team(
                 config,
                 self._system_message_team_lead_agent,
                 self._system_message_builder_agent,
                 self._system_message_analyst_agent,
                 self._system_message_fixer_agent,
             ),
+            context=context,
         )
 
-    @staticmethod
-    def select_next_speaker(messages: Sequence[AgentEvent | ChatMessage]):
+    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         """Selects the next speaker based on the last speaker and message in the conversation."""
 
         if len(messages) == 1:
@@ -181,8 +183,8 @@ class BuildAgent(SocietyOfMindAgent):
             # A jump into this agent from another agent, so let's start building
             return self._over_to(BUILDER_AGENT_NAME)
 
-    @staticmethod
     def _create_team(
+        self,
         config: Config,
         system_message_team_lead_agent: str,
         system_message_builder_agent: str,
@@ -221,7 +223,7 @@ class BuildAgent(SocietyOfMindAgent):
         team = SelectorGroupChat(
             [team_lead_agent, builder_agent, analyst_agent, fixer_agent],
             model_client=model_client,
-            selector_func=BuildAgent.select_next_speaker,
+            selector_func=self._select_next_speaker,
             termination_condition=termination_condition,
         )
         return team
