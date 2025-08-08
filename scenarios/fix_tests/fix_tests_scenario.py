@@ -10,5 +10,5 @@ class FixTestsScenario(ScenarioBase):
     def create_orchestrator_agent(
         self, config: Config, context: OrchestratorAgentContext = None
     ) -> OrchestratorAgentBase:
-        orchestrator_agent = FixTestsOrchestratorAgent(config, context=context)
+        orchestrator_agent = FixTestsOrchestratorAgent(config=config, context=context)
         return orchestrator_agent
