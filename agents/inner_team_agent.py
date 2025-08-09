@@ -24,11 +24,12 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
         )
         self._context = context
 
-    def _over_to(self, agent_name: str):
+    def _over_to(self, agent_name: str) -> str:
         """Handles the over_to event."""
 
         if self._context is not None:
             self._context.monitor.set_current_agent(self.name + "." + agent_name)
+        return agent_name
 
     def _add_error(self, error: Exception):
         """Adds an error to the orchestrator context."""
