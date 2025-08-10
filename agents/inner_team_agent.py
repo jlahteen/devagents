@@ -3,6 +3,7 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from scenarios.orchestrator_agent_base import OrchestratorContext
+from utils.autogen import SuccessOrFailureTermination
 
 
 class InnerTeamAgentBase(SocietyOfMindAgent):
@@ -36,3 +37,16 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
 
         if self._context is not None:
             self._context.errors.append(error)
+
+    def _on_failure(self, message: str):
+        """Handles the failure event."""
+
+        if self._context is not None:
+            self._context.errors.append(RuntimeError(message))
+
+    def _create_termination_condition(self, success_phrase: str, failure_phrase: str):
+        """Creates a termination condition for the inner team agent."""
+
+        return SuccessOrFailureTermination(
+            success_phrase=success_phrase, failure_phrase=failure_phrase, on_failure_callback=self._on_failure
+        )

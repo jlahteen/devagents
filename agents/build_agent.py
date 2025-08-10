@@ -217,9 +217,7 @@ class BuildAgent(InnerTeamAgentBase):
             model_client=model_client,
             tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
         )
-        termination_condition = OrTerminationCondition(
-            TextMentionTermination(BUILD_AGENT_SUCCESSFUL), TextMentionTermination(BUILD_AGENT_FAILED)
-        )
+        termination_condition = self._create_termination_condition(BUILD_AGENT_SUCCESSFUL, BUILD_AGENT_FAILED)
         team = SelectorGroupChat(
             [team_lead_agent, builder_agent, analyst_agent, fixer_agent],
             model_client=model_client,

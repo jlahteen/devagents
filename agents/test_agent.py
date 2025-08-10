@@ -217,9 +217,7 @@ class TestAgent(InnerTeamAgentBase):
             model_client=model_client,
             tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
         )
-        termination_condition = OrTerminationCondition(
-            TextMentionTermination(TEST_AGENT_SUCCESSFUL), TextMentionTermination(TEST_AGENT_FAILED)
-        )
+        termination_condition = self._create_termination_condition(TEST_AGENT_SUCCESSFUL, TEST_AGENT_FAILED)
         team = SelectorGroupChat(
             [team_lead_agent, tester_agent, analyst_agent, fixer_agent],
             model_client=model_client,
