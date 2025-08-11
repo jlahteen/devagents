@@ -1,141 +1,117 @@
 import argparse
 import asyncio
-import datetime
 import os
-import sys
+import traceback
+from asyncio.exceptions import CancelledError
 
-from hello import say_hello
-from scenarios.scenario_base import create_scenario
-from utils.misc import Tee, print_yellow
+from scenario_engine.scenario_engine import ScenarioEngine
+from scenario_engine.scenario_task import ScenarioTaskResult
+from utils.misc import print_green, print_red, print_yellow
 
 
 async def main():
-    """The main program to run DevAgents."""
+    """The CLI of DevAgents."""
 
-    print("\n** DevAgents **\n")
+    print("\n** DevAgents CLI **")
 
     # Parse the command line args
     args = parse_args()
 
-    # Get the scenario
+    # Get the command line args
     scenario_name = get_scenario(args.scenario)
-
-    # Create the scenario
-    scenario = create_scenario(scenario_name)
-
-    # Get the prompt
     prompt = get_prompt(args.prompt)
-
-    # Set the workspace
-    set_workspace(args.workspace)
-
-    # Report the start time
-    start_time = datetime.datetime.now().astimezone()
-    print_yellow(f"\n** Coding task started at {start_time.strftime('%H.%M.%S')} **\n")
-
-    # Redirect the console streams
-    redirect_stdout_stderr()
-
+    workspace = get_workspace(args.workspace)
     # Run the scenario
-    await scenario.run_scenario(prompt=prompt)
-
-    # Restore the console streams
-    restore_stdout_stderr()
-
-    # Report the end time and elapsed time
-    end_time = datetime.datetime.now().astimezone()
-    elapsed = end_time - start_time
-    print_yellow(f"\n** Coding task finished at {end_time.strftime('%H.%M.%S')}, elapsed time {str(elapsed)[:-7]} **\n")
+    print("\nSetting up a team of agents to run your scenario...")
+    scenario_engine = ScenarioEngine()
+    result = await scenario_engine.run_scenario(scenario_name, prompt, workspace)
+    print_scenario_task_result(result)
 
 
 def get_prompt(prompt=None):
     """
-    Gets a prompt containing a coding task.
+    Gets a prompt.
 
     The user can either enter a prompt or enter a file path containg a prompt.
     In the latter case the file content will be returned.
     """
 
     if not prompt:
-        prompt = input("Enter a prompt or a prompt file:\n> ")
-
+        prompt = input("\nEnter a prompt or a prompt file:\n> ")
     if os.path.isfile(prompt):
         # The prompt is a valid file path
-        try:
-            with open(prompt, "r", encoding="utf-8") as file:
-                prompt = file.read()
-        except FileNotFoundError:
-            print("File was not found.")
-            sys.exit(1)
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
+        with open(prompt, "r", encoding="utf-8") as file:
+            prompt = file.read()
     return prompt
 
 
 def get_scenario(scenario=None):
-    """
-    Gets the scenario to run. If not provided, asks the user.
-    """
+    """Gets the scenario to run. If not provided, asks the user."""
 
     if not scenario:
-        scenario = input("Enter the scenario to run:\n> ")
+        scenario = input("\nEnter the scenario to run:\n> ")
     return scenario
 
 
-def redirect_stdout_stderr():
-    """Redirects stdout and stderr."""
+def get_workspace(workspace=None):
+    """Gets the workspace. If not provided, asks the user."""
 
-    trace_file_path = os.getenv("TRACE_DIR") + "/trace-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".md"
-    trace_file = open(trace_file_path, "w", encoding="utf-8")
-    sys.stdout = Tee(sys.stdout, trace_file)
-    sys.stderr = Tee(sys.stderr, trace_file)
-
-
-def restore_stdout_stderr():
-    """Restores stdout and stderr."""
-
-    sys.stdout.close()
-    sys.stderr.close()
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
-
-
-def set_workspace(workspace=None):
-    """Sets the workspace."""
-
-    # Use the argument if provided, otherwise ask the user
     if not workspace:
-        workspace = input(f"Enter the workspace:\n> ")
-
-    # Check if the workspace exists
-    if not os.path.exists(workspace):
-        print(f"Workspace '{workspace}' does not exist.")
-        sys.exit(1)
-
-    # Change the current directory to the workspace
-    os.chdir(workspace)
+        workspace = input(f"\nEnter the workspace:\n> ")
+    return workspace
 
 
 def parse_args():
+    """Parses command line arguments."""
+
     # Create a parser
     parser = argparse.ArgumentParser(description="DevAgents")
 
-    # Add arguments
+    # Add the arguments
     parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
     parser.add_argument(
         "--prompt",
         type=str,
         default=None,
-        help="A prompt as a raw prompt or as a file path to a file containing a prompt",
+        help="A prompt as a raw prompt or a file path to a file containing a prompt",
     )
     parser.add_argument("--workspace", type=str, default=None, help="A directory specifying the workspace to use")
 
-    # Parse the arguments
-    args = parser.parse_args()
+    # Parse and return the arguments
+    return parser.parse_args()
 
-    return args
+
+def print_scenario_task_result(result: ScenarioTaskResult) -> None:
+    """Prints the scenario task result to the console."""
+
+    print_yellow(f"\nScenario Task Result:")
+    print_yellow(f"  Scenario    : {result.scenario_name}")
+    print_yellow(f"  Started At  : {result.started_at}")
+    print_yellow(f"  Finished At : {result.finished_at}")
+    print_yellow(f"  Elapsed Time: {result.elapsed}")
+    print_yellow(f"  Task ID     : {result.task_id}")
+    print_yellow(f"  Workspace   : {result.workspace}")
+    if result.errors:
+        print_red("  Errors:")
+        for error in result.errors:
+            print_red(f"    - {error}")
+    else:
+        print_green("  No errors occurred in the scenario task.")
+    print()
+
+
+def print_exception(e):
+    """Prints an exception to the console."""
+
+    print_red(f"\n** Unhandled error **\n")
+    print_red(f"{e}")
+    print_red(traceback.format_exc())
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, CancelledError):
+        print_yellow("\n** Cancelled by the user **\n")
+    except Exception as e:
+        print_exception(e)
