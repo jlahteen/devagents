@@ -1,5 +1,6 @@
 import datetime
 
+
 def update_build(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -17,5 +18,6 @@ def update_build(filepath):
     except Exception as e:
         print(f'Failed to update the build number: {e}')
 
+
 if __name__ == '__main__':
-    update_build('devagents/hello.py')
+    update_build('devagents/cli/hello.py')

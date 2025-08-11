@@ -76,7 +76,7 @@ WORKDIR /app/devagents
 RUN echo "source /app/venv/bin/activate" >> ~/.bashrc
 
 # Define the "devagents" aliases
-RUN echo "alias devagents='python devagents.py'" >> ~/.bashrc && \
+RUN echo "alias devagents='python -m cli.devagents'" >> ~/.bashrc && \
     echo "alias run-tests='python run_tests.py'" >> ~/.bashrc && \
     echo "alias new-code='devagents --scenario NewCode'" >> ~/.bashrc && \
     echo "alias new-app='devagents --scenario NewApp'" >> ~/.bashrc && \
@@ -90,4 +90,4 @@ RUN echo "export PS1='\[\033[0;32m\]devagents# \[\033[0m\]'" >> ~/.bashrc
 ENV npm_config_yes=true
 
 # Start an interactive login shell, run hello.py, then stay in the shell
-CMD ["/bin/bash", "--login", "-c", "python3 hello.py; exec bash"]
+CMD ["/bin/bash", "--login", "-c", "python -m cli.hello; exec bash"]

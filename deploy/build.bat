@@ -17,6 +17,7 @@ XCOPY ..\scenarios\* devagents\scenarios /I /Y /S
 XCOPY ..\agents\* devagents\agents /I /Y /S
 XCOPY ..\monitoring\* devagents\monitoring /I /Y /S
 XCOPY ..\scenario_engine\* devagents\scenario_engine /I /Y /S
+XCOPY ..\cli\* devagents\cli /I /Y /S
 
 REM Copy the tests
 MKDIR devagents\tests
