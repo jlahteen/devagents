@@ -77,11 +77,12 @@ RUN echo "source /app/venv/bin/activate" >> ~/.bashrc
 
 # Define the "devagents" aliases
 RUN echo "alias devagents='python -m cli.devagents'" >> ~/.bashrc && \
-    echo "alias run-tests='python run_tests.py'" >> ~/.bashrc && \
+    echo "alias run-tests='python -m tests.run_tests'" >> ~/.bashrc && \
     echo "alias new-code='devagents --scenario NewCode'" >> ~/.bashrc && \
     echo "alias new-app='devagents --scenario NewApp'" >> ~/.bashrc && \
     echo "alias fix-build='devagents --scenario FixBuild'" >> ~/.bashrc && \
-    echo "alias fix-tests='devagents --scenario FixTests'" >> ~/.bashrc
+    echo "alias fix-tests='devagents --scenario FixTests'" >> ~/.bashrc && \
+    echo "alias ver='python -m cli.hello'" >> ~/.bashrc
 
 # Set the shell prompt
 RUN echo "export PS1='\[\033[0;32m\]devagents# \[\033[0m\]'" >> ~/.bashrc
