@@ -3,7 +3,6 @@ import sys
 from contextlib import redirect_stdout
 
 import pytest
-from autogen_agentchat.ui import Console
 
 from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
 from tests.test_utils import setup_test
@@ -23,11 +22,12 @@ async def test_failing_tests__should_fix_and_pass(setup_test):
     test_run_dir = setup_test
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
-    scenario = FixTestsScenario(config=Config())
+    scenario = FixTestsScenario()
+    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
 
     # Act
     with redirect_stdout(tee):
-        await scenario.run_scenario(prompt="Fix the build errors in the project.")
+        await orchestrator_agent.run_team(prompt="Fix the build errors in the project.")
     output = console_output.getvalue()
 
     # Assert

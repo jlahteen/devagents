@@ -10,8 +10,9 @@ from autogen_core.models import ChatCompletionClient
 
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from monitoring.console_monitor_curses import ConsoleMonitorCurses
-from monitoring.monitor import MonitorBase, Tee
+from monitoring.monitor import MonitorBase
 from utils.config import Config
+from utils.tee import Tee
 
 SKIP_TESTS = False
 SKIP_TEST_YES = True
