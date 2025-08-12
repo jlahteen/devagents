@@ -8,10 +8,10 @@ from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.ui import Console
 from autogen_core.models import ChatCompletionClient
 
-from config import Config
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from monitoring.console_monitor_curses import ConsoleMonitorCurses
 from monitoring.monitor import MonitorBase, Tee
+from utils.config import Config
 
 SKIP_TESTS = False
 SKIP_TEST_YES = True

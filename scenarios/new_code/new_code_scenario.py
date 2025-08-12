@@ -1,7 +1,7 @@
-from config import Config
 from scenarios.new_code.new_code_orchestrator_agent import NewCodeOrchestratorAgent
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
+from utils.config import Config
 
 
 class NewCodeScenario(ScenarioBase):

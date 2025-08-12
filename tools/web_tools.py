@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
 
-from config import Config
+from utils.config import Config
 
 
 def google_search(query: str):

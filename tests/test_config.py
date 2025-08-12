@@ -4,7 +4,7 @@ from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken
 from autogen_core.models import ChatCompletionClient
 
-from config import Config
+from utils.config import Config
 
 
 @pytest.mark.asyncio

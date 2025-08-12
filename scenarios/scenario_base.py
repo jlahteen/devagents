@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from config import Config
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from utils.config import Config
 
 
 class ScenarioBase(ABC):

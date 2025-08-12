@@ -1,7 +1,7 @@
-from config import Config
 from scenarios.fix_build.fix_build_orchestrator_agent import FixBuildOrchestratorAgent
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
+from utils.config import Config
 
 
 class FixBuildScenario(ScenarioBase):

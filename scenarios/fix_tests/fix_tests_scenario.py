@@ -1,7 +1,7 @@
-from config import Config
 from scenarios.fix_tests.fix_tests_orchestrator_agent import FixTestsOrchestratorAgent
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
+from utils.config import Config
 
 
 class FixTestsScenario(ScenarioBase):

@@ -7,8 +7,8 @@ from autogen_agentchat.ui import Console
 from autogen_core import CancellationToken
 
 from agents.scaffold_agent import ScaffoldAgent
-from config import Config
 from tests.test_utils import setup_test
+from utils.config import Config
 
 prompt = textwrap.dedent(
     """

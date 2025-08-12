@@ -8,8 +8,8 @@ from autogen_agentchat.ui import Console
 from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
-from config import Config
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from utils.config import Config
 
 
 class NewCodeOrchestratorAgent(OrchestratorAgentBase):

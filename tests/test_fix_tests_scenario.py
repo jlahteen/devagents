@@ -5,10 +5,10 @@ from contextlib import redirect_stdout
 import pytest
 from autogen_agentchat.ui import Console
 
-from config import Config
 from constants import TEST_AGENT_SUCCESSFUL
 from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
 from tests.test_utils import setup_test
+from utils.config import Config
 from utils.tee import Tee
 
 

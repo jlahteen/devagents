@@ -5,9 +5,9 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.ui import Console
 
 from agents.build_agent import BuildAgent
-from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from utils.config import Config
 
 
 class FixBuildOrchestratorAgent(OrchestratorAgentBase):

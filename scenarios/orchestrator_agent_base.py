@@ -7,8 +7,8 @@ from autogen_agentchat.conditions import TextMentionTermination
 from autogen_core.models import ChatCompletionClient
 
 from agents.termination_agent import TerminationAgent
-from config import Config
 from monitoring.monitor import MonitorBase
+from utils.config import Config
 
 
 @dataclass

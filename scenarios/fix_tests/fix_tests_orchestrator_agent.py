@@ -3,8 +3,8 @@ import textwrap
 from autogen_agentchat.ui import Console
 
 from agents.test_agent import TestAgent
-from config import Config
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from utils.config import Config
 
 
 class FixTestsOrchestratorAgent(OrchestratorAgentBase):

@@ -9,12 +9,12 @@ from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
 from agents.inner_team_agent import InnerTeamAgentBase
-from config import Config
 from constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 from scenarios.orchestrator_agent_base import OrchestratorContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
+from utils.config import Config
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 BUILDER_AGENT_NAME = "builder_agent"
