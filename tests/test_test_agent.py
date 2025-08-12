@@ -8,9 +8,9 @@ from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.ui import Console
 
 from agents.test_agent import TestAgent
-from constants import TEST_AGENT_SUCCESSFUL
 from tests.test_utils import setup_test
 from utils.config import Config
+from utils.constants import TEST_AGENT_SUCCESSFUL
 from utils.tee import Tee
 
 SKIP_TESTS = False

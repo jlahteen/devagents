@@ -3,10 +3,10 @@ import textwrap
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
-from constants import SCAFFOLD_AGENT_DONE
 from tools.os_tools import get_os_type
 from tools.shell_tools import run_command
 from utils.config import Config
+from utils.constants import SCAFFOLD_AGENT_DONE
 
 
 class ScaffoldAgent(AssistantAgent):
