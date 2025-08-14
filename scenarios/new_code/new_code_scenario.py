@@ -5,7 +5,7 @@ from utils.config import Config
 
 
 class NewCodeScenario(ScenarioBase):
-    """A scenario for creating new code snippets."""
+    """A scenario for creating new code files."""
 
     def create_orchestrator_agent(self, config: Config, context: OrchestratorContext = None) -> OrchestratorAgentBase:
         # Create an Orchestrator Agent
