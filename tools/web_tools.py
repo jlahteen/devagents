@@ -8,11 +8,17 @@ from utils.config import Config
 def google_search(query: str):
     """
     Performs a Google Custom Search and return simplified results.
+
+    If the API key or CSE ID is not available, a message "Google searches are not available" will be returned.
     """
 
     config = Config()
-    service = build("customsearch", "v1", developerKey=config.google_search.api_key)
-    res = service.cse().list(q=query, cx=config.google_search.cse_id, gl="fi").execute()
+    api_key = getattr(config.google_search, "api_key", "")
+    cse_id = getattr(config.google_search, "cse_id", "")
+    if not api_key or not cse_id:
+        return "Google searches are not available, you are on your training knowledge, sorry."
+    service = build("customsearch", "v1", developerKey=api_key)
+    res = service.cse().list(q=query, cx=cse_id, gl="fi").execute()
     simplified_results = [
         {"title": item.get("title"), "link": item.get("link"), "snippet": item.get("snippet")}
         for item in res.get("items", [])
