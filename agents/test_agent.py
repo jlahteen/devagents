@@ -1,28 +1,31 @@
 import textwrap
 from typing import Sequence
 
-from autogen_agentchat.agents import AssistantAgent, SocietyOfMindAgent
+from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.base import OrTerminationCondition
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import RoundRobinGroupChat, SelectorGroupChat
+from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from config import Config
-from constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
+from agents.inner_team_agent import InnerTeamAgentBase
+from scenarios.orchestrator_agent_base import OrchestratorContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
+from utils.config import Config
+from utils.constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
 
-ORCHESTRATOR_AGENT_NAME = "orchestrator_agent"
+TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 TESTER_AGENT_NAME = "tester_agent"
 ANALYST_AGENT_NAME = "analyst_agent"
 FIXER_AGENT_NAME = "fixer_agent"
 TESTER_AGENT_DONE = "TESTER_AGENT DONE"
 FIXER_AGENT_DONE = "FIXER_AGENT DONE"
+ALL_TESTS_PASSED = "ALL TESTS PASSED"
 
 
-class TestAgent(SocietyOfMindAgent):
+class TestAgent(InnerTeamAgentBase):
     """An agent that ensures the application's tests will pass."""
 
     _system_message = textwrap.dedent(
@@ -39,7 +42,7 @@ class TestAgent(SocietyOfMindAgent):
         """
     )
 
-    _system_message_orchestrator_agent = textwrap.dedent(
+    _system_message_team_lead_agent = textwrap.dedent(
         f"""
         You run the team that tests the application in the current directory.
 
@@ -99,6 +102,7 @@ class TestAgent(SocietyOfMindAgent):
           to find the latest information about the errors.
         - Do not ask questions, just suggest specific fixes.
         - If there no tests found, do not suggest to add tests.
+        - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
 
         You have the following tools:
         - read_file tool for reading files
@@ -113,11 +117,16 @@ class TestAgent(SocietyOfMindAgent):
         f"""
         You are a developer. Your task is to fix the failed tests according to the suggested fixes.
 
-        Do not comment on the suggested fixes, just implement them.
-        Do not suggest new fixes, just implement the suggested ones.
-        Do not run the tests, there is another agent for that.
-        
-        When you have implemented the suggested fixes or there is nothing to fix, say '{FIXER_AGENT_DONE}' without any other content.
+        Act as follows:
+        - Check the last message from the analyst agent for suggested fixes.
+        - Implement the suggested fixes.
+        - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
+        - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
+
+        Important notes:
+        - Do not comment the suggested fixes, just implement them.
+        - Do not suggest new fixes, just implement the suggested ones.
+        - Do not run the tests, there is another agent for that.
 
         You have the following tools:
         - read_file tool for reading files
@@ -132,57 +141,62 @@ class TestAgent(SocietyOfMindAgent):
     # This is not a test class even though its name starts with "test".
     __test__ = False
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, context: OrchestratorContext = None):
         super().__init__(
             name="test_agent",
             model_client=ChatCompletionClient.load_component(config.model_client),
             instruction=self._system_message,
             response_prompt=self._response_prompt,
-            team=TestAgent._create_team(
+            team=self._create_team(
                 config,
-                self._system_message_orchestrator_agent,
+                self._system_message_team_lead_agent,
                 self._system_message_tester_agent,
                 self._system_message_analyst_agent,
                 self._system_message_fixer_agent,
             ),
+            context=context,
         )
 
-    @staticmethod
-    def select_next_speaker(messages: Sequence[AgentEvent | ChatMessage]):
+    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
+        """Selects the next speaker based on the last speaker and message in the conversation."""
+
         if len(messages) == 1:
-            return TESTER_AGENT_NAME
-        elif messages[-1].source == ORCHESTRATOR_AGENT_NAME:
-            return TESTER_AGENT_NAME
+            return self._over_to(TESTER_AGENT_NAME)
+        elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
+            return self._over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == TESTER_AGENT_NAME:
             if TESTER_AGENT_DONE in messages[-1].content:
-                return ANALYST_AGENT_NAME
+                return self._over_to(ANALYST_AGENT_NAME)
             else:
-                return TESTER_AGENT_NAME
+                return self._over_to(TESTER_AGENT_NAME)
         elif messages[-1].source == ANALYST_AGENT_NAME:
-            return FIXER_AGENT_NAME
+            if ALL_TESTS_PASSED in messages[-1].content:
+                return self._over_to(TEAM_LEAD_AGENT_NAME)
+            else:
+                return self._over_to(FIXER_AGENT_NAME)
         elif messages[-1].source == FIXER_AGENT_NAME:
             if FIXER_AGENT_DONE in messages[-1].content:
-                return ORCHESTRATOR_AGENT_NAME
+                return self._over_to(TEAM_LEAD_AGENT_NAME)
             else:
-                return FIXER_AGENT_NAME
+                return self._over_to(FIXER_AGENT_NAME)
         else:
             # A jump into this agent from another agent, so let's start testing
-            return TESTER_AGENT_NAME
+            return self._over_to(TESTER_AGENT_NAME)
 
-    @staticmethod
     def _create_team(
+        self,
         config: Config,
-        system_message_orchestrator_agent: str,
+        system_message_team_lead_agent: str,
         system_message_tester_agent: str,
         system_message_analyst_agent: str,
         system_message_fixer_agent: str,
-    ) -> RoundRobinGroupChat:
+    ) -> SelectorGroupChat:
         """Creates an inner team."""
 
         model_client = ChatCompletionClient.load_component(config.model_client)
-        orchestrator_agent = AssistantAgent(
-            name=ORCHESTRATOR_AGENT_NAME,
-            system_message=system_message_orchestrator_agent,
+        team_lead_agent = AssistantAgent(
+            name=TEAM_LEAD_AGENT_NAME,
+            system_message=system_message_team_lead_agent,
             model_client=model_client,
         )
         tester_agent = AssistantAgent(
@@ -203,13 +217,11 @@ class TestAgent(SocietyOfMindAgent):
             model_client=model_client,
             tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
         )
-        termination_condition = OrTerminationCondition(
-            TextMentionTermination(TEST_AGENT_SUCCESSFUL), TextMentionTermination(TEST_AGENT_FAILED)
-        )
+        termination_condition = self._create_termination_condition(TEST_AGENT_SUCCESSFUL, TEST_AGENT_FAILED)
         team = SelectorGroupChat(
-            [orchestrator_agent, tester_agent, analyst_agent, fixer_agent],
+            [team_lead_agent, tester_agent, analyst_agent, fixer_agent],
             model_client=model_client,
-            selector_func=TestAgent.select_next_speaker,
+            selector_func=self._select_next_speaker,
             termination_condition=termination_condition,
         )
         return team

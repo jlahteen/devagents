@@ -3,7 +3,7 @@ from autogen_agentchat.messages import TextMessage
 from autogen_core import CancellationToken
 
 from agents.developer_agent import DeveloperAgent
-from config import Config
+from utils.config import Config
 
 
 @pytest.mark.asyncio

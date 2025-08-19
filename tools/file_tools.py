@@ -57,7 +57,9 @@ def enum_subdirs(dir_path: str) -> list:
         with file_lock:
             if not os.path.exists(dir_path):
                 return f"enum_subdirs ERROR: The directory '{dir_path}' does not exist"
-            subdirs = [d for d in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, d))]
+            subdirs = [
+                d for d in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, d)) and d != ".devagents"
+            ]
         print(f"enum_subdirs OK: Subdirectories of the directory '{dir_path}' were enumerated")
         return subdirs
     except Exception as e:

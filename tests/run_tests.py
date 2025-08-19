@@ -1,6 +1,6 @@
 import pytest
 
-from tools.os_tools import to_os_path
+from utils.misc import to_os_path
 
 if __name__ == "__main__":
     # Run all tests
@@ -35,3 +35,6 @@ if __name__ == "__main__":
 
     # FixTestsScenario tests
     # pytest.main(["-s", to_os_path("tests\\test_fix_tests_scenario.py")])
+
+    # MonitorBase tests
+    # pytest.main(["-s", to_os_path("tests\\test_monitor_base.py")])

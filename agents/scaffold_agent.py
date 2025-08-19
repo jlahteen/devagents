@@ -3,10 +3,10 @@ import textwrap
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
-from config import Config
-from constants import SCAFFOLD_AGENT_DONE
 from tools.os_tools import get_os_type
 from tools.shell_tools import run_command
+from utils.config import Config
+from utils.constants import SCAFFOLD_AGENT_DONE
 
 
 class ScaffoldAgent(AssistantAgent):
@@ -21,11 +21,14 @@ class ScaffoldAgent(AssistantAgent):
         Do not write code for the requested solution excluding necessary placeholder files.
         
         Place each project in a separate subfolder under the solution root.
-        
+
         Scaffold the directory structure by using appropriate CLI commands.
 
-        Pass such options to commands that work in the CI/CD mode, so they do not use interactive prompts.
-        - Especially, use the --yes option for appropriate npm and npx commmands.
+        Scaffold Java projects using maven.
+
+        Pass such options to commands that are designed for the CI/CD mode. Especially:
+        - use the --yes option with npm and npx
+        - use the --batch-mode option with maven
 
         Run all necessary install commands when scaffolding the solution.
 

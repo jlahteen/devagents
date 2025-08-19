@@ -1,70 +1,79 @@
-# DevAgents
+# Welcome to DevAgents!
 
-DevAgents is an **experimental** project for using a team of AI agents to generate code for different scenarios.
+DevAgents is an **experimental** project for using a team of AI agents for generating code or even create complete applications.
 
-The currently supported scenarios are listed in the table below.
+DevAgents uses a scenario-based approach. There are scenarios for different development tasks. DevAgents aims to complete all scenarios autonomously.
+
+The scenarios, that are currently supported, are listed in the table below.
 
 | **Scenario**      | **Description**                                                                                     |
 |-------------------|-----------------------------------------------------------------------------------------------------|
-| NewCode           | A scenario for generating one or more code snippets, e.g., specific classes, modules, scripts, etc.|
-| NewApp            | A scenario for generating complete applications. Applications should consist of a maximum of 5 components or services.|
+| NewCode           | A scenario for generating one or more code files, e.g., specific classes, modules, scripts, etc.|
+| NewApp            | A scenario for generating complete applications. In a NewApp scenario, the application will be built and tested by several agents specialized for certain tasks. In this scenario, LLM context size is the only limitation for an application to create. (However, the upcoming NewSolution scenario aims to remove this limitation.) |
 | FixBuild          | A scenario to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A scenario to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
 DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
 
 
-## Local Setup
+## DevAgents Architecture
 
-Follow these steps to set up DevAgents locally:
+DevAgents architecture is illustrated in the diagram below.
 
-### 1. Create a Virtual Environment
+![DevAgents Logo](docs/devagents-architecture.png)
 
-Run the following commands in the terminal:
 
-```bash
-# Create a virtual Python environment
-python -m venv ./venv
+## How to Run Scenarios with DevAgents
 
-# Activate the virtual environment
-venv\Scripts\activate
-
-# Install the requirements
-pip install -r requirements.txt
-```
-
-### 2. Configure Environment Variables
-
-Set the following environment variables in a `.env` file located in the root directory:
-
-```
-TRACE_DIR=<directory path for saving trace files>
-MAX_TURNS=<mamimum number of turns in conversations>
-AZURE_MODEL=<Azure LLM model name>
-AZURE_API_KEY=<Azure API key for LLM calls>
-AZURE_ENDPOINT=<Azure OpenAI endpoint to use>
-AZURE_DEPLOYMENT=<Azure OpenAI model deployment name>
-AZURE_API_VERSION=<Azure API version to use>
-GOOGLE_API_KEY = <Google API key>
-GOOGLE_CSE_ID = "<Google Custom Search Engine ID>"
-```
-
-These variables are required to connect to your Azure OpenAI Service instance.
-
-### 3. Run DevAgents
-
-To start DevAgents, use the following command:
+To run scenarios with DevAgents, use the following command:
 
 ```bash
-python devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
+python -m cli.devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
 ```
 
 When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
 
-
-## Output
-
 Generated or modified code and other artifacts are saved in the given workspace.
+
+DevAgents is available in a Docker container. The container defines the following aliases for starting scenarios more easily.
+
+| **Alias** | **Definition**                       | **Description**              |
+|-----------|--------------------------------------|------------------------------|
+| devagents | python -m cli.devagents              | Starts DevAgents             |
+| new-code  | devagents --scenario NewCode         | Starts a NewCode scenario    |
+| new-app   | devagents --scenario NewApp          | Starts a NewApp scenario     |
+| fix-build | devagents --scenario FixBuild        | Starts a FixBuild scenario   |
+| fix-tests | devagents --scenario FixTests        | Starts a FixTests scenario   |
+| ver       | python -m cli.hello                  | Prints the DevAgents version |
+
+
+## Configuration
+
+To run DevAgents, you have to set the following environment variables in a `.env` file.
+
+| Environment variable | Description                                                                                     |
+|----------------------|-------------------------------------------------------------------------------------------------|
+| AZURE_MODEL          | Azure LLM model name                                                                            |
+| AZURE_API_KEY        | Azure API key for LLM calls                                                                     |
+| AZURE_ENDPOINT       | Azure OpenAI endpoint to use                                                                    |
+| AZURE_DEPLOYMENT     | Azure OpenAI model deployment name                                                              |
+| AZURE_API_VERSION    | Azure API version to use                                                                        |
+| MAX_TURNS            | Maximum number of turns in conversations                                                        |
+| GOOGLE_API_KEY       | Google API key (optional, if not given, real time google searches are not available for agents) |
+| GOOGLE_CSE_ID        | Google Custom Search Engine ID (optional, see above)                                            |
+
+Below is a sample of a content of a `.env` file.
+
+```bash
+AZURE_MODEL=gpt-4.1
+AZURE_ENDPOINT=https://<your-openai-name>.openai.azure.com/
+AZURE_API_KEY=35RpgJ******************************************************************************
+AZURE_DEPLOYMENT=gpt-41
+AZURE_API_VERSION=2024-12-01-preview
+MAX_TURNS=999
+GOOGLE_API_KEY=AIza***********************************
+GOOGLE_CSE_ID=3fc2************
+```
 
 
 ## License
@@ -74,33 +83,14 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ## Remarks
 
-DevAgents is currently tested only on Windows with Azure OpenAI Service.
+- DevAgents is currently tested with Azure OpenAI Service using GPT-4o and GPT-4.1.
+- Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
 
 
-## Example Run
+## Further Information
 
-Below is a sample output of running a NewApp scenario.
+- [Local Development Setup](docs/local_dev_setup.md)
 
-```text
-PS C:\_dev2\devagents> python devagents.py --scenario NewCode
-
-** DevAgents **
-
-Enter the scenario to run:
-> NewApp
-Enter a prompt or a prompt file:
-> Write a CSharp Hello World app as a console app, the app needs just to say "Hello".
-Enter the workspace:
-> C:\_dev2\devagents\output\my-simple-console-calculator
-
-** Coding task started at 18.52.21 **
-
-[... agent conversation ...]
-
-** Coding task finished at 18.52.32, elapsed time 0:00:11 **
-
-PS C:\_dev2\devagents> 
-```
 
 ---
 Happy prompting with DevAgents! 🚀

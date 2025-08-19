@@ -3,8 +3,8 @@ import textwrap
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
-from config import Config
 from tools.web_tools import google_search, load_page
+from utils.config import Config
 
 
 class DeveloperAgent(AssistantAgent):
