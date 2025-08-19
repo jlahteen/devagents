@@ -87,5 +87,10 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 - Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
 
 
+## Further Information
+
+- [Local Development Setup](docs/local_dev_setup.md)
+
+
 ---
 Happy prompting with DevAgents! 🚀
