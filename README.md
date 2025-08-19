@@ -15,6 +15,7 @@ The scenarios, that are currently supported, are listed in the table below.
 
 DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
 
+
 ## DevAgents Architecture
 
 DevAgents architecture is illustrated in the diagram below.
