@@ -4,12 +4,13 @@ from autogen_core import CancellationToken
 
 from agents.developer_agent import DeveloperAgent
 from utils.config import Config
+from utils.constants import ScenarioType
 
 
 @pytest.mark.asyncio
 async def test_generate_cs_console_hello_app__should_response_with_code():
     # Arrange
-    developer_agent = DeveloperAgent(config=Config())
+    developer_agent = DeveloperAgent(config=Config(), scenario_type=ScenarioType.NEW_CODE)
     cancellation_token = CancellationToken()
 
     # Act

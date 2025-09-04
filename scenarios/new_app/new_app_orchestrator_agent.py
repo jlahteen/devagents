@@ -13,7 +13,7 @@ from agents.scaffold_agent import ScaffoldAgent
 from agents.test_agent import TestAgent
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from utils.config import Config
-from utils.constants import BUILD_AGENT_SUCCESSFUL, SCAFFOLD_AGENT_DONE
+from utils.constants import BUILD_AGENT_SUCCESSFUL, SCAFFOLD_AGENT_DONE, ScenarioType
 
 
 class NewAppOrchestratorAgent(OrchestratorAgentBase):
@@ -37,7 +37,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
             context=context,
         )
         self._scaffold_agent = ScaffoldAgent(config=config)
-        self._developer_agent = DeveloperAgent(config=config)
+        self._developer_agent = DeveloperAgent(config=config, scenario_type=ScenarioType.NEW_APP)
         self._reviewer_agent = ReviewerAgent(config=config)
         self._output_agent = OutputAgent(config=config)
         self._build_agent = BuildAgent(config=config, context=context)

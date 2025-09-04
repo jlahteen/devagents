@@ -10,6 +10,7 @@ from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
 from utils.config import Config
+from utils.constants import ScenarioType
 
 
 class NewCodeOrchestratorAgent(OrchestratorAgentBase):
@@ -32,7 +33,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             config=config,
             context=context,
         )
-        self._developer_agent = DeveloperAgent(config=config)
+        self._developer_agent = DeveloperAgent(config=config, scenario_type=ScenarioType.NEW_CODE)
         self._reviewer_agent = ReviewerAgent(config=config)
         self._output_agent = OutputAgent(config=config)
 
