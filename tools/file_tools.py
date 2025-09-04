@@ -1,3 +1,4 @@
+import fnmatch
 import os
 import threading
 
@@ -100,3 +101,37 @@ def delete_file(file_path: str) -> str:
         return f"delete_file OK: The file '{file_path}' was deleted"
     except Exception as e:
         return f"delete_file ERROR: Failed to delete the file '{file_path}': {e}"
+
+
+def search_in_files(dir_path: str, search_term: str, file_name_mask: str) -> list:
+    """
+    Recursively searches for files in a given directory and its subdirectories whose names match the file_name_mask.
+    For each matching file, searches for the search_term (case-insensitive) in the file's contents.
+    The .devagents directory is excluded from the search.
+
+    If the directory does not exist, the function returns an error message.
+    """
+
+    try:
+        if not os.path.exists(dir_path):
+            return f"search_in_files ERROR: The directory '{dir_path}' does not exist"
+        search_term_lower = search_term.lower()
+        matching_files = []
+        for root, dirs, files in os.walk(dir_path):
+            if ".devagents" in dirs:
+                dirs.remove(".devagents")
+            for filename in files:
+                if fnmatch.fnmatch(filename, file_name_mask):
+                    file_path = os.path.join(root, filename)
+                    try:
+                        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                            content = f.read().lower()
+                            if search_term_lower in content:
+                                matching_files.append(file_path)
+                    except Exception:
+                        pass
+        result_text = f"search_in_files OK: Term '{search_term}' searched in files '{dir_path}/**/{file_name_mask}'"
+        print(result_text)
+        return {"message": result_text, "result": matching_files}
+    except Exception as e:
+        return f"search_in_files ERROR: Failed to search for term '{search_term}' in files '{dir_path}/**/{file_name_mask}': {e}"
