@@ -114,7 +114,7 @@ class DeveloperAgent(AssistantAgent):
     def _get_system_message(self, scenario_type: ScenarioType) -> str:
         """Returns the system message for the given scenario type."""
 
-        if scenario_type == ScenarioType.NEW_CODE:
+        if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
             return self._system_message_new
         elif scenario_type == ScenarioType.MODIFY_CODE:
             return self._system_message_modify
@@ -124,7 +124,7 @@ class DeveloperAgent(AssistantAgent):
     def _get_tools(self, scenario_type: ScenarioType):
         """Returns the list of tools for the given scenario type."""
 
-        if scenario_type == ScenarioType.NEW_CODE:
+        if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
             return [google_search, load_page]
         elif scenario_type == ScenarioType.MODIFY_CODE:
             return [
