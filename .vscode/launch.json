@@ -5,11 +5,54 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Current File",
+            "name": "Debug NewCode",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "module": "cli.devagents",
+            "console": "integratedTerminal",
+            "args": [
+                "--scenario", "new-code"
+            ]
+        },
+        {
+            "name": "Debug NewApp",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "cli.devagents",
+            "console": "integratedTerminal",
+            "args": [
+                "--scenario", "new-app"
+            ]
+        },
+        {
+            "name": "Debug ModifyCode",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "cli.devagents",
+            "console": "integratedTerminal",
+            "args": [
+                "--scenario", "modify-code"
+            ]
+        },
+        {
+            "name": "Debug FixBuild",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "cli.devagents",
+            "console": "integratedTerminal",
+            "args": [
+                "--scenario", "fix-build"
+            ]
+        },
+        {
+            "name": "Debug FixTests",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "cli.devagents",
+            "console": "integratedTerminal",
+            "args": [
+                "--scenario", "fix-tests"
+            ]
         },
         {
             "name": "Debug Tests",
