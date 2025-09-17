@@ -5,6 +5,21 @@ Track ongoing progress, upcoming features, and known issues below.
 
 ---
 
+## ⏳ Todo:
+- hide .devagents directory?
+- google search optional
+- developer agent may not write all code in one message, reviewer should review
+- when console closes, the status line is in the listing (as the first row)
+
+## ✅ Done:
++ replace over_to in orchestrator agents
++ add errors to orchestrator_base and add errors
++ move devagents.py to cli
++ move all root level files to sub dirs
++ scenario engine layer added
++ monitoring added
++ fix tests
+
 ## 🟢 Current Iteration
 
 - 🔄 **Change:** All arguments can be passed as command line arguments; missing arguments will be prompted
@@ -20,6 +35,7 @@ Track ongoing progress, upcoming features, and known issues below.
 
 ## 📋 Backlog
 
+- 🐞 **Bug:** In case of an early AutoGen error, the monitor is not closed (e.g. "model_info is required when model name is not a valid OpenAI model")
 - ✨ **New:** Add Java SDK to the container image, plus simple tests
 - ✨ **New:** Add support for GO
 - ✨ **New:** Add support for Rust
@@ -36,5 +52,8 @@ Track ongoing progress, upcoming features, and known issues below.
 
 ---
 
-> 💡 **Tip:**  
-> Have an idea or found a bug? Open an issue or contribute
+> 💡 **Tip:**
+> Have an idea or found a bug? Open an issue or contribute!
+
+---
+Happy prompting with DevAgents! 🚀
