@@ -3,7 +3,7 @@ import textwrap
 from autogen_agentchat.agents import AssistantAgent
 from autogen_core.models import ChatCompletionClient
 
-from deploy.devagents.tools.file_tools import read_file
+from tools.file_tools import read_file
 from utils.config import Config
 from utils.constants import ScenarioType
 
