@@ -34,7 +34,7 @@ class NewCodeOrchestratorAgent(OrchestratorAgentBase):
             context=context,
         )
         self._developer_agent = DeveloperAgent(config=config, scenario_type=ScenarioType.NEW_CODE)
-        self._reviewer_agent = ReviewerAgent(config=config)
+        self._reviewer_agent = ReviewerAgent(config=config, scenario_type=ScenarioType.NEW_CODE)
         self._output_agent = OutputAgent(config=config)
 
     def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):

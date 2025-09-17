@@ -38,7 +38,7 @@ class NewAppOrchestratorAgent(OrchestratorAgentBase):
         )
         self._scaffold_agent = ScaffoldAgent(config=config)
         self._developer_agent = DeveloperAgent(config=config, scenario_type=ScenarioType.NEW_APP)
-        self._reviewer_agent = ReviewerAgent(config=config)
+        self._reviewer_agent = ReviewerAgent(config=config, scenario_type=ScenarioType.NEW_APP)
         self._output_agent = OutputAgent(config=config)
         self._build_agent = BuildAgent(config=config, context=context)
         self._test_agent = TestAgent(config=config, context=context)
