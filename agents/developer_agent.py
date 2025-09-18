@@ -102,13 +102,11 @@ class DeveloperAgent(AssistantAgent):
     )
 
     def __init__(self, config: Config, scenario_type: ScenarioType):
-        self._system_message = self._get_system_message(scenario_type)
-        self._tools = self._get_tools(scenario_type)
         super().__init__(
             name="developer_agent",
             model_client=ChatCompletionClient.load_component(config.model_client),
-            system_message=self._system_message,
-            tools=self._tools,
+            system_message=self._get_system_message(scenario_type),
+            tools=self._get_tools(scenario_type),
         )
 
     def _get_system_message(self, scenario_type: ScenarioType) -> str:
