@@ -135,3 +135,20 @@ def search_in_files(dir_path: str, search_term: str, file_name_mask: str) -> lis
         return {"message": result_text, "result": matching_files}
     except Exception as e:
         return f"search_in_files ERROR: Failed to search for term '{search_term}' in files '{dir_path}/**/{file_name_mask}': {e}"
+
+
+def file_exists(file_path: str) -> str:
+    """Checks if a file exists. Returns a message indicating the result."""
+
+    try:
+        exists = os.path.exists(file_path)
+        if exists:
+            result = f"File '{file_path}' does exist"
+        else:
+            result = f"File '{file_path}' does not exist"
+        print(f"file_exists OK: {result}")
+        return result
+    except Exception as e:
+        result = f"Failed to check the existence of the file '{file_path}': {e}"
+        print("file_exists ERROR: {result}")
+        return result
