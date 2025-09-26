@@ -42,6 +42,7 @@ class DeveloperAgent(AssistantAgent):
             }}
             ```
         - If you modify a file based on the feedback from the reviewer, always provide the full version of the file.
+        - When you are done with the implementation, end your response with '{DEVELOPER_AGENT_DONE}'.
 
         You have the following tools:
         - google_search tool for searching the web for latest information
