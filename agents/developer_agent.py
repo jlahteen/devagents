@@ -13,7 +13,7 @@ class DeveloperAgent(AssistantAgent):
     """An agent that acts as a professional developer."""
 
     _system_message_new = textwrap.dedent(
-        """
+        f"""
         ## Role
         You are a professional software developer, known for reusable and maintainable code.
 
