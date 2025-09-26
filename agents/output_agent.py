@@ -5,6 +5,7 @@ from autogen_core.models import ChatCompletionClient
 
 from tools.file_tools import delete_file, save_file
 from utils.config import Config
+from utils.constants import OUTPUT_AGENT_DONE
 
 
 class OutputAgent(AssistantAgent):
@@ -13,7 +14,7 @@ class OutputAgent(AssistantAgent):
     """
 
     _system_message = textwrap.dedent(
-        """
+        f"""
         ## Role
         You are an agent that manages file saving and deletion based on the conversation history.
 
@@ -39,6 +40,7 @@ class OutputAgent(AssistantAgent):
         - Identify the files to delete by looking for the marker @delete_file in the conversation history. The marker
           is followed by a relative file path in the workspace. Below is an example of a file marked for deletion:
             ## @delete_file ./src/MyConsole.cs
+        - When you have deleted and saved all files, end your response with '{OUTPUT_AGENT_DONE}'.
 
         ## Tools
         - save_file tool for saving files
