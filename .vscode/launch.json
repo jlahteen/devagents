@@ -58,7 +58,7 @@
             "name": "Debug Tests",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/run_tests.py",
+            "module": "tests.run_tests",
             "console": "integratedTerminal",
             "justMyCode": false
         },
