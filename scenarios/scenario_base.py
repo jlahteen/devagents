@@ -27,6 +27,10 @@ class ScenarioBase(ABC):
                 from scenarios.new_app.new_app_scenario import NewAppScenario
 
                 scenario = NewAppScenario()
+            case "ModifyApp" | "modify-app":
+                from scenarios.modify_app.modify_app_scenario import ModifyAppScenario
+
+                scenario = ModifyAppScenario()
             case "NewCode" | "new-code":
                 from scenarios.new_code.new_code_scenario import NewCodeScenario
 
