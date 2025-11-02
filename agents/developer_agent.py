@@ -115,7 +115,7 @@ class DeveloperAgent(AssistantAgent):
 
         if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
             return self._system_message_new
-        elif scenario_type == ScenarioType.MODIFY_CODE:
+        elif scenario_type == ScenarioType.MODIFY_CODE or scenario_type == ScenarioType.MODIFY_APP:
             return self._system_message_modify
         else:
             raise ValueError(f"System message not defined for the scenario type: {scenario_type}")
@@ -125,7 +125,7 @@ class DeveloperAgent(AssistantAgent):
 
         if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
             return [google_search, load_page]
-        elif scenario_type == ScenarioType.MODIFY_CODE:
+        elif scenario_type == ScenarioType.MODIFY_CODE or scenario_type == ScenarioType.MODIFY_APP:
             return [
                 read_file,
                 enum_files,
