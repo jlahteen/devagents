@@ -45,7 +45,7 @@ class AppScenarioOrchestratorAgentBase(OrchestratorAgentBase):
             config=config,
             context=context,
         )
-        self._scaffold_agent = ScaffoldAgent(config=config, scenario_type=scenario_type)
+        self._scaffold_agent = ScaffoldAgent(config=config)
         self._developer_agent = DeveloperAgent(config=config, scenario_type=scenario_type)
         self._reviewer_agent = ReviewerAgent(config=config, scenario_type=scenario_type)
         self._output_agent = OutputAgent(config=config)
