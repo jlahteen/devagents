@@ -9,7 +9,9 @@ The scenarios, that are currently supported, are listed in the table below.
 | **Scenario**      | **Description**                                                                                     |
 |-------------------|-----------------------------------------------------------------------------------------------------|
 | NewCode           | A scenario for generating one or more code files, e.g., specific classes, modules, scripts, etc.|
-| NewApp            | A scenario for generating complete applications. In a NewApp scenario, the application will be built and tested by several agents specialized for certain tasks. In this scenario, LLM context size is the only limitation for an application to create. (However, the upcoming NewSolution scenario aims to remove this limitation.) |
+| ModifyCode        | A scenario for modifying one or more code files, e.g., specific classes, modules, scripts, etc.|
+| NewApp            | A scenario for generating complete applications. In a NewApp scenario, the application will be built and tested by specialized agents. In this scenario, LLM context size is the only limitation for an application to create. |
+| ModifyApp         | A scenario for modifying existing applications. In a ModifyApp scenario, the application will be rebuilt and retested after modifications by specialized agents. |
 | FixBuild          | A scenario to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A scenario to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
@@ -37,14 +39,16 @@ Generated or modified code and other artifacts are saved in the given workspace.
 
 DevAgents is available in a Docker container. The container defines the following aliases for starting scenarios more easily.
 
-| **Alias** | **Definition**                       | **Description**              |
-|-----------|--------------------------------------|------------------------------|
-| devagents | python -m cli.devagents              | Starts DevAgents             |
-| new-code  | devagents --scenario NewCode         | Starts a NewCode scenario    |
-| new-app   | devagents --scenario NewApp          | Starts a NewApp scenario     |
-| fix-build | devagents --scenario FixBuild        | Starts a FixBuild scenario   |
-| fix-tests | devagents --scenario FixTests        | Starts a FixTests scenario   |
-| ver       | python -m cli.hello                  | Prints the DevAgents version |
+| **Alias**   | **Definition**                       | **Description**              |
+|-------------|--------------------------------------|------------------------------|
+| devagents   | python -m cli.devagents              | Starts DevAgents             |
+| new-code    | devagents --scenario NewCode         | Starts a NewCode scenario    |
+| modify-code | devagents --scenario ModifyCode      | Starts a ModifyCode scenario |
+| new-app     | devagents --scenario NewApp          | Starts a NewApp scenario     |
+| modify-app  | devagents --scenario ModifyApp       | Starts a ModifyApp scenario  |
+| fix-build   | devagents --scenario FixBuild        | Starts a FixBuild scenario   |
+| fix-tests   | devagents --scenario FixTests        | Starts a FixTests scenario   |
+| ver         | python -m cli.hello                  | Prints the DevAgents version |
 
 
 ## Configuration
