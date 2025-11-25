@@ -42,5 +42,5 @@ if __name__ == "__main__":
     # ModifyCodeScenario tests
     # pytest.main(["-s", to_os_path("tests\\test_modify_code_scenario.py")])
 
-    # ModifyCodeScenario tests
+    # ModifyAppScenario tests
     # pytest.main(["-s", to_os_path("tests\\test_modify_app_scenario.py")])
