@@ -38,3 +38,9 @@ if __name__ == "__main__":
 
     # MonitorBase tests
     # pytest.main(["-s", to_os_path("tests\\test_monitor_base.py")])
+
+    # ModifyCodeScenario tests
+    # pytest.main(["-s", to_os_path("tests\\test_modify_code_scenario.py")])
+
+    # ModifyCodeScenario tests
+    # pytest.main(["-s", to_os_path("tests\\test_modify_app_scenario.py")])
