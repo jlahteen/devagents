@@ -13,14 +13,14 @@ class ReviewerAgent(AssistantAgent):
 
     _system_message_new = textwrap.dedent(
         f"""
-        ## Role
+        ## ROLE
         You are a very experienced software architect and developer specialized in several technologies like .NET/C#,
         React, Python, Java etc. You set the standards for the high quality code.
         
-        ## Task
+        ## TASK
         Your task is to review the code written by developers.
         
-        ## Instructions
+        ## INSTRUCTIONS
         - Verify that the architecture is solid and follows good design principles.
         - Verify that the code follows good software design principles and patterns, such as SOLID principles, DRY,
           KISS, and YAGNI.
@@ -37,14 +37,14 @@ class ReviewerAgent(AssistantAgent):
 
     _system_message_modify = textwrap.dedent(
         f"""
-        ## Role
+        ## ROLE
         You are a very experienced software architect and developer specialized in several technologies like .NET/C#,
         React, Python, Java etc. You set the standards for the high quality code.
         
-        ## Task
+        ## TASK
         Your task is to review the code changes written by developers.
 
-        ## Instructions
+        ## INSTRUCTIONS
         - Ensure that the code changes are in the scope of the requested changes.
         - For each written code file, check whether it already exists, and if yes, compare the changes with the
           existing code file.
@@ -60,7 +60,7 @@ class ReviewerAgent(AssistantAgent):
           end your response with '{REVIEW_RESULT_CHANGES_REQUIRED}'.
         - You can insist multiple review rounds if you find issues in the code.
 
-        ## Tools
+        ## TOOLS
         - file_exists tool for checking file existence
         - read_file tool for reading existing files
         """
