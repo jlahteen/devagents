@@ -64,14 +64,13 @@ class ScenarioTask:
         # Create a Tee instance
         tee = Tee(monitor, trace_file)
 
-        # Create an orchestrator agent
-        orchestrator_agent = scenario.create_orchestrator_agent(
-            config=Config(), context=OrchestratorContext(monitor=monitor, errors=errors)
-        )
-
         # Run the orchestrator agent
         original_dir = os.getcwd()
         try:
+            # Create an orchestrator agent
+            orchestrator_agent = scenario.create_orchestrator_agent(
+                config=Config(), context=OrchestratorContext(monitor=monitor, errors=errors)
+            )
             os.chdir(self.workspace)
             await orchestrator_agent.run_team(self._prompt)
         finally:
