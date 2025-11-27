@@ -69,7 +69,8 @@ class ConsoleMonitorAnsi(MonitorBase):
         self._status_updater_thread.join()
         self._resize_thread.join()
         self._reset_scroll_region()
-        self._clear_screen()
+        self._stdout.write(f"{self.ESC}[J")
+        self._stdout.write("\n")
         self._show_cursor()
         if self._wrapped_lines:
             self._stdout.write("\n".join(self._wrapped_lines) + "\n")
