@@ -31,8 +31,6 @@ Track ongoing progress, upcoming features, and known issues below.
 
 ## 📋 Backlog
 
-- 🐞 **Bug:** When console closes, the status line is in the listing (as the first row)
-- 🐞 **Bug:** In case of an early AutoGen error, the monitor is not closed (e.g. "model_info is required when model name is not a valid OpenAI model")
 - ✨ **New:** Add Java SDK to the container image, plus simple tests
 - ✨ **New:** Add support for GO
 - ✨ **New:** Add support for Rust
@@ -41,7 +39,6 @@ Track ongoing progress, upcoming features, and known issues below.
 - ✨ **New:** Add NewSolution scenario
 - ✨ **New:** Add NewFeature scenario
 - 🔄 **Change:** Refactor google_search as intelligent (pass a free question as a param)
-- 🐞 **Bug:** If a prompt file is not found, DevAgents starts to hallucinate
 
 ---
 
