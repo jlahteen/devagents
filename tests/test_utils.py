@@ -42,3 +42,14 @@ def setup_test(request):
     os.chdir(test_run_dir)
     yield test_run_dir
     os.chdir(base_dir)
+
+
+def assert_file_contains(file_path: str, expected_content: str):
+    """Asserts that a file contains the expected content."""
+
+    if not os.path.exists(file_path):
+        raise AssertionError(f"File '{file_path}' does not exist")
+    with open(file_path, "r", encoding="utf-8") as f:
+        file_content = f.read()
+    if expected_content not in file_content:
+        raise AssertionError(f"File '{file_path}' does not contain expected content")

@@ -1,5 +1,6 @@
 import datetime
 import os
+from pathlib import Path
 
 
 def print_yellow(text: str) -> None:
@@ -45,3 +46,31 @@ def to_os_path(windows_path: str) -> str:
         return unix_path
     else:
         return windows_path
+
+
+def is_valid_file_path(file_path: str) -> bool:
+    """
+    Checks if a string is a valid file path that should be attempted to read.
+
+    Returns True if the string:
+    - Has a parent directory (e.g., folder/file.txt)
+    - Contains no spaces (single word, e.g., file.txt or README)
+
+    Returns False for multi-word text (likely a prompt).
+    """
+
+    try:
+        path = Path(file_path)
+
+        # Treat as file path if it has a parent directory
+        if path.parent != Path("."):
+            return True
+
+        # Treat as file path if it's a single word (no spaces)
+        if " " not in file_path.strip():
+            return True
+
+        return False
+    except (ValueError, OSError):
+        # Invalid path format
+        return False

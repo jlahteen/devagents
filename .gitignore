@@ -177,3 +177,6 @@ tests/test_output/
 
 # Temporary docker build files
 deploy/devagents/
+
+# Temp files
+temp/

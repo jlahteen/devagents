@@ -1,12 +1,13 @@
 import argparse
 import asyncio
 import os
+import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
 from scenario_engine.scenario_engine import ScenarioEngine
 from scenario_engine.scenario_task import ScenarioTaskResult
-from utils.misc import print_green, print_red, print_yellow
+from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
 
 
 async def main():
@@ -38,10 +39,16 @@ def get_prompt(prompt=None):
 
     if not prompt:
         prompt = input("\nEnter a prompt or a prompt file:\n> ")
-    if os.path.isfile(prompt):
-        # The prompt is a valid file path
-        with open(prompt, "r", encoding="utf-8") as file:
-            prompt = file.read()
+
+    # Try to read as file if it's a valid path format
+    if is_valid_file_path(prompt):
+        try:
+            with open(prompt, "r", encoding="utf-8") as file:
+                prompt = file.read()
+        except OSError as e:
+            print_red(f"\nError: {e}\n")
+            sys.exit(1)
+
     return prompt
 
 

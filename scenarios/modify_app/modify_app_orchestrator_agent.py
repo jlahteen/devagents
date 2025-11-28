@@ -4,8 +4,8 @@ from utils.config import Config
 from utils.constants import ScenarioType
 
 
-class NewAppOrchestratorAgent(AppScenarioOrchestratorAgentBase):
-    """An orchestrator agent to run a NewApp scenario."""
+class ModifyAppOrchestratorAgent(AppScenarioOrchestratorAgentBase):
+    """An orchestrator agent to run a ModifyApp scenario."""
 
     def __init__(
         self,
@@ -14,6 +14,6 @@ class NewAppOrchestratorAgent(AppScenarioOrchestratorAgentBase):
     ):
         super().__init__(
             config=config,
-            scenario_type=ScenarioType.NEW_APP,
+            scenario_type=ScenarioType.MODIFY_APP,
             context=context,
         )

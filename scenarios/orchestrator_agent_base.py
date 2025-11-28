@@ -59,15 +59,3 @@ class OrchestratorAgentBase(AssistantAgent):
 
         if self._context is not None:
             self._context.errors.append(error)
-
-    def _is_code_approved(self, message):
-        """Checks whether the code is approved in the given message."""
-
-        # Use a regex to match 'CODE APPROVED' surrounded by any special characters
-        pattern = r"[^a-zA-Z0-9]*CODE\sAPPROVED[^a-zA-Z0-9]*"
-
-        # Split the message into lines and get the last line
-        last_line = message.strip().split("\n")[-1]
-
-        # Check the pattern against the last line
-        return bool(re.fullmatch(pattern, last_line))
