@@ -1,6 +1,6 @@
 import pyfiglet
 
-VERSION = "Version 0.7"
+VERSION = "Version 1.0.0-preview"
 BUILD = "Build __BUILD__"
 HOME_PAGE = "https://github.com/jlahteen/devagents"
 
