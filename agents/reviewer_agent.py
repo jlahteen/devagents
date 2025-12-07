@@ -1,14 +1,12 @@
 import textwrap
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-
+from agent_platform.agent_base import AgentBase
 from tools.file_tools import file_exists, read_file
 from utils.config import Config
 from utils.constants import REVIEW_RESULT_APPROVED, REVIEW_RESULT_CHANGES_REQUIRED, ScenarioType
 
 
-class ReviewerAgent(AssistantAgent):
+class ReviewerAgent(AgentBase):
     """An agent that acts as a professional reviewer."""
 
     _system_message_new = textwrap.dedent(
@@ -70,8 +68,8 @@ class ReviewerAgent(AssistantAgent):
         super().__init__(
             name="reviewer_agent",
             system_message=self._get_system_message(scenario_type),
+            config=config,
             tools=self._get_tools(scenario_type),
-            model_client=ChatCompletionClient.load_component(config.model_client),
         )
 
     def _get_system_message(self, scenario_type: ScenarioType) -> str:
