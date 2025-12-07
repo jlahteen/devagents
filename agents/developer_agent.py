@@ -1,15 +1,13 @@
 import textwrap
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-
-from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file, search_in_files
+from agent_platform.agent_base import AgentBase
+from tools.file_tools import enum_files, enum_subdirs, read_file, save_file, search_in_files
 from tools.web_tools import google_search, load_page
 from utils.config import Config
 from utils.constants import DEVELOPER_AGENT_DONE, ScenarioType
 
 
-class DeveloperAgent(AssistantAgent):
+class DeveloperAgent(AgentBase):
     """An agent that acts as a professional developer."""
 
     _system_message_new = textwrap.dedent(
@@ -105,8 +103,8 @@ class DeveloperAgent(AssistantAgent):
     def __init__(self, config: Config, scenario_type: ScenarioType):
         super().__init__(
             name="developer_agent",
-            model_client=ChatCompletionClient.load_component(config.model_client),
             system_message=self._get_system_message(scenario_type),
+            config=config,
             tools=self._get_tools(scenario_type),
         )
 
