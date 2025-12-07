@@ -1,14 +1,12 @@
 import textwrap
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-
+from agent_platform.agent_base import AgentBase
 from tools.file_tools import delete_file, save_file
 from utils.config import Config
 from utils.constants import OUTPUT_AGENT_DONE
 
 
-class OutputAgent(AssistantAgent):
+class OutputAgent(AgentBase):
     """
     An agent that manages file saving and deletion based on the conversation history.
     """
@@ -52,6 +50,6 @@ class OutputAgent(AssistantAgent):
         super().__init__(
             name="output_agent",
             system_message=self._system_message,
-            model_client=ChatCompletionClient.load_component(config.model_client),
+            config=config,
             tools=[save_file, delete_file],
         )
