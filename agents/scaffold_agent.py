@@ -1,8 +1,6 @@
 import textwrap
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-
+from agent_platform.agent_base import AgentBase
 from tools.file_tools import enum_files, enum_subdirs
 from tools.os_tools import get_os_type
 from tools.shell_tools import run_command
@@ -10,7 +8,7 @@ from utils.config import Config
 from utils.constants import SCAFFOLD_AGENT_DONE
 
 
-class ScaffoldAgent(AssistantAgent):
+class ScaffoldAgent(AgentBase):
     """An agent that scaffolds a directory structure for the requested solution."""
 
     _system_message = textwrap.dedent(
@@ -53,6 +51,6 @@ class ScaffoldAgent(AssistantAgent):
         super().__init__(
             name="scaffold_agent",
             system_message=self._system_message,
-            model_client=ChatCompletionClient.load_component(config.model_client),
+            config=config,
             tools=[run_command, get_os_type, enum_subdirs, enum_files],
         )
