@@ -21,7 +21,7 @@ class Message:
 
 
 """Define a platform-agnostic speaker selector function type."""
-SpeakerSelectorFunc = Callable[[int, str | None, str | None], str]
+SpeakerSelectorFunc = Callable[[int, Message | None], str]
 
 
 class AgentBase(AssistantAgent):

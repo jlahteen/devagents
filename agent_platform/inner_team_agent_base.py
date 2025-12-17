@@ -6,7 +6,7 @@ from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
 from autogen_core.models import ChatCompletionClient
 
-from agent_platform.agent_base import AgentBase, SpeakerSelectorFunc
+from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
 from utils.config import Config
 
 
@@ -58,13 +58,11 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
         )
 
     def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]) -> str:
-        """Selects the next speaker. Extracts last speaker/content and delegates them to speaker_selector."""
+        """Selects the next speaker. Passes the last message to speaker_selector."""
 
         message_count = len(messages)
-        last_speaker = None
-        last_content = None
+        last_message = None
         if message_count > 0:
             msg = messages[-1]
-            last_speaker = msg.source
-            last_content = msg.content if hasattr(msg, "content") else ""
-        return self._speaker_selector(message_count, last_speaker, last_content)
+            last_message = Message(source=msg.source, content=getattr(msg, "content", ""))
+        return self._speaker_selector(message_count, last_message)
