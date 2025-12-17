@@ -131,7 +131,10 @@ class TestAgent(InnerTeamAgent):
     _system_message_fixer_agent = textwrap.dedent(
         f"""
         ## ROLE
-        You are an experienced developer. Your task is to fix the failed tests according to the suggested fixes.
+        You are an experienced developer specialized in fixing failed tests.
+
+        ## TASK
+        Your task is to fix the failed tests according to the suggested fixes.
 
         ## INSTRUCTIONS
         - Check the last message from the analyst agent for suggested fixes.
