@@ -1,14 +1,7 @@
 import textwrap
-from typing import Sequence
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.base import OrTerminationCondition
-from autogen_agentchat.conditions import TextMentionTermination
-from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import SelectorGroupChat
-from autogen_core.models import ChatCompletionClient
-
-from agents.inner_team_agent import InnerTeamAgentBase
+from agent_platform.agent_base import AgentBase, Message
+from agents.inner_team_agent import InnerTeamAgent
 from scenarios.orchestrator_agent_base import OrchestratorContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
@@ -25,7 +18,7 @@ FIXER_AGENT_DONE = "FIXER_AGENT DONE"
 ALL_TESTS_PASSED = "ALL TESTS PASSED"
 
 
-class TestAgent(InnerTeamAgentBase):
+class TestAgent(InnerTeamAgent):
     """An agent that ensures the application's tests will pass."""
 
     _system_message = textwrap.dedent(
@@ -168,84 +161,67 @@ class TestAgent(InnerTeamAgentBase):
     def __init__(self, config: Config, context: OrchestratorContext = None):
         super().__init__(
             name="test_agent",
-            model_client=ChatCompletionClient.load_component(config.model_client),
-            instruction=self._system_message,
+            config=config,
+            agents=self._create_team(config),
+            speaker_selector=self._select_speaker,
+            system_message=self._system_message,
             response_prompt=self._response_prompt,
-            team=self._create_team(
-                config,
-                self._system_message_team_lead_agent,
-                self._system_message_tester_agent,
-                self._system_message_analyst_agent,
-                self._system_message_fixer_agent,
-            ),
+            success_phrase=TEST_AGENT_SUCCESSFUL,
+            failure_phrase=TEST_AGENT_FAILED,
             context=context,
         )
 
-    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
-        """Selects the next speaker based on the last speaker and message in the conversation."""
+    def _create_team(self, config: Config) -> list[AgentBase]:
+        """Creates the inner team as AgentBase instances."""
 
-        if len(messages) == 1:
+        return [
+            AgentBase(
+                name=TEAM_LEAD_AGENT_NAME,
+                system_message=self._system_message_team_lead_agent,
+                config=config,
+            ),
+            AgentBase(
+                name=TESTER_AGENT_NAME,
+                system_message=self._system_message_tester_agent,
+                config=config,
+                tools=[run_command, read_file, enum_subdirs, enum_files],
+            ),
+            AgentBase(
+                name=ANALYST_AGENT_NAME,
+                system_message=self._system_message_analyst_agent,
+                config=config,
+                tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+            ),
+            AgentBase(
+                name=FIXER_AGENT_NAME,
+                system_message=self._system_message_fixer_agent,
+                config=config,
+                tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
+            ),
+        ]
+
+    def _select_speaker(self, message_count: int, last_message: Message) -> str:
+        """Selects the next speaker based on the last message."""
+
+        if message_count == 1 or last_message is None:
             return self._over_to(TESTER_AGENT_NAME)
-        elif messages[-1].source == TEAM_LEAD_AGENT_NAME:
+        if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(TESTER_AGENT_NAME)
-        elif messages[-1].source == TESTER_AGENT_NAME:
-            if TESTER_AGENT_DONE in messages[-1].content:
+        elif last_message.source == TESTER_AGENT_NAME:
+            if TESTER_AGENT_DONE in last_message.content:
                 return self._over_to(ANALYST_AGENT_NAME)
             else:
                 return self._over_to(TESTER_AGENT_NAME)
-        elif messages[-1].source == ANALYST_AGENT_NAME:
-            if ALL_TESTS_PASSED in messages[-1].content:
+        elif last_message.source == ANALYST_AGENT_NAME:
+            if ALL_TESTS_PASSED in last_message.content:
                 return self._over_to(TEAM_LEAD_AGENT_NAME)
             else:
                 return self._over_to(FIXER_AGENT_NAME)
-        elif messages[-1].source == FIXER_AGENT_NAME:
-            if FIXER_AGENT_DONE in messages[-1].content:
+        elif last_message.source == FIXER_AGENT_NAME:
+            if FIXER_AGENT_DONE in last_message.content:
                 return self._over_to(TEAM_LEAD_AGENT_NAME)
             else:
                 return self._over_to(FIXER_AGENT_NAME)
         else:
             # A jump into this agent from another agent, so let's start testing
             return self._over_to(TESTER_AGENT_NAME)
-
-    def _create_team(
-        self,
-        config: Config,
-        system_message_team_lead_agent: str,
-        system_message_tester_agent: str,
-        system_message_analyst_agent: str,
-        system_message_fixer_agent: str,
-    ) -> SelectorGroupChat:
-        """Creates an inner team."""
-
-        model_client = ChatCompletionClient.load_component(config.model_client)
-        team_lead_agent = AssistantAgent(
-            name=TEAM_LEAD_AGENT_NAME,
-            system_message=system_message_team_lead_agent,
-            model_client=model_client,
-        )
-        tester_agent = AssistantAgent(
-            name=TESTER_AGENT_NAME,
-            system_message=system_message_tester_agent,
-            model_client=model_client,
-            tools=[run_command, read_file, enum_subdirs, enum_files],
-        )
-        analyst_agent = AssistantAgent(
-            name=ANALYST_AGENT_NAME,
-            system_message=system_message_analyst_agent,
-            model_client=model_client,
-            tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
-        )
-        fixer_agent = AssistantAgent(
-            name=FIXER_AGENT_NAME,
-            system_message=system_message_fixer_agent,
-            model_client=model_client,
-            tools=[read_file, save_file, enum_subdirs, enum_files, delete_file, run_command],
-        )
-        termination_condition = self._create_termination_condition(TEST_AGENT_SUCCESSFUL, TEST_AGENT_FAILED)
-        team = SelectorGroupChat(
-            [team_lead_agent, tester_agent, analyst_agent, fixer_agent],
-            model_client=model_client,
-            selector_func=self._select_next_speaker,
-            termination_condition=termination_condition,
-        )
-        return team
