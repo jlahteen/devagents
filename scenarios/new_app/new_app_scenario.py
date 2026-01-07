@@ -1,5 +1,5 @@
-from scenarios.new_app.new_app_orchestrator_agent import NewAppOrchestratorAgent
-from scenarios.orchestrator_agent_base import OrchestratorAgentBase, OrchestratorContext
+from scenarios.new_app.new_app_orchestrator import NewAppOrchestrator
+from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
 from utils.config import Config
 
@@ -7,7 +7,6 @@ from utils.config import Config
 class NewAppScenario(ScenarioBase):
     """A scenario for creating a new application."""
 
-    def create_orchestrator_agent(self, config: Config, context: OrchestratorContext = None) -> OrchestratorAgentBase:
-        # Create an Orchestrator Agent
-        orchestrator_agent = NewAppOrchestratorAgent(config=config, context=context)
-        return orchestrator_agent
+    def create_orchestrator(self, config: Config, context: OrchestratorContext = None) -> OrchestratorBase:
+        orchestrator = NewAppOrchestrator(config=config, context=context)
+        return orchestrator

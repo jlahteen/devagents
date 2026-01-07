@@ -2,7 +2,7 @@ import datetime
 import os
 
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
-from scenarios.orchestrator_agent_base import OrchestratorContext
+from scenarios.orchestrator_base import OrchestratorContext
 from scenarios.scenario_base import ScenarioBase
 from utils.config import Config
 from utils.misc import generate_timestamp, to_os_path
@@ -64,15 +64,15 @@ class ScenarioTask:
         # Create a Tee instance
         tee = Tee(monitor, trace_file)
 
-        # Run the orchestrator agent
+        # Run the orchestrator
         original_dir = os.getcwd()
         try:
-            # Create an orchestrator agent
-            orchestrator_agent = scenario.create_orchestrator_agent(
+            # Create an orchestrator
+            orchestrator = scenario.create_orchestrator(
                 config=Config(), context=OrchestratorContext(monitor=monitor, errors=errors)
             )
             os.chdir(self.workspace)
-            await orchestrator_agent.run_team(self._prompt)
+            await orchestrator.run_team(self._prompt)
         finally:
             os.chdir(original_dir)
             tee.close()

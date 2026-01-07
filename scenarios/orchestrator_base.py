@@ -1,12 +1,6 @@
-import re
 from abc import abstractmethod
 from dataclasses import dataclass
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.conditions import TextMentionTermination
-from autogen_core.models import ChatCompletionClient
-
-from agents.termination_agent import TerminationAgent
 from monitoring.monitor import MonitorBase
 from utils.config import Config
 
@@ -22,25 +16,16 @@ class OrchestratorContext:
     errors: list[Exception]
 
 
-class OrchestratorAgentBase(AssistantAgent):
-    """A base class for orchestrator agents."""
+class OrchestratorBase:
+    """A base class for orchestrators."""
 
     def __init__(
         self,
-        name,
-        system_message,
         config: Config,
         context: OrchestratorContext = None,
     ):
-        super().__init__(
-            name=name,
-            system_message=system_message,
-            model_client=ChatCompletionClient.load_component(config.model_client),
-        )
         self._config: Config = config
         self._context: OrchestratorContext = context
-        self._termination_agent = TerminationAgent(config=config)
-        self._termination_condition = TextMentionTermination("TERMINATE")
 
     @abstractmethod
     async def run_team(self, prompt: str):

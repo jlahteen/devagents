@@ -1,11 +1,11 @@
-from scenarios.code_scenario_orchestrator_agent_base import CodeScenarioOrchestratorAgentBase
-from scenarios.orchestrator_agent_base import OrchestratorContext
+from scenarios.code_scenario_orchestrator_base import CodeScenarioOrchestratorBase
+from scenarios.orchestrator_base import OrchestratorContext
 from utils.config import Config
 from utils.constants import ScenarioType
 
 
-class NewCodeOrchestratorAgent(CodeScenarioOrchestratorAgentBase):
-    """An orchestrator agent to run a NewCode scenario."""
+class NewCodeOrchestratorAgent(CodeScenarioOrchestratorBase):
+    """An orchestrator to run a NewCode scenario."""
 
     def __init__(
         self,
