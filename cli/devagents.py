@@ -5,8 +5,8 @@ import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
-from scenario_engine.scenario_engine import ScenarioEngine
-from scenario_engine.scenario_task import ScenarioTaskResult
+from workflow_engine.scenario_engine import ScenarioEngine
+from workflow_engine.scenario_task import ScenarioTaskResult
 from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
 
 

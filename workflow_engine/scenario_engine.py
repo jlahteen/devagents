@@ -1,6 +1,6 @@
 import datetime
 
-from scenario_engine.scenario_task import ScenarioTask, ScenarioTaskResult
+from workflow_engine.scenario_task import ScenarioTask, ScenarioTaskResult
 
 
 class ScenarioEngine:
