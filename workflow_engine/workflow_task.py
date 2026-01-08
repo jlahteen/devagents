@@ -9,8 +9,8 @@ from utils.misc import generate_timestamp, to_os_path
 from utils.tee import Tee
 
 
-class ScenarioTaskResult:
-    """Defines the result of a scenario task."""
+class WorkflowResult:
+    """Defines the result of a workflow."""
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class ScenarioTaskResult:
         workspace: str = None,
         errors: list[Exception] = None,
     ):
-        """Initializes a new scenario task result."""
+        """Initializes a new workflow result."""
 
         self.scenario_name: str = scenario_name
         self.started_at: datetime.datetime = started_at
@@ -32,11 +32,11 @@ class ScenarioTaskResult:
         self.errors: list[Exception] = errors if errors is not None else []
 
 
-class ScenarioTask:
-    """Defines a scenario task."""
+class WorkflowTask:
+    """Defines a workflow task."""
 
     def __init__(self, scenario_name: str, prompt: str, workspace: str):
-        """Initializes a new scenario task."""
+        """Initializes a new workflow task."""
 
         self.scenario_name: str = scenario_name
         self._prompt: str = prompt
@@ -45,8 +45,8 @@ class ScenarioTask:
         self.started_at: datetime.datetime = None
         self.finished_at: datetime.datetime = None
 
-    async def run(self) -> ScenarioTaskResult:
-        """Runs the scenario task."""
+    async def run(self) -> WorkflowResult:
+        """Runs the workflow task."""
 
         self.started_at = datetime.datetime.now()
 
@@ -78,7 +78,7 @@ class ScenarioTask:
             tee.close()
             self.finished_at = datetime.datetime.now()
 
-        return ScenarioTaskResult(
+        return WorkflowResult(
             scenario_name=self.scenario_name,
             started_at=self.started_at,
             finished_at=self.finished_at,

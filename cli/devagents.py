@@ -5,8 +5,8 @@ import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
-from workflow_engine.scenario_engine import ScenarioEngine
-from workflow_engine.scenario_task import ScenarioTaskResult
+from workflow_engine.workflow_engine import WorkflowEngine
+from workflow_engine.workflow_task import WorkflowResult
 from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
 
 
@@ -24,9 +24,9 @@ async def main():
     workspace = get_workspace(args.workspace)
     # Run the scenario
     print("\nSetting up a team of agents to run your scenario...")
-    scenario_engine = ScenarioEngine()
-    result = await scenario_engine.run_scenario(scenario_name, prompt, workspace)
-    print_scenario_task_result(result)
+    workflow_engine = WorkflowEngine()
+    result = await workflow_engine.run_scenario(scenario_name, prompt, workspace)
+    print_workflow_result(result)
 
 
 def get_prompt(prompt=None):
@@ -88,10 +88,10 @@ def parse_args():
     return parser.parse_args()
 
 
-def print_scenario_task_result(result: ScenarioTaskResult) -> None:
-    """Prints the scenario task result to the console."""
+def print_workflow_result(result: WorkflowResult) -> None:
+    """Prints the workflow result to the console."""
 
-    print_yellow(f"\nScenario Task Result:")
+    print_yellow(f"\nWorkflow Result:")
     print_yellow(f"  Scenario    : {result.scenario_name}")
     print_yellow(f"  Started At  : {result.started_at}")
     print_yellow(f"  Finished At : {result.finished_at}")
@@ -103,7 +103,7 @@ def print_scenario_task_result(result: ScenarioTaskResult) -> None:
         for error in result.errors:
             print_red(f"    - {error}")
     else:
-        print_green("  No errors occurred in the scenario task.")
+        print_green("  No errors occurred in the workflow.")
     print()
 
 
