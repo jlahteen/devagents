@@ -13,11 +13,11 @@ DEL devagents\_format_all.ps1
 REM Copy the necessary subdirectories
 XCOPY ..\utils\* devagents\utils /I /Y /S
 XCOPY ..\tools\* devagents\tools /I /Y /S
-XCOPY ..\scenarios\* devagents\scenarios /I /Y /S
+XCOPY ..\workflows\* devagents\workflows /I /Y /S
 XCOPY ..\agents\* devagents\agents /I /Y /S
 XCOPY ..\agent_platform\* devagents\agent_platform /I /Y /S
 XCOPY ..\monitoring\* devagents\monitoring /I /Y /S
-XCOPY ..\scenario_engine\* devagents\scenario_engine /I /Y /S
+XCOPY ..\workflow_engine\* devagents\workflow_engine /I /Y /S
 XCOPY ..\cli\* devagents\cli /I /Y /S
 
 REM Copy the tests
