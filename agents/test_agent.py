@@ -2,7 +2,7 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
 from agents.inner_team_agent import InnerTeamAgent
-from scenarios.orchestrator_base import OrchestratorContext
+from workflows.orchestrator_base import OrchestratorContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
@@ -69,15 +69,13 @@ class TestAgent(InnerTeamAgent):
         f"""
         ## ROLE
         You are an agent that can run automated tests for several technologies and frameworks.
-        
+
         ## TASK
-        - Your task is to run all the tests implemented for the application in the current workspace.
+        Your task is to run all the tests implemented for the application in the current workspace.
+
+        ## INSTRUCTIONS
         - Always run the tests when your turn comes.
         - The application may consist of multiple components so there might be several test sets to run.
-        - After running all the tests, report the results.
-          - If no tests are found, report also that.
-        
-        ## INSTRUCTIONS
         - When looking for tests, directory names like "test", "tests", "spec", etc. are good indicators of test components.
         - For each found test set, run the tests as follows:
           - Find out the test technology by investigating the file names, types and contents in the test directory.
@@ -85,7 +83,9 @@ class TestAgent(InnerTeamAgent):
           - Ensure that the "run tests" command is suitable for CI/CD (e.g. no user input, no interactive prompts).
             - Especially for npm test use the "-- --ci --watchAll=false" options.
           - Run the tests.
-        - When all tests are run, say '{TESTER_AGENT_DONE}' without any other content.
+        - After running all the tests, report the results.
+          - If no tests are found, report also that.
+        - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' without any other content.
 
         ## CONSTRAINTS
         - Do not analyze or fix the failed tests, neither ask questions about failed tests, it is not your job.
