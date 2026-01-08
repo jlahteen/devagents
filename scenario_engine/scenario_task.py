@@ -2,8 +2,8 @@ import datetime
 import os
 
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
-from scenarios.orchestrator_base import OrchestratorContext
-from scenarios.scenario_base import ScenarioBase
+from workflows.orchestrator_base import OrchestratorContext
+from workflows.scenario_base import ScenarioBase
 from utils.config import Config
 from utils.misc import generate_timestamp, to_os_path
 from utils.tee import Tee

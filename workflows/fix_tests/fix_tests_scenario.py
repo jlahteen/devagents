@@ -1,6 +1,6 @@
-from scenarios.fix_tests.fix_tests_orchestrator import FixTestsOrchestrator
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
-from scenarios.scenario_base import ScenarioBase
+from workflows.fix_tests.fix_tests_orchestrator import FixTestsOrchestrator
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.scenario_base import ScenarioBase
 from utils.config import Config
 
 

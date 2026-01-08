@@ -1,7 +1,7 @@
 from agent_platform.agent_base import AgentBase, SpeakerSelectorFunc
 from agent_platform.inner_team_agent_base import InnerTeamAgentBase
 from agent_platform.termination import SuccessOrFailureTermination
-from scenarios.orchestrator_base import OrchestratorContext
+from workflows.orchestrator_base import OrchestratorContext
 from utils.config import Config
 
 

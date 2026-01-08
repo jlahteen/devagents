@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
 from utils.config import Config
 
 
@@ -24,27 +24,27 @@ class ScenarioBase(ABC):
         scenario = None
         match scenario_name:
             case "NewApp" | "new-app":
-                from scenarios.new_app.new_app_scenario import NewAppScenario
+                from workflows.new_app.new_app_scenario import NewAppScenario
 
                 scenario = NewAppScenario()
             case "ModifyApp" | "modify-app":
-                from scenarios.modify_app.modify_app_scenario import ModifyAppScenario
+                from workflows.modify_app.modify_app_scenario import ModifyAppScenario
 
                 scenario = ModifyAppScenario()
             case "NewCode" | "new-code":
-                from scenarios.new_code.new_code_scenario import NewCodeScenario
+                from workflows.new_code.new_code_scenario import NewCodeScenario
 
                 scenario = NewCodeScenario()
             case "ModifyCode" | "modify-code":
-                from scenarios.modify_code.modify_code_scenario import ModifyCodeScenario
+                from workflows.modify_code.modify_code_scenario import ModifyCodeScenario
 
                 scenario = ModifyCodeScenario()
             case "FixBuild" | "fix-build":
-                from scenarios.fix_build.fix_build_scenario import FixBuildScenario
+                from workflows.fix_build.fix_build_scenario import FixBuildScenario
 
                 scenario = FixBuildScenario()
             case "FixTests" | "fix-tests":
-                from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
+                from workflows.fix_tests.fix_tests_scenario import FixTestsScenario
 
                 scenario = FixTestsScenario()
             case _:

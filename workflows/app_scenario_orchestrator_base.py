@@ -10,7 +10,7 @@ from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from agents.test_agent import TestAgent
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
 from utils.config import Config
 from utils.constants import (
     BUILD_AGENT_SUCCESSFUL,

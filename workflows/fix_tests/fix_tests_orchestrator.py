@@ -1,7 +1,7 @@
 from autogen_agentchat.ui import Console
 
 from agents.test_agent import TestAgent
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
 from utils.config import Config
 
 

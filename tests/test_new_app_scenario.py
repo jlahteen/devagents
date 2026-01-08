@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from scenarios.new_app.new_app_scenario import NewAppScenario
+from workflows.new_app.new_app_scenario import NewAppScenario
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL

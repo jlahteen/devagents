@@ -8,7 +8,7 @@ from autogen_agentchat.ui import Console
 from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
 from utils.config import Config
 from utils.constants import (
     DEVELOPER_AGENT_DONE,

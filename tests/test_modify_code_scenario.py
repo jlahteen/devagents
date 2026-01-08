@@ -3,7 +3,7 @@ import textwrap
 
 import pytest
 
-from scenarios.modify_code.modify_code_scenario import ModifyCodeScenario
+from workflows.modify_code.modify_code_scenario import ModifyCodeScenario
 from tests.test_utils import assert_file_contains, setup_test
 from utils.config import Config
 

@@ -1,5 +1,5 @@
-from scenarios.code_scenario_orchestrator_base import CodeScenarioOrchestratorBase
-from scenarios.orchestrator_base import OrchestratorContext
+from workflows.code_scenario_orchestrator_base import CodeScenarioOrchestratorBase
+from workflows.orchestrator_base import OrchestratorContext
 from utils.config import Config
 from utils.constants import ScenarioType
 

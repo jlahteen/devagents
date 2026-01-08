@@ -1,6 +1,6 @@
-from scenarios.modify_code.modify_code_orchestrator import ModifyCodeOrchestrator
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
-from scenarios.scenario_base import ScenarioBase
+from workflows.modify_code.modify_code_orchestrator import ModifyCodeOrchestrator
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.scenario_base import ScenarioBase
 from utils.config import Config
 
 

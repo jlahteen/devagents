@@ -1,6 +1,6 @@
-from scenarios.fix_build.fix_build_orchestrator import FixBuildOrchestrator
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
-from scenarios.scenario_base import ScenarioBase
+from workflows.fix_build.fix_build_orchestrator import FixBuildOrchestrator
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.scenario_base import ScenarioBase
 from utils.config import Config
 
 

@@ -1,7 +1,7 @@
 from autogen_agentchat.ui import Console
 
 from agents.build_agent import BuildAgent
-from scenarios.orchestrator_base import OrchestratorBase, OrchestratorContext
+from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
 from utils.config import Config
 from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
 

@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from scenarios.fix_build.fix_build_scenario import FixBuildScenario
+from workflows.fix_build.fix_build_scenario import FixBuildScenario
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.misc import to_os_path

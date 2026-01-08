@@ -4,7 +4,7 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from scenarios.fix_tests.fix_tests_scenario import FixTestsScenario
+from workflows.fix_tests.fix_tests_scenario import FixTestsScenario
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import TEST_AGENT_SUCCESSFUL
