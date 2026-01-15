@@ -2,7 +2,7 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
 from agents.inner_team_agent import InnerTeamAgent
-from workflows.orchestrator_base import OrchestratorContext
+from workflows.workflow_base import WorkflowContext
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
@@ -161,7 +161,7 @@ class TestAgent(InnerTeamAgent):
     # This is not a test class even though its name starts with "test".
     __test__ = False
 
-    def __init__(self, config: Config, context: OrchestratorContext = None):
+    def __init__(self, config: Config, context: WorkflowContext = None):
         super().__init__(
             name="test_agent",
             config=config,

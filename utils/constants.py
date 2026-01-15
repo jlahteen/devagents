@@ -13,7 +13,7 @@ REVIEW_RESULT_APPROVED: Final[str] = "REVIEW RESULT: APPROVED"
 REVIEW_RESULT_CHANGES_REQUIRED: Final[str] = "REVIEW RESULT: CHANGES REQUIRED"
 
 
-class ScenarioType(Enum):
+class WorkflowType(Enum):
     NEW_CODE = 200
     MODIFY_CODE = 300
     NEW_APP = 400

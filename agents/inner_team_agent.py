@@ -1,7 +1,7 @@
 from agent_platform.agent_base import AgentBase, SpeakerSelectorFunc
 from agent_platform.inner_team_agent_base import InnerTeamAgentBase
 from agent_platform.termination import SuccessOrFailureTermination
-from workflows.orchestrator_base import OrchestratorContext
+from workflows.workflow_base import WorkflowContext
 from utils.config import Config
 
 
@@ -20,7 +20,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
         response_prompt: str,
         success_phrase: str,
         failure_phrase: str,
-        context: OrchestratorContext = None,
+        context: WorkflowContext = None,
     ):
         """
         Initialize a new InnerTeamAgent instance.
@@ -51,7 +51,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
         return agent_name
 
     def _add_error(self, error: Exception):
-        """Adds an error to the orchestrator context."""
+        """Adds an error to the workflow context."""
 
         if self._context is not None and hasattr(self._context, "errors"):
             self._context.errors.append(error)
