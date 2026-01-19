@@ -2,7 +2,7 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
 from agents.inner_team_agent import InnerTeamAgent
-from workflows.workflow_base import WorkflowContext
+from monitoring.monitor import MonitorBase
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
@@ -161,7 +161,7 @@ class TestAgent(InnerTeamAgent):
     # This is not a test class even though its name starts with "test".
     __test__ = False
 
-    def __init__(self, config: Config, context: WorkflowContext = None):
+    def __init__(self, config: Config, monitor: MonitorBase = None, on_error_callback: callable = None):
         super().__init__(
             name="test_agent",
             config=config,
@@ -171,7 +171,8 @@ class TestAgent(InnerTeamAgent):
             response_prompt=self._response_prompt,
             success_phrase=TEST_AGENT_SUCCESSFUL,
             failure_phrase=TEST_AGENT_FAILED,
-            context=context,
+            monitor=monitor,
+            on_error_callback=on_error_callback,
         )
 
     def _create_team(self, config: Config) -> list[AgentBase]:
