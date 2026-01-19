@@ -1,16 +1,16 @@
 from typing import Sequence
 
 from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import SelectorGroupChat
-from autogen_agentchat.ui import Console
 
+from agent_platform.agent_team import AgentTeam
 from agents.build_agent import BuildAgent
 from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from agents.test_agent import TestAgent
-from workflows.orchestrator_base import OrchestratorBase, OrchestratorContext
+from monitoring.monitor import MonitorBase
+from workflows.workflow_base import WorkflowBase
 from utils.config import Config
 from utils.constants import (
     BUILD_AGENT_SUCCESSFUL,
@@ -19,29 +19,29 @@ from utils.constants import (
     REVIEW_RESULT_APPROVED,
     REVIEW_RESULT_CHANGES_REQUIRED,
     SCAFFOLD_AGENT_DONE,
-    ScenarioType,
+    WorkflowType,
 )
 
 
-class AppScenarioOrchestratorBase(OrchestratorBase):
-    """A base orchestrator to run app level scenarios."""
+class AppWorkflowBase(WorkflowBase):
+    """A base workflow to run app level workflows."""
 
     def __init__(
         self,
         config: Config,
-        scenario_type: ScenarioType,
-        context: OrchestratorContext = None,
+        workflow_type: WorkflowType,
+        monitor: MonitorBase = None,
     ):
         super().__init__(
             config=config,
-            context=context,
+            monitor=monitor,
         )
         self._scaffold_agent = ScaffoldAgent(config=config)
-        self._developer_agent = DeveloperAgent(config=config, scenario_type=scenario_type)
-        self._reviewer_agent = ReviewerAgent(config=config, scenario_type=scenario_type)
+        self._developer_agent = DeveloperAgent(config=config, workflow_type=workflow_type)
+        self._reviewer_agent = ReviewerAgent(config=config, workflow_type=workflow_type)
         self._output_agent = OutputAgent(config=config)
-        self._build_agent = BuildAgent(config=config, context=context)
-        self._test_agent = TestAgent(config=config, context=context)
+        self._build_agent = BuildAgent(config=config, monitor=monitor, on_error_callback=self._add_error)
+        self._test_agent = TestAgent(config=config, monitor=monitor, on_error_callback=self._add_error)
 
     def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
         if len(messages) == 1:
@@ -81,11 +81,11 @@ class AppScenarioOrchestratorBase(OrchestratorBase):
             # Raise an error if the source is not recognized
             raise ValueError(f"Unknown message source: {messages[-1].source}")
 
-    async def run_team(self, prompt: str) -> None:
-        """Runs the team with a given prompt."""
+    async def run(self, prompt: str) -> None:
+        """Runs the workflow with a given prompt."""
 
-        self.groupchat = SelectorGroupChat(
-            [
+        self._agent_team = AgentTeam(
+            agents=[
                 self._scaffold_agent,
                 self._developer_agent,
                 self._reviewer_agent,
@@ -94,9 +94,9 @@ class AppScenarioOrchestratorBase(OrchestratorBase):
                 self._test_agent,
                 self._termination_agent,
             ],
-            model_client=self._model_client,
+            config=self._config,
             selector_func=self._select_next_speaker,
             max_turns=self._config.max_turns,
             termination_condition=self._termination_condition,
         )
-        await Console(self.groupchat.run_stream(task=prompt))
+        await self._agent_team.run(prompt=prompt)
