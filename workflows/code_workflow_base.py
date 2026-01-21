@@ -73,7 +73,6 @@ class CodeWorkflowBase(WorkflowBase):
             ],
             config=self._config,
             selector_func=self._select_next_speaker,
-            max_turns=self._config.max_turns,
             termination_condition=self._termination_condition,
         )
         await self._agent_team.run(prompt=prompt)

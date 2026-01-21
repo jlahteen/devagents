@@ -62,7 +62,6 @@ To run DevAgents, you have to set the following environment variables in a `.env
 | AZURE_ENDPOINT       | Azure OpenAI endpoint to use                                                                    |
 | AZURE_DEPLOYMENT     | Azure OpenAI model deployment name                                                              |
 | AZURE_API_VERSION    | Azure API version to use                                                                        |
-| MAX_TURNS            | Maximum number of turns in conversations                                                        |
 | GOOGLE_API_KEY       | Google API key (optional, if not given, real time google searches are not available for agents) |
 | GOOGLE_CSE_ID        | Google Custom Search Engine ID (optional, see above)                                            |
 
@@ -74,7 +73,6 @@ AZURE_ENDPOINT=https://<your-openai-name>.openai.azure.com/
 AZURE_API_KEY=35RpgJ******************************************************************************
 AZURE_DEPLOYMENT=gpt-41
 AZURE_API_VERSION=2024-12-01-preview
-MAX_TURNS=999
 GOOGLE_API_KEY=AIza***********************************
 GOOGLE_CSE_ID=3fc2************
 ```
