@@ -5,8 +5,7 @@ import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
-from workflow_engine.workflow_engine import WorkflowEngine
-from workflow_engine.workflow_task import WorkflowResult
+from workflow_engine.workflow_engine import WorkflowEngine, WorkflowResult
 from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
 
 
@@ -19,13 +18,13 @@ async def main():
     args = parse_args()
 
     # Get the command line args
-    scenario_name = get_scenario(args.scenario)
+    workflow_name = get_workflow(args.workflow)
     prompt = get_prompt(args.prompt)
     workspace = get_workspace(args.workspace)
-    # Run the scenario
-    print("\nSetting up a team of agents to run your scenario...")
+    # Run the workflow
+    print("\nSetting up a team of agents to run your workflow...")
     workflow_engine = WorkflowEngine()
-    result = await workflow_engine.run_scenario(scenario_name, prompt, workspace)
+    result = await workflow_engine.run_workflow(workflow_name, prompt, workspace)
     print_workflow_result(result)
 
 
@@ -52,12 +51,12 @@ def get_prompt(prompt=None):
     return prompt
 
 
-def get_scenario(scenario=None):
-    """Gets the scenario to run. If not provided, asks the user."""
+def get_workflow(workflow=None):
+    """Gets the workflow to run. If not provided, asks the user."""
 
-    if not scenario:
-        scenario = input("\nEnter the scenario to run:\n> ")
-    return scenario
+    if not workflow:
+        workflow = input("\nEnter the workflow to run:\n> ")
+    return workflow
 
 
 def get_workspace(workspace=None):
@@ -75,7 +74,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="DevAgents")
 
     # Add the arguments
-    parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
+    parser.add_argument("--workflow", type=str, default=None, help="A workflow to run")
     parser.add_argument(
         "--prompt",
         type=str,
@@ -92,11 +91,11 @@ def print_workflow_result(result: WorkflowResult) -> None:
     """Prints the workflow result to the console."""
 
     print_yellow(f"\nWorkflow Result:")
-    print_yellow(f"  Scenario    : {result.scenario_name}")
+    print_yellow(f"  Workflow    : {result.workflow_name}")
     print_yellow(f"  Started At  : {result.started_at}")
     print_yellow(f"  Finished At : {result.finished_at}")
     print_yellow(f"  Elapsed Time: {result.elapsed}")
-    print_yellow(f"  Task ID     : {result.task_id}")
+    print_yellow(f"  Run ID      : {result.run_id}")
     print_yellow(f"  Workspace   : {result.workspace}")
     if result.errors:
         print_red("  Errors:")
