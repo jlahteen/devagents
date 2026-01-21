@@ -78,12 +78,12 @@ RUN echo "source /app/venv/bin/activate" >> ~/.bashrc
 # Define the "devagents" aliases
 RUN echo "alias devagents='python -m cli.devagents'" >> ~/.bashrc && \
     echo "alias run-tests='python -m tests.run_tests'" >> ~/.bashrc && \
-    echo "alias new-code='devagents --scenario NewCode'" >> ~/.bashrc && \
-    echo "alias modify-code='devagents --scenario ModifyCode'" >> ~/.bashrc && \
-    echo "alias new-app='devagents --scenario NewApp'" >> ~/.bashrc && \
-    echo "alias modify-app='devagents --scenario ModifyApp'" >> ~/.bashrc && \
-    echo "alias fix-build='devagents --scenario FixBuild'" >> ~/.bashrc && \
-    echo "alias fix-tests='devagents --scenario FixTests'" >> ~/.bashrc && \
+    echo "alias new-code='devagents --workflow NewCode'" >> ~/.bashrc && \
+    echo "alias modify-code='devagents --workflow ModifyCode'" >> ~/.bashrc && \
+    echo "alias new-app='devagents --workflow NewApp'" >> ~/.bashrc && \
+    echo "alias modify-app='devagents --workflow ModifyApp'" >> ~/.bashrc && \
+    echo "alias fix-build='devagents --workflow FixBuild'" >> ~/.bashrc && \
+    echo "alias fix-tests='devagents --workflow FixTests'" >> ~/.bashrc && \
     echo "alias ver='python -m cli.hello'" >> ~/.bashrc
 
 # Set the shell prompt
