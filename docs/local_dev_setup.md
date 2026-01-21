@@ -48,7 +48,7 @@ Create a `.env` file in the `devagents` directory to setup the configuration as 
 To start DevAgents, use the following command:
 
 ```bash
-python -m cli.devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
+python -m cli.devagents.py [--workflow <workflowName>] [--prompt <prompt>] [--workspace <workspace>]
 ```
 
 ---
