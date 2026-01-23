@@ -1,10 +1,9 @@
 import os
 
 import pytest
-from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.ui import Console
 
 from agents.build_agent import BuildAgent
+from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.misc import to_os_path
@@ -19,21 +18,12 @@ from utils.misc import to_os_path
 async def test_broken_build__should_fix(setup_test):
     # Arrange
     test_run_dir = setup_test
-    build_agent = BuildAgent(config=Config())
+    monitor = ConsoleMonitorAnsi()
+    build_agent = BuildAgent(config=Config(), monitor=monitor, on_error_callback=None)
 
     # Act
-    await Console(
-        build_agent.on_messages_stream(
-            [
-                TextMessage(
-                    content="Fix the build.",
-                    source="user",
-                )
-            ],
-            cancellation_token=None,
-        )
-    )
+    await build_agent.run_inner_team(prompt="Fix the build.")
 
     # Assert
-    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.dll")))
-    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.exe")))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Release\\net8.0\\FinnishSSNValidator.dll")))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Release\\net8.0\\FinnishSSNValidator.exe")))

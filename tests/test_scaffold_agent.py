@@ -2,16 +2,10 @@ import os
 import textwrap
 
 import pytest
-from autogen_agentchat.conditions import TextMentionTermination
-from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_agentchat.ui import Console
-from autogen_core import CancellationToken
 
 from agents.scaffold_agent import ScaffoldAgent
 from tests.test_utils import setup_test
 from utils.config import Config
-from utils.constants import SCAFFOLD_AGENT_DONE
 
 prompt = textwrap.dedent(
     """
@@ -39,11 +33,9 @@ async def test_scaffold_react_app__should_scaffold(setup_test):
     # Arrange
     test_run_dir = setup_test
     scaffold_agent = ScaffoldAgent(config=Config())
-    termination_condition = TextMentionTermination(SCAFFOLD_AGENT_DONE)
-    group_chat = RoundRobinGroupChat([scaffold_agent], termination_condition=termination_condition)
 
     # Act
-    await Console(group_chat.run_stream(task=prompt))
+    await scaffold_agent.run(prompt)
 
     # Assert
     assert os.path.exists(os.path.join(test_run_dir, "my-chatgpt-frontend"))
