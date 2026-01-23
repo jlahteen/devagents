@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import Any, Awaitable, Callable
 
 from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.messages import TextMessage
+from autogen_core import CancellationToken
 from autogen_core.models import ChatCompletionClient
 from autogen_core.tools import FunctionTool
 
@@ -37,6 +39,15 @@ class AgentBase(AssistantAgent):
             model_client=ChatCompletionClient.load_component(config.model_client),
             tools=self._to_autogen_tools(),
         )
+
+    async def run(self, prompt: str) -> str:
+        """Runs the agent with a prompt. Returns the agent's response content."""
+
+        response = await self.on_messages(
+            [TextMessage(content=prompt, source="user")],
+            CancellationToken()
+        )
+        return response.chat_message.content
 
     def _to_autogen_tools(self):
         """Converts platform-agnostic tools to Autogen tools."""
