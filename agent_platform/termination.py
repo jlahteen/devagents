@@ -2,13 +2,20 @@ import asyncio
 from typing import Callable, Optional, Sequence
 
 from autogen_agentchat.base import TerminationCondition
+from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.messages import BaseAgentEvent, BaseChatMessage, StopMessage
+
+
+class MessageTermination(TextMentionTermination):
+    """Defines a platform-agnostic termination condition that stops when specific text is mentioned."""
+
+    pass
 
 
 class SuccessOrFailureTermination(TerminationCondition):
     """
-    Defines a termination condition that terminates a conversation based on a success and failure phrase.
-    The public interface is platform-agnostic.
+    Defines a platform-agnostic termination condition that terminates a conversation based on a success and failure
+    phrase.
     """
 
     def __init__(
