@@ -1,8 +1,7 @@
 import textwrap
 from typing import Sequence
 
-from autogen_agentchat.messages import AgentEvent, ChatMessage
-
+from agent_platform.agent_base import Message
 from agent_platform.agent_team import AgentTeam
 from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
@@ -36,30 +35,30 @@ class CodeWorkflowBase(WorkflowBase):
         self._reviewer_agent = ReviewerAgent(config=config, workflow_type=workflow_type)
         self._output_agent = OutputAgent(config=config)
 
-    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]):
-        if len(messages) == 1:
+    def _select_next_speaker(self, message_count: int, last_message: Message | None):
+        if message_count == 1:
             return self._over_to(self._developer_agent.name)
-        elif messages[-1].source == self._developer_agent.name:
-            if DEVELOPER_AGENT_DONE in messages[-1].content:
+        elif last_message.source == self._developer_agent.name:
+            if DEVELOPER_AGENT_DONE in last_message.content:
                 return self._over_to(self._reviewer_agent.name)
             else:
                 return self._over_to(self._developer_agent.name)
-        elif messages[-1].source is self._reviewer_agent.name:
-            if REVIEW_RESULT_APPROVED in messages[-1].content:
+        elif last_message.source is self._reviewer_agent.name:
+            if REVIEW_RESULT_APPROVED in last_message.content:
                 return self._over_to(self._output_agent.name)
-            elif REVIEW_RESULT_CHANGES_REQUIRED in messages[-1].content:
+            elif REVIEW_RESULT_CHANGES_REQUIRED in last_message.content:
                 return self._over_to(self._developer_agent.name)
             else:
                 return self._over_to(self._reviewer_agent.name)
-        elif messages[-1].source == self._output_agent.name:
-            if OUTPUT_AGENT_DONE in messages[-1].content:
+        elif last_message.source == self._output_agent.name:
+            if OUTPUT_AGENT_DONE in last_message.content:
                 return self._over_to(self._termination_agent.name)
             else:
                 return self._over_to(self._output_agent.name)
-        elif messages[-1].source == self._termination_agent.name:
+        elif last_message.source == self._termination_agent.name:
             return self._over_to(self._termination_agent.name)
         else:
-            raise ValueError(f"Unknown message source: {messages[-1].source}")
+            raise ValueError(f"Unknown message source: {last_message.source}")
 
     async def run(self, prompt: str) -> None:
         """Runs the workflow with a given prompt."""
