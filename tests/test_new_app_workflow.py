@@ -6,12 +6,12 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from workflows.new_app.new_app_workflow import NewAppWorkflow
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
 from utils.misc import to_os_path
 from utils.tee import Tee
+from workflows.new_app.new_app_workflow import NewAppWorkflow
 
 SKIP_TESTS = False
 

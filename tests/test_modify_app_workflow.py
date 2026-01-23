@@ -3,9 +3,9 @@ import textwrap
 
 import pytest
 
-from workflows.modify_app.modify_app_workflow import ModifyAppWorkflow
 from tests.test_utils import assert_file_contains, setup_test
 from utils.config import Config
+from workflows.modify_app.modify_app_workflow import ModifyAppWorkflow
 
 SKIP_TESTS = False
 

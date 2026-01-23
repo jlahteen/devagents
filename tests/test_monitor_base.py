@@ -288,11 +288,7 @@ async def test_agent_stream():
     sys.stdout = Tee(monitor)
     sys.stderr = Tee(monitor)
     config = Config()
-    assistant = AgentBase(
-        name="assistant",
-        system_message="You are a helpful assistant.",
-        config=config
-    )
+    assistant = AgentBase(name="assistant", system_message="You are a helpful assistant.", config=config)
 
     # Act: loop 10 times, sending a different message each time
     for i in range(10):

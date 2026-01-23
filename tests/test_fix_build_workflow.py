@@ -2,10 +2,10 @@ import os
 
 import pytest
 
-from workflows.fix_build.fix_build_workflow import FixBuildWorkflow
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.misc import to_os_path
+from workflows.fix_build.fix_build_workflow import FixBuildWorkflow
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,7 @@
 from agents.build_agent import BuildAgent
-from workflows.workflow_base import WorkflowBase
 from monitoring.monitor import MonitorBase
 from utils.config import Config
+from workflows.workflow_base import WorkflowBase
 
 
 class FixBuildWorkflow(WorkflowBase):

@@ -1,7 +1,7 @@
-from workflows.code_workflow_base import CodeWorkflowBase
 from monitoring.monitor import MonitorBase
 from utils.config import Config
 from utils.constants import WorkflowType
+from workflows.code_workflow_base import CodeWorkflowBase
 
 
 class NewCodeWorkflow(CodeWorkflowBase):

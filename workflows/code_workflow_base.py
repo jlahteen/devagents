@@ -7,7 +7,6 @@ from agents.developer_agent import DeveloperAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from monitoring.monitor import MonitorBase
-from workflows.workflow_base import WorkflowBase
 from utils.config import Config
 from utils.constants import (
     DEVELOPER_AGENT_DONE,
@@ -16,6 +15,7 @@ from utils.constants import (
     REVIEW_RESULT_CHANGES_REQUIRED,
     WorkflowType,
 )
+from workflows.workflow_base import WorkflowBase
 
 
 class CodeWorkflowBase(WorkflowBase):

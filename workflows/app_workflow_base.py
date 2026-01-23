@@ -9,7 +9,6 @@ from agents.reviewer_agent import ReviewerAgent
 from agents.scaffold_agent import ScaffoldAgent
 from agents.test_agent import TestAgent
 from monitoring.monitor import MonitorBase
-from workflows.workflow_base import WorkflowBase
 from utils.config import Config
 from utils.constants import (
     BUILD_AGENT_SUCCESSFUL,
@@ -20,6 +19,7 @@ from utils.constants import (
     SCAFFOLD_AGENT_DONE,
     WorkflowType,
 )
+from workflows.workflow_base import WorkflowBase
 
 
 class AppWorkflowBase(WorkflowBase):

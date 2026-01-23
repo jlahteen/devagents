@@ -2,10 +2,10 @@ import datetime
 import os
 
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
-from workflows.workflow_factory import WorkflowFactory
 from utils.config import Config
 from utils.misc import generate_timestamp, to_os_path
 from utils.tee import Tee
+from workflows.workflow_factory import WorkflowFactory
 
 
 class WorkflowResult:
@@ -57,9 +57,7 @@ class WorkflowEngine:
             try:
                 # Create the workflow
                 workflow = WorkflowFactory.create_workflow(
-                    workflow_name=workflow_name,
-                    config=Config(),
-                    monitor=monitor
+                    workflow_name=workflow_name, config=Config(), monitor=monitor
                 )
                 os.chdir(workspace)
                 await workflow.run(prompt)

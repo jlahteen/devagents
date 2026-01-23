@@ -4,12 +4,12 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from workflows.fix_tests.fix_tests_workflow import FixTestsWorkflow
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import TEST_AGENT_SUCCESSFUL
 from utils.tee import Tee
+from workflows.fix_tests.fix_tests_workflow import FixTestsWorkflow
 
 
 @pytest.mark.parametrize(

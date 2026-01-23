@@ -1,7 +1,7 @@
-from workflows.app_workflow_base import AppWorkflowBase
 from monitoring.monitor import MonitorBase
 from utils.config import Config
 from utils.constants import WorkflowType
+from workflows.app_workflow_base import AppWorkflowBase
 
 
 class ModifyAppWorkflow(AppWorkflowBase):

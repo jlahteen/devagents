@@ -5,8 +5,8 @@ import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
-from workflow_engine.workflow_engine import WorkflowEngine, WorkflowResult
 from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
+from workflow_engine.workflow_engine import WorkflowEngine, WorkflowResult
 
 
 async def main():

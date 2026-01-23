@@ -43,10 +43,7 @@ class AgentBase(AssistantAgent):
     async def run(self, prompt: str) -> str:
         """Runs the agent with a prompt. Returns the agent's response content."""
 
-        response = await self.on_messages(
-            [TextMessage(content=prompt, source="user")],
-            CancellationToken()
-        )
+        response = await self.on_messages([TextMessage(content=prompt, source="user")], CancellationToken())
         return response.chat_message.content
 
     def _to_autogen_tools(self):

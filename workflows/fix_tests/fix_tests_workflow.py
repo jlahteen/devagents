@@ -1,7 +1,7 @@
 from agents.test_agent import TestAgent
-from workflows.workflow_base import WorkflowBase
 from monitoring.monitor import MonitorBase
 from utils.config import Config
+from workflows.workflow_base import WorkflowBase
 
 
 class FixTestsWorkflow(WorkflowBase):
