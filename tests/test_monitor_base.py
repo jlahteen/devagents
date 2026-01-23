@@ -3,11 +3,8 @@ import sys
 import textwrap
 
 import pytest
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.ui import Console
-from autogen_core.models import ChatCompletionClient
 
+from agent_platform.agent_base import AgentBase
 from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from monitoring.console_monitor_curses import ConsoleMonitorCurses
 from monitoring.monitor import MonitorBase
@@ -291,21 +288,16 @@ async def test_agent_stream():
     sys.stdout = Tee(monitor)
     sys.stderr = Tee(monitor)
     config = Config()
-    model_client = ChatCompletionClient.load_component(config.model_client)
-    assistant = AssistantAgent(
+    assistant = AgentBase(
         name="assistant",
         system_message="You are a helpful assistant.",
-        model_client=model_client,
+        config=config
     )
 
     # Act: loop 10 times, sending a different message each time
     for i in range(10):
-        await Console(
-            assistant.on_messages_stream(
-                [TextMessage(content=f"Hello! Tell me a funny 'why' joke. [{i}]", source="user")],
-                cancellation_token=None,
-            )
-        )
+        response = await assistant.run(f"Hello! Tell me a funny 'why' joke. [{i}]")
+        print(response)  # Print to monitor via Tee
         await asyncio.sleep(3)  # Allow time for output to be processed
 
     await asyncio.sleep(3)
