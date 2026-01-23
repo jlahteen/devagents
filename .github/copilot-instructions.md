@@ -148,7 +148,7 @@ Launch configurations available in `.vscode/launch.json`:
 - Tests use `pytest` with async support
 - Fixtures prepare test workspaces with broken code to fix
 - Tests validate agent outputs and file artifacts
-- Example: [test_fix_build_scenario.py](tests/test_fix_build_scenario.py)
+- Example: [test_fix_build_workflow.py](tests/test_fix_build_workflow.py)
 - **All tests use platform-agnostic APIs** - no direct AutoGen imports in test code
 - Simple agents tested with `agent.run(prompt)` method
 - Inner team agents tested with `agent.run_inner_team(prompt)` method
