@@ -21,11 +21,11 @@ if __name__ == "__main__":
     # ScaffoldAgent tests
     # pytest.main(["-s", to_os_path("tests\\test_scaffold_agent.py")])
 
-    # NewAppScenario tests
-    # pytest.main(["-s", to_os_path("tests\\test_new_app_scenario.py")])
+    # NewAppWorkflow tests
+    # pytest.main(["-s", to_os_path("tests\\test_new_app_workflow.py")])
 
-    # FixBuildScenario tests
-    # pytest.main(["-s", to_os_path("tests\\test_fix_build_scenario.py")])
+    # FixBuildWorkflow tests
+    # pytest.main(["-s", to_os_path("tests\\test_fix_build_workflow.py")])
 
     # TestAgent tests
     # pytest.main(["-s", to_os_path("tests\\test_test_agent.py")])
@@ -33,14 +33,14 @@ if __name__ == "__main__":
     # Web tools tests
     # pytest.main(["-s", to_os_path("tests\\test_web_tools.py")])
 
-    # FixTestsScenario tests
-    # pytest.main(["-s", to_os_path("tests\\test_fix_tests_scenario.py")])
+    # FixTestsWorkflow tests
+    # pytest.main(["-s", to_os_path("tests\\test_fix_tests_workflow.py")])
 
     # MonitorBase tests
     # pytest.main(["-s", to_os_path("tests\\test_monitor_base.py")])
 
-    # ModifyCodeScenario tests
-    # pytest.main(["-s", to_os_path("tests\\test_modify_code_scenario.py")])
+    # ModifyCodeWorkflow tests
+    # pytest.main(["-s", to_os_path("tests\\test_modify_code_workflow.py")])
 
-    # ModifyAppScenario tests
-    # pytest.main(["-s", to_os_path("tests\\test_modify_app_scenario.py")])
+    # ModifyAppWorkflow tests
+    # pytest.main(["-s", to_os_path("tests\\test_modify_app_workflow.py")])

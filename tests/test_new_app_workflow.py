@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from workflows.new_app.new_app_scenario import NewAppScenario
+from workflows.new_app.new_app_workflow import NewAppWorkflow
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import BUILD_AGENT_SUCCESSFUL, TEST_AGENT_SUCCESSFUL
@@ -159,11 +159,10 @@ prompt_react_hello_world_app = textwrap.dedent(
 async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = NewAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_cs_two_layer_greeting_app)
+    await workflow.run_team(prompt=prompt_cs_two_layer_greeting_app)
 
     # Assert
     assert os.path.exists(
@@ -184,11 +183,10 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
 async def test_generate_cs_fi_ssn_validator_lib__creates_lib(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = NewAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_cs_fi_ssn_validator_lib)
+    await workflow.run_team(prompt=prompt_cs_fi_ssn_validator_lib)
 
     # Assert
     assert os.path.exists(
@@ -213,12 +211,11 @@ async def test_generate_react_weather_app__creates_app(setup_test):
     test_run_dir = setup_test
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
-    scenario = NewAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = NewAppWorkflow(config=Config())
 
     # Act
     with redirect_stdout(tee):
-        await orchestrator_agent.run_team(prompt=prompt_react_weather_app)
+        await workflow.run_team(prompt=prompt_react_weather_app)
     output = console_output.getvalue()
 
     # Assert
@@ -238,12 +235,11 @@ async def test_generate_react_hello_world_app__creates_app(setup_test):
     test_run_dir = setup_test
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
-    scenario = NewAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = NewAppWorkflow(config=Config())
 
     # Act
     with redirect_stdout(tee):
-        await orchestrator_agent.run_team(prompt=prompt_react_hello_world_app)
+        await workflow.run_team(prompt=prompt_react_hello_world_app)
     output = console_output.getvalue()
 
     # Assert
@@ -261,11 +257,10 @@ async def test_generate_react_hello_world_app__creates_app(setup_test):
 async def test_generate_java_fi_ssn_validator_console_app__creates_app(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = NewAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_java_fi_ssn_validator_console_app)
+    await workflow.run_team(prompt=prompt_java_fi_ssn_validator_console_app)
 
     # Assert
     assert os.path.exists(

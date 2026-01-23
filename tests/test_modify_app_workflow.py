@@ -3,7 +3,7 @@ import textwrap
 
 import pytest
 
-from workflows.modify_app.modify_app_scenario import ModifyAppScenario
+from workflows.modify_app.modify_app_workflow import ModifyAppWorkflow
 from tests.test_utils import assert_file_contains, setup_test
 from utils.config import Config
 
@@ -29,11 +29,10 @@ prompt_modify_hello_world_cs_console_app = textwrap.dedent(
 async def test_modify_hello_world_cs__displays_date_and_time(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = ModifyAppScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = ModifyAppWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_modify_hello_world_cs_console_app)
+    await workflow.run_team(prompt=prompt_modify_hello_world_cs_console_app)
 
     # Assert
     output = os.popen(os.path.join(test_run_dir, "bin", "Debug", "net8.0", "HelloWorld.exe")).read()

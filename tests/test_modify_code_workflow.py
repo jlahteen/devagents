@@ -3,7 +3,7 @@ import textwrap
 
 import pytest
 
-from workflows.modify_code.modify_code_scenario import ModifyCodeScenario
+from workflows.modify_code.modify_code_workflow import ModifyCodeWorkflow
 from tests.test_utils import assert_file_contains, setup_test
 from utils.config import Config
 
@@ -35,11 +35,10 @@ prompt_split_cars_cs_to_separate_cs_files = textwrap.dedent(
 async def test_add_van_to_cars_cs__adds_van_class(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = ModifyCodeScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = ModifyCodeWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_add_van_to_cars_cs)
+    await workflow.run_team(prompt=prompt_add_van_to_cars_cs)
 
     # Assert
     assert not os.path.exists(os.path.join(test_run_dir, "Program.cs"))
@@ -62,11 +61,10 @@ async def test_add_van_to_cars_cs__adds_van_class(setup_test):
 async def test_split_cars_cs_to_separate_cs_files__creates_cs_files(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scenario = ModifyCodeScenario()
-    orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
+    workflow = ModifyCodeWorkflow(config=Config())
 
     # Act
-    await orchestrator_agent.run_team(prompt=prompt_split_cars_cs_to_separate_cs_files)
+    await workflow.run_team(prompt=prompt_split_cars_cs_to_separate_cs_files)
 
     # Assert
     assert os.path.exists(os.path.join(test_run_dir, "Program.cs"))

@@ -4,7 +4,7 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from workflows.fix_tests.fix_tests_scenario import FixTestsScenario
+from workflows.fix_tests.fix_tests_workflow import FixTestsWorkflow
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import TEST_AGENT_SUCCESSFUL
@@ -22,7 +22,7 @@ async def test_failing_tests__should_fix_and_pass(setup_test):
     test_run_dir = setup_test
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
-    scenario = FixTestsScenario()
+    scenario = FixTestsWorkflow()
     orchestrator_agent = scenario.create_orchestrator_agent(config=Config())
 
     # Act
