@@ -4,6 +4,7 @@ from autogen_agentchat.agents import SocietyOfMindAgent
 from autogen_agentchat.base import TerminationCondition
 from autogen_agentchat.messages import AgentEvent, ChatMessage
 from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.ui import Console
 from autogen_core.models import ChatCompletionClient
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
@@ -46,6 +47,11 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
             instruction=self._system_message,
             response_prompt=self._response_prompt,
         )
+
+    async def run_inner_team(self, prompt: str):
+        """Runs the inner team with the given prompt."""
+
+        await Console(self.run_stream(task=prompt))
 
     def _create_platform_team(self, model_client: ChatCompletionClient) -> SelectorGroupChat:
         """Creates the Autogen SelectorGroupChat from the AgentBase instances."""
