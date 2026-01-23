@@ -15,7 +15,7 @@ The workflows that are currently supported are listed in the table below.
 | FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
-DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
+DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft AutoGen](https://github.com/microsoft/autogen), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
 
 ## DevAgents Architecture
