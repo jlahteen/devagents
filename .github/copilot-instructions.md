@@ -1,7 +1,9 @@
 # DevAgents AI Coding Instructions
 
 ## Project Overview
-DevAgents is a multi-agent AI system built on Microsoft AutoGen for autonomous software development tasks. The system uses a workflow-based approach where specialized agents collaborate in teams to generate code, create applications, fix builds, and run tests.
+DevAgents is a multi-agent AI system for autonomous software development tasks. The system uses a workflow-based approach where specialized agents collaborate in teams to generate code, create applications, fix builds, and run tests.
+
+DevAgents uses a **platform-agnostic abstraction layer** (`agent_platform/`) that decouples workflows and agents from the underlying AI framework. The current internal implementation uses Microsoft AutoGen, but the architecture enables swapping to alternative frameworks without rewriting workflows or agents.
 
 ## Architecture
 
@@ -21,20 +23,21 @@ WorkflowEngine → WorkflowFactory → WorkflowBase → AgentTeam → AgentBase
 - `monitoring/` - Console monitoring with ANSI support
 
 ### Framework Abstraction Layer
-The `agent_platform/` provides framework-agnostic interfaces that decouple from AutoGen:
+The `agent_platform/` provides framework-agnostic interfaces that decouple workflows and agents from the underlying AI framework:
 - **AgentBase** - Base class for all agents with tool wrapping, provides `run(prompt)` method for simple agents
 - **InnerTeamAgentBase** - Base for agents managing sub-teams, provides `run_inner_team(prompt)` method
-- **AgentTeam** - Wrapper around SelectorGroupChat with `run(prompt)` interface
+- **AgentTeam** - Team orchestration with `run(prompt)` interface (internally wraps SelectorGroupChat)
 - **MessageTermination** - Wrapper class for keyword-based termination conditions
 - **SuccessOrFailureTermination** - Custom termination based on success/failure phrases with callback support
 
-**Platform-agnostic means:**
-- ✅ Internal implementations can use AutoGen classes
-- ✅ Public methods/properties must not expose AutoGen types in signatures
-- ✅ Use adapters/wrappers to convert between AutoGen types and platform-agnostic types (e.g., `SpeakerSelectorFunc`, `Message`)
-- ❌ Never expose `AgentEvent`, `ChatMessage`, or other AutoGen-specific types in public APIs
+**Platform-agnostic architecture principles:**
+- ✅ Internal implementations in `agent_platform/` can use framework-specific classes (currently AutoGen)
+- ✅ Public methods/properties must not expose framework-specific types in signatures
+- ✅ Use adapters/wrappers to convert between framework types and platform-agnostic types (e.g., `SpeakerSelectorFunc`, `Message`)
+- ❌ Never expose framework-specific types (like `AgentEvent`, `ChatMessage`) in public APIs
+- ❌ Never import framework classes directly in `workflows/`, `agents/`, `tests/`, or `utils/`
 
-Agents and workflows depend only on these interfaces, not AutoGen directly. This enables framework changes without rewriting higher layers.
+Agents and workflows depend only on `agent_platform/` interfaces, not on any AI framework directly. This enables framework changes without rewriting higher layers.
 
 ### Agent Team Pattern
 Agents are organized hierarchically. Complex agents (like `BuildAgent`) use `InnerTeamAgent` to manage sub-teams with specialized roles. Example from [build_agent.py](agents/build_agent.py):
@@ -68,7 +71,7 @@ Agents are organized hierarchically. Complex agents (like `BuildAgent`) use `Inn
 - Max conversation turns (999) is set internally in agent_platform layer
 
 ### Tool Pattern
-Tools in `tools/` must return strings:
+Tools in `tools/` must return strings (required by current framework implementation):
 - Success: `"tool_name OK: description"` + console print
 - Error: `"tool_name ERROR: description"`
 - All file/shell operations use thread locks (`file_lock`) for safety
@@ -129,8 +132,9 @@ Launch configurations available in `.vscode/launch.json`:
 2. Define system message with clear role, task, instructions, constraints sections
 3. Provide tools list in constructor: `super().__init__(name, system_message, config, tools=[func1, func2])`
 4. For inner team agents, accept `monitor` and `on_error_callback` parameters for workflow integration
-5. Tools automatically wrapped by abstraction layer (AutoGen implementation hidden in [agent_base.py](agent_platform/agent_base.py))
-6. **Never import AutoGen directly** - use `agent_platform` interfaces to maintain framework independence
+5. Tools automatically wrapped by abstraction layer (framework implementation hidden in [agent_base.py](agent_platform/agent_base.py))
+6. **Never import framework classes directly** - use only `agent_platform/` interfaces to maintain framework independence
+7. All agent code must work against `agent_platform/` abstractions without knowledge of underlying framework
 
 ### Adding a New Workflow
 1. Create `workflows/<workflow_name>/` directory with single workflow file (no separate orchestrator)
@@ -149,12 +153,13 @@ Launch configurations available in `.vscode/launch.json`:
 - Fixtures prepare test workspaces with broken code to fix
 - Tests validate agent outputs and file artifacts
 - Example: [test_fix_build_workflow.py](tests/test_fix_build_workflow.py)
-- **All tests use platform-agnostic APIs** - no direct AutoGen imports in test code
+- **All tests use platform-agnostic APIs** - zero framework imports in test code
 - Simple agents tested with `agent.run(prompt)` method
 - Inner team agents tested with `agent.run_inner_team(prompt)` method
 - Workflows tested with `workflow.run(prompt)` or via `WorkflowEngine.run_workflow()`
 - Tests directly instantiate workflow classes: `workflow = FixBuildWorkflow(config=Config(), monitor=ConsoleMonitorAnsi())`
 - Test workspaces created in `tests/test_output/` (temporary directories)
+- Tests verify behavior through platform-agnostic interfaces only
 
 ## Monitoring and Debugging
 
@@ -168,8 +173,9 @@ Launch configurations available in `.vscode/launch.json`:
 1. **Forgetting Config and Monitor dependencies** - All workflows need Config and MonitorBase; inner team agents need monitor and on_error_callback
 2. **Missing termination keywords** - Agents won't transition without exact keyword matches from constants.py
 3. **Directory context** - Remember WorkflowEngine changes to workspace; paths are relative to it
-4. **Tool return types** - Tools must return strings (AutoGen requirement for function tools)
+4. **Tool return types** - Tools must return strings (current framework requirement for function tools)
 5. **Thread safety** - Always use `file_lock` in tools for file/directory operations
-6. **Direct AutoGen imports** - Never import AutoGen classes in workflows, agents, or tests; use agent_platform abstractions
+6. **Framework imports** - Never import framework classes (AutoGen, etc.) outside `agent_platform/`; use only platform-agnostic abstractions
 7. **Method naming** - Simple agents use `run(prompt)`, inner team agents use `run_inner_team(prompt)`, workflows use `run(prompt)`, AgentTeam uses `run(prompt)`
-8. **Platform-agnostic types** - Use `SpeakerSelectorFunc`, `Message`, `MessageTermination` instead of AutoGen types in public APIs
+8. **Platform-agnostic types** - Use `SpeakerSelectorFunc`, `Message`, `MessageTermination` instead of framework-specific types in public APIs
+9. **Abstraction boundaries** - Code in `workflows/`, `agents/`, `tests/`, `utils/` must remain framework-agnostic and depend only on `agent_platform/` interfaces
