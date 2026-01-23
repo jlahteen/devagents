@@ -3,7 +3,6 @@ import os
 import pytest
 
 from agents.build_agent import BuildAgent
-from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.misc import to_os_path
@@ -18,8 +17,7 @@ from utils.misc import to_os_path
 async def test_broken_build__should_fix(setup_test):
     # Arrange
     test_run_dir = setup_test
-    monitor = ConsoleMonitorAnsi()
-    build_agent = BuildAgent(config=Config(), monitor=monitor, on_error_callback=None)
+    build_agent = BuildAgent(config=Config(), monitor=None, on_error_callback=None)
 
     # Act
     await build_agent.run_inner_team(prompt="Fix the build.")
