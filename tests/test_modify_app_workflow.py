@@ -22,7 +22,7 @@ prompt_modify_hello_world_cs_console_app = textwrap.dedent(
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("modify_app_scenario", "modify_hello_world_cs", "hello_world_cs_console_app")],
+    [("modify_app_workflow", "modify_hello_world_cs", "hello_world_cs_console_app")],
     indirect=True,
 )
 @pytest.mark.asyncio

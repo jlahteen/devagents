@@ -152,7 +152,7 @@ prompt_react_hello_world_app = textwrap.dedent(
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("new_app_scenario", "test_generate_cs_two_layer_greeting_app", None)],
+    [("new_app_workflow", "test_generate_cs_two_layer_greeting_app", None)],
     indirect=True,
 )
 @pytest.mark.asyncio
@@ -176,7 +176,7 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("new_app_scenario", "test_generate_cs_fi_ssn_validator_lib", None)],
+    [("new_app_workflow", "test_generate_cs_fi_ssn_validator_lib", None)],
     indirect=True,
 )
 @pytest.mark.asyncio
@@ -202,7 +202,7 @@ async def test_generate_cs_fi_ssn_validator_lib__creates_lib(setup_test):
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("new_app_scenario", "test_generate_react_weather_app", None)],
+    [("new_app_workflow", "test_generate_react_weather_app", None)],
     indirect=True,
 )
 @pytest.mark.asyncio
@@ -226,7 +226,7 @@ async def test_generate_react_weather_app__creates_app(setup_test):
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("new_app_scenario", "test_generate_react_hello_world_app", None)],
+    [("new_app_workflow", "test_generate_react_hello_world_app", None)],
     indirect=True,
 )
 @pytest.mark.asyncio
@@ -250,7 +250,7 @@ async def test_generate_react_hello_world_app__creates_app(setup_test):
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("new_app_scenario", "test_generate_java_fi_ssn_validator_console_app", None)],
+    [("new_app_workflow", "test_generate_java_fi_ssn_validator_console_app", None)],
     indirect=True,
 )
 @pytest.mark.asyncio

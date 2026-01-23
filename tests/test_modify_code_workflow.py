@@ -28,7 +28,7 @@ prompt_split_cars_cs_to_separate_cs_files = textwrap.dedent(
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("modify_code_scenario", "add_van_to_cars_cs", "cars_cs_console_app")],
+    [("modify_code_workflow", "add_van_to_cars_cs", "cars_cs_console_app")],
     indirect=True,
 )
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_add_van_to_cars_cs__adds_van_class(setup_test):
 @pytest.mark.skipif(SKIP_TESTS, reason="Skipping test")
 @pytest.mark.parametrize(
     "setup_test",
-    [("modify_code_scenario", "split_cars_cs_to_separate_cs_files", "cars_cs_console_app")],
+    [("modify_code_workflow", "split_cars_cs_to_separate_cs_files", "cars_cs_console_app")],
     indirect=True,
 )
 @pytest.mark.asyncio
