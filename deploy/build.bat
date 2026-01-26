@@ -8,6 +8,7 @@ COPY ..\*.* devagents
 DEL devagents\.env
 DEL devagents\.gitignore
 DEL devagents\_venv.bat
+DEL devagents\_venv.ps1
 DEL devagents\_format_all.ps1
 
 REM Copy the necessary subdirectories
