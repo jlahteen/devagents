@@ -32,7 +32,7 @@ async def test_modify_hello_world_cs__displays_date_and_time(setup_test):
     workflow = ModifyAppWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_modify_hello_world_cs_console_app)
+    await workflow.run(prompt=prompt_modify_hello_world_cs_console_app)
 
     # Assert
     output = os.popen(os.path.join(test_run_dir, "bin", "Debug", "net8.0", "HelloWorld.exe")).read()

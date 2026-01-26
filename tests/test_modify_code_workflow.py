@@ -38,7 +38,7 @@ async def test_add_van_to_cars_cs__adds_van_class(setup_test):
     workflow = ModifyCodeWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_add_van_to_cars_cs)
+    await workflow.run(prompt=prompt_add_van_to_cars_cs)
 
     # Assert
     assert not os.path.exists(os.path.join(test_run_dir, "Program.cs"))
@@ -64,7 +64,7 @@ async def test_split_cars_cs_to_separate_cs_files__creates_cs_files(setup_test):
     workflow = ModifyCodeWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_split_cars_cs_to_separate_cs_files)
+    await workflow.run(prompt=prompt_split_cars_cs_to_separate_cs_files)
 
     # Assert
     assert os.path.exists(os.path.join(test_run_dir, "Program.cs"))

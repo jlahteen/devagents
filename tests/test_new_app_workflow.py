@@ -162,7 +162,7 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
     workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_cs_two_layer_greeting_app)
+    await workflow.run(prompt=prompt_cs_two_layer_greeting_app)
 
     # Assert
     assert os.path.exists(
@@ -186,7 +186,7 @@ async def test_generate_cs_fi_ssn_validator_lib__creates_lib(setup_test):
     workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_cs_fi_ssn_validator_lib)
+    await workflow.run(prompt=prompt_cs_fi_ssn_validator_lib)
 
     # Assert
     assert os.path.exists(
@@ -215,7 +215,7 @@ async def test_generate_react_weather_app__creates_app(setup_test):
 
     # Act
     with redirect_stdout(tee):
-        await workflow.run_team(prompt=prompt_react_weather_app)
+        await workflow.run(prompt=prompt_react_weather_app)
     output = console_output.getvalue()
 
     # Assert
@@ -239,7 +239,7 @@ async def test_generate_react_hello_world_app__creates_app(setup_test):
 
     # Act
     with redirect_stdout(tee):
-        await workflow.run_team(prompt=prompt_react_hello_world_app)
+        await workflow.run(prompt=prompt_react_hello_world_app)
     output = console_output.getvalue()
 
     # Assert
@@ -260,7 +260,7 @@ async def test_generate_java_fi_ssn_validator_console_app__creates_app(setup_tes
     workflow = NewAppWorkflow(config=Config())
 
     # Act
-    await workflow.run_team(prompt=prompt_java_fi_ssn_validator_console_app)
+    await workflow.run(prompt=prompt_java_fi_ssn_validator_console_app)
 
     # Assert
     assert os.path.exists(
