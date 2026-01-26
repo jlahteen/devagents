@@ -4,7 +4,6 @@ from contextlib import redirect_stdout
 
 import pytest
 
-from monitoring.console_monitor_ansi import ConsoleMonitorAnsi
 from tests.test_utils import setup_test
 from utils.config import Config
 from utils.constants import TEST_AGENT_SUCCESSFUL
@@ -23,9 +22,7 @@ async def test_failing_tests__should_fix_and_pass(setup_test):
     test_run_dir = setup_test
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
-    monitor = ConsoleMonitorAnsi()
-    workflow = FixTestsWorkflow(config=Config(), monitor=monitor)
-
+    workflow = FixTestsWorkflow(config=Config(), monitor=None)
     # Act
     with redirect_stdout(tee):
         await workflow.run(prompt="Fix the build errors in the project.")
