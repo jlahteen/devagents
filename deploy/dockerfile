@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 # - Node.js 20.x
 # - Java 17
 # - Build tools
+# - vim editor
 # - Set up locales and terminal
 # All apt-get installs are combined for fewer layers and smaller image size
 # Clean up apt cache in the same layer to avoid leftover files
@@ -23,6 +24,7 @@ RUN apt-get update && \
         ncurses-term \
         libreadline-dev \
         openjdk-17-jdk \
+        vim \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
