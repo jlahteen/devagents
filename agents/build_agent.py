@@ -83,6 +83,7 @@ class BuildAgent(InnerTeamAgent):
           - After detecting the component technology, determine the build command.
             - Pass options to skip tests if the build command also runs them.
             - Use such options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
+            - Use the Release build configuration if applicable.
           - Run the build command.
         - When the build has been run for all components, say '{BUILDER_AGENT_DONE}' without any other content.
 
