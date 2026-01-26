@@ -17,6 +17,8 @@ The workflows that are currently supported are listed in the table below.
 
 DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft AutoGen](https://github.com/microsoft/autogen), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
+> ℹ️ **Information**: The agent platform will be replaced by [Microsoft Agent Framework](https://github.com/microsoft/agent-framework) since AutoGen is no longer actively developed.
+
 
 ## DevAgents Architecture
 
