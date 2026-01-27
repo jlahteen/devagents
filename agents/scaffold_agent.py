@@ -1,7 +1,7 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase
-from tools.file_tools import enum_files, enum_subdirs
+from tools.file_tools import enum_files, enum_subdirs, read_file
 from tools.os_tools import get_os_type
 from tools.shell_tools import run_command
 from utils.config import Config
@@ -20,7 +20,8 @@ class ScaffoldAgent(AgentBase):
         Your task is either:
         - To scaffold a directory structure for a new solution
         - To modify an existing directory structure based on the new requirements. In this case, investigate the
-          existing directory structure and make only the necessary changes.
+          existing directory structure and make only the necessary changes. If there are no subdirectories to
+          investigate, focus on the files in the root directory.
 
         ## INSTRUCTIONS
         - Use the current directory as the solution root, so do not create a new root directory for the solution.
@@ -44,6 +45,7 @@ class ScaffoldAgent(AgentBase):
         - get_os_type tool for detecting the operating system type
         - enum_subdirs tool for listing subdirectories in a given directory
         - enum_files tool for listing files in a given directory
+        - read_file tool for reading a file content
         """
     )
 
@@ -52,5 +54,5 @@ class ScaffoldAgent(AgentBase):
             name="scaffold_agent",
             system_message=self._system_message,
             config=config,
-            tools=[run_command, get_os_type, enum_subdirs, enum_files],
+            tools=[run_command, get_os_type, enum_subdirs, enum_files, read_file],
         )
