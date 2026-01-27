@@ -19,7 +19,11 @@ async def test_dotnet_build__should_build(setup_test):
 
     # Act
     result = run_command("dotnet build")
+    print(result)
 
     # Assert
+    "Build succeeded." in result
+    "0 Warning(s)" in result
+    "0 Error(s)" in result
     assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\HelloWorld.dll")))
     assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\HelloWorld.exe")))

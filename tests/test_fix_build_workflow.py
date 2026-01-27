@@ -23,5 +23,5 @@ async def test_broken_build__should_fix(setup_test):
     await workflow.run(prompt="Fix the build errors in the project.")
 
     # Assert
-    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.dll")))
-    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Debug\\net8.0\\FinnishSSNValidator.exe")))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Release\\net8.0\\FinnishSSNValidator.dll")))
+    assert os.path.exists(os.path.join(test_run_dir, to_os_path("bin\\Release\\net8.0\\FinnishSSNValidator.exe")))
