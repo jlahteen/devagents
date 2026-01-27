@@ -10,7 +10,7 @@ from workflows.fix_build.fix_build_workflow import FixBuildWorkflow
 
 @pytest.mark.parametrize(
     "setup_test",
-    [("fix_build_errors_workflow", "test_broken_build", "simple_cs_console_app_broken")],
+    [("fix_build_workflow", "test_broken_build", "simple_cs_console_app_broken")],
     indirect=True,
 )
 @pytest.mark.asyncio
