@@ -11,7 +11,7 @@
             "module": "cli.devagents",
             "console": "integratedTerminal",
             "args": [
-                "--scenario", "new-code"
+                "--workflow", "new-code"
             ]
         },
         {
@@ -21,7 +21,7 @@
             "module": "cli.devagents",
             "console": "integratedTerminal",
             "args": [
-                "--scenario", "new-app"
+                "--workflow", "new-app"
             ]
         },
         {
@@ -31,7 +31,7 @@
             "module": "cli.devagents",
             "console": "integratedTerminal",
             "args": [
-                "--scenario", "modify-code"
+                "--workflow", "modify-code"
             ]
         },
         {
@@ -41,7 +41,7 @@
             "module": "cli.devagents",
             "console": "integratedTerminal",
             "args": [
-                "--scenario", "fix-build"
+                "--workflow", "fix-build"
             ]
         },
         {
@@ -51,7 +51,7 @@
             "module": "cli.devagents",
             "console": "integratedTerminal",
             "args": [
-                "--scenario", "fix-tests"
+                "--workflow", "fix-tests"
             ]
         },
         {

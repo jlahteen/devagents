@@ -4,8 +4,6 @@ import sys
 from contextlib import redirect_stdout
 
 import pytest
-from autogen_agentchat.messages import TextMessage
-from autogen_agentchat.ui import Console
 
 from agents.test_agent import TestAgent
 from tests.test_utils import setup_test
@@ -26,23 +24,13 @@ SKIP_TESTS = False
 async def test_no_tests__should_pass(setup_test):
     # Arrange
     test_run_dir = setup_test
-    test_agent = TestAgent(config=Config())
+    test_agent = TestAgent(config=Config(), monitor=None, on_error_callback=None)
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
 
     # Act
     with redirect_stdout(tee):
-        await Console(
-            test_agent.on_messages_stream(
-                [
-                    TextMessage(
-                        content="Run and fix the tests.",
-                        source="user",
-                    )
-                ],
-                cancellation_token=None,
-            )
-        )
+        await test_agent.run_inner_team(prompt="Run and fix the tests.")
     output = console_output.getvalue()
 
     # Assert
@@ -59,23 +47,13 @@ async def test_no_tests__should_pass(setup_test):
 async def test_passing_tests__should_pass(setup_test):
     # Arrange
     test_run_dir = setup_test
-    test_agent = TestAgent(config=Config())
+    test_agent = TestAgent(config=Config(), monitor=None, on_error_callback=None)
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
 
     # Act
     with redirect_stdout(tee):
-        await Console(
-            test_agent.on_messages_stream(
-                [
-                    TextMessage(
-                        content="Run and fix the tests.",
-                        source="user",
-                    )
-                ],
-                cancellation_token=None,
-            )
-        )
+        await test_agent.run_inner_team(prompt="Run and fix the tests.")
     output = console_output.getvalue()
 
     # Assert
@@ -98,21 +76,17 @@ async def test_passing_tests__should_pass(setup_test):
 async def test_fi_ssn_validator_lib_broken_tests_with_valid_test_data__should_fix_code_to_pass_tests(setup_test):
     # Arrange
     test_run_dir = setup_test
-    test_agent = TestAgent(config=Config())
+    test_agent = TestAgent(config=Config(), monitor=None, on_error_callback=None)
     console_output = io.StringIO()
     tee = Tee(sys.stdout, console_output)
 
     # Act
     with redirect_stdout(tee):
-        await Console(
-            test_agent.on_messages_stream(
-                [
-                    TextMessage(
-                        content="Fix the SSN Validator code to pass all the tests.",
-                        source="user",
-                    )
-                ],
-                cancellation_token=None,
+        await test_agent.run_inner_team(
+            prompt=(
+                "Fix the SSN Validator code to pass all the tests. "
+                "Not sure about all expected results, fix those if in doubt they are not correct. "
+                "Use Google to verify Finnish SSN validity rules."
             )
         )
     output = console_output.getvalue()

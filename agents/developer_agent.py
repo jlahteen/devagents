@@ -1,15 +1,13 @@
 import textwrap
 
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core.models import ChatCompletionClient
-
-from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file, search_in_files
+from agent_platform.agent_base import AgentBase
+from tools.file_tools import enum_files, enum_subdirs, read_file, save_file, search_in_files
 from tools.web_tools import google_search, load_page
 from utils.config import Config
-from utils.constants import DEVELOPER_AGENT_DONE, ScenarioType
+from utils.constants import DEVELOPER_AGENT_DONE, WorkflowType
 
 
-class DeveloperAgent(AssistantAgent):
+class DeveloperAgent(AgentBase):
     """An agent that acts as a professional developer."""
 
     _system_message_new = textwrap.dedent(
@@ -102,30 +100,30 @@ class DeveloperAgent(AssistantAgent):
         """
     )
 
-    def __init__(self, config: Config, scenario_type: ScenarioType):
+    def __init__(self, config: Config, workflow_type: WorkflowType):
         super().__init__(
             name="developer_agent",
-            model_client=ChatCompletionClient.load_component(config.model_client),
-            system_message=self._get_system_message(scenario_type),
-            tools=self._get_tools(scenario_type),
+            system_message=self._get_system_message(workflow_type),
+            config=config,
+            tools=self._get_tools(workflow_type),
         )
 
-    def _get_system_message(self, scenario_type: ScenarioType) -> str:
-        """Returns the system message for the given scenario type."""
+    def _get_system_message(self, workflow_type: WorkflowType) -> str:
+        """Returns the system message for the given workflow type."""
 
-        if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
+        if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
             return self._system_message_new
-        elif scenario_type == ScenarioType.MODIFY_CODE or scenario_type == ScenarioType.MODIFY_APP:
+        elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
             return self._system_message_modify
         else:
-            raise ValueError(f"System message not defined for the scenario type: {scenario_type}")
+            raise ValueError(f"System message not defined for the workflow type: {workflow_type}")
 
-    def _get_tools(self, scenario_type: ScenarioType):
-        """Returns the list of tools for the given scenario type."""
+    def _get_tools(self, workflow_type: WorkflowType):
+        """Returns the list of tools for the given workflow type."""
 
-        if scenario_type == ScenarioType.NEW_CODE or scenario_type == ScenarioType.NEW_APP:
+        if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
             return [google_search, load_page]
-        elif scenario_type == ScenarioType.MODIFY_CODE or scenario_type == ScenarioType.MODIFY_APP:
+        elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
             return [
                 read_file,
                 enum_files,
@@ -135,4 +133,4 @@ class DeveloperAgent(AssistantAgent):
                 load_page,
             ]
         else:
-            raise ValueError(f"Tools not defined for the scenario type: {scenario_type}")
+            raise ValueError(f"Tools not defined for the workflow type: {workflow_type}")

@@ -5,9 +5,8 @@ import sys
 import traceback
 from asyncio.exceptions import CancelledError
 
-from scenario_engine.scenario_engine import ScenarioEngine
-from scenario_engine.scenario_task import ScenarioTaskResult
 from utils.misc import is_valid_file_path, print_green, print_red, print_yellow
+from workflow_engine.workflow_engine import WorkflowEngine, WorkflowResult
 
 
 async def main():
@@ -19,14 +18,14 @@ async def main():
     args = parse_args()
 
     # Get the command line args
-    scenario_name = get_scenario(args.scenario)
+    workflow_name = get_workflow(args.workflow)
     prompt = get_prompt(args.prompt)
     workspace = get_workspace(args.workspace)
-    # Run the scenario
-    print("\nSetting up a team of agents to run your scenario...")
-    scenario_engine = ScenarioEngine()
-    result = await scenario_engine.run_scenario(scenario_name, prompt, workspace)
-    print_scenario_task_result(result)
+    # Run the workflow
+    print("\nSetting up a team of agents to run your workflow...")
+    workflow_engine = WorkflowEngine()
+    result = await workflow_engine.run_workflow(workflow_name, prompt, workspace)
+    print_workflow_result(result)
 
 
 def get_prompt(prompt=None):
@@ -52,12 +51,12 @@ def get_prompt(prompt=None):
     return prompt
 
 
-def get_scenario(scenario=None):
-    """Gets the scenario to run. If not provided, asks the user."""
+def get_workflow(workflow=None):
+    """Gets the workflow to run. If not provided, asks the user."""
 
-    if not scenario:
-        scenario = input("\nEnter the scenario to run:\n> ")
-    return scenario
+    if not workflow:
+        workflow = input("\nEnter the workflow to run:\n> ")
+    return workflow
 
 
 def get_workspace(workspace=None):
@@ -75,7 +74,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="DevAgents")
 
     # Add the arguments
-    parser.add_argument("--scenario", type=str, default=None, help="A scenario to run")
+    parser.add_argument("--workflow", type=str, default=None, help="A workflow to run")
     parser.add_argument(
         "--prompt",
         type=str,
@@ -88,22 +87,22 @@ def parse_args():
     return parser.parse_args()
 
 
-def print_scenario_task_result(result: ScenarioTaskResult) -> None:
-    """Prints the scenario task result to the console."""
+def print_workflow_result(result: WorkflowResult) -> None:
+    """Prints the workflow result to the console."""
 
-    print_yellow(f"\nScenario Task Result:")
-    print_yellow(f"  Scenario    : {result.scenario_name}")
+    print_yellow(f"\nWorkflow Result:")
+    print_yellow(f"  Workflow    : {result.workflow_name}")
     print_yellow(f"  Started At  : {result.started_at}")
     print_yellow(f"  Finished At : {result.finished_at}")
     print_yellow(f"  Elapsed Time: {result.elapsed}")
-    print_yellow(f"  Task ID     : {result.task_id}")
+    print_yellow(f"  Run ID      : {result.run_id}")
     print_yellow(f"  Workspace   : {result.workspace}")
     if result.errors:
         print_red("  Errors:")
         for error in result.errors:
             print_red(f"    - {error}")
     else:
-        print_green("  No errors occurred in the scenario task.")
+        print_green("  No errors occurred in the workflow.")
     print()
 
 

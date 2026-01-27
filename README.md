@@ -2,20 +2,22 @@
 
 DevAgents is an **experimental** project for using a team of AI agents for generating code or even create complete applications.
 
-DevAgents uses a scenario-based approach. There are scenarios for different development tasks. DevAgents aims to complete all scenarios autonomously.
+DevAgents uses a workflow-based approach. There are workflows for different development tasks. DevAgents aims to complete all workflows autonomously.
 
-The scenarios, that are currently supported, are listed in the table below.
+The workflows that are currently supported are listed in the table below.
 
-| **Scenario**      | **Description**                                                                                     |
+| **Workflow**      | **Description**                                                                                     |
 |-------------------|-----------------------------------------------------------------------------------------------------|
-| NewCode           | A scenario for generating one or more code files, e.g., specific classes, modules, scripts, etc.|
-| ModifyCode        | A scenario for modifying one or more code files, e.g., specific classes, modules, scripts, etc.|
-| NewApp            | A scenario for generating complete applications. In a NewApp scenario, the application will be built and tested by specialized agents. In this scenario, LLM context size is the only limitation for an application to create. |
-| ModifyApp         | A scenario for modifying existing applications. In a ModifyApp scenario, the application will be rebuilt and retested after modifications by specialized agents. |
-| FixBuild          | A scenario to ensure an application builds successfully. Build errors will be fixed if necessary. |
-| FixTests          | A scenario to ensure all tests pass successfully. Tests will be fixed if necessary. |
+| NewCode           | A workflow for generating one or more code files, e.g., specific classes, modules, scripts, etc.|
+| ModifyCode        | A workflow for modifying one or more code files, e.g., specific classes, modules, scripts, etc.|
+| NewApp            | A workflow for generating complete applications. In a NewApp workflow, the application will be built and tested by specialized agents. In this workflow, LLM context size is the only limitation for an application to create. |
+| ModifyApp         | A workflow for modifying existing applications. In a ModifyApp workflow, the application will be rebuilt and retested after modifications by specialized agents. |
+| FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
+| FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
-DevAgents is built on top of [Microsoft AutoGen](https://github.com/microsoft/autogen), a framework for creating AI-driven workflows.
+DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft AutoGen](https://github.com/microsoft/autogen), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
+
+> ℹ️ **Information**: The agent platform will be replaced by [Microsoft Agent Framework](https://github.com/microsoft/agent-framework) since AutoGen is no longer actively developed.
 
 
 ## DevAgents Architecture
@@ -25,29 +27,29 @@ DevAgents architecture is illustrated in the diagram below.
 ![DevAgents Logo](docs/devagents-architecture.png)
 
 
-## How to Run Scenarios with DevAgents
+## How to Run Workflows with DevAgents
 
-To run scenarios with DevAgents, use the following command:
+To run workflows with DevAgents, use the following command:
 
 ```bash
-python -m cli.devagents.py [--scenario <scenarioName>] [--prompt <prompt>] [--workspace <workspace>]
+python -m cli.devagents.py [--workflow <workflowName>] [--prompt <prompt>] [--workspace <workspace>]
 ```
 
 When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
 
 Generated or modified code and other artifacts are saved in the given workspace.
 
-DevAgents is available in a Docker container. The container defines the following aliases for starting scenarios more easily.
+DevAgents is available in a Docker container. The container defines the following aliases for starting workflows more easily.
 
 | **Alias**   | **Definition**                       | **Description**              |
 |-------------|--------------------------------------|------------------------------|
 | devagents   | python -m cli.devagents              | Starts DevAgents             |
-| new-code    | devagents --scenario NewCode         | Starts a NewCode scenario    |
-| modify-code | devagents --scenario ModifyCode      | Starts a ModifyCode scenario |
-| new-app     | devagents --scenario NewApp          | Starts a NewApp scenario     |
-| modify-app  | devagents --scenario ModifyApp       | Starts a ModifyApp scenario  |
-| fix-build   | devagents --scenario FixBuild        | Starts a FixBuild scenario   |
-| fix-tests   | devagents --scenario FixTests        | Starts a FixTests scenario   |
+| new-code    | devagents --workflow NewCode         | Starts a NewCode workflow    |
+| modify-code | devagents --workflow ModifyCode      | Starts a ModifyCode workflow |
+| new-app     | devagents --workflow NewApp          | Starts a NewApp workflow     |
+| modify-app  | devagents --workflow ModifyApp       | Starts a ModifyApp workflow  |
+| fix-build   | devagents --workflow FixBuild        | Starts a FixBuild workflow   |
+| fix-tests   | devagents --workflow FixTests        | Starts a FixTests workflow   |
 | ver         | python -m cli.hello                  | Prints the DevAgents version |
 
 
@@ -62,7 +64,6 @@ To run DevAgents, you have to set the following environment variables in a `.env
 | AZURE_ENDPOINT       | Azure OpenAI endpoint to use                                                                    |
 | AZURE_DEPLOYMENT     | Azure OpenAI model deployment name                                                              |
 | AZURE_API_VERSION    | Azure API version to use                                                                        |
-| MAX_TURNS            | Maximum number of turns in conversations                                                        |
 | GOOGLE_API_KEY       | Google API key (optional, if not given, real time google searches are not available for agents) |
 | GOOGLE_CSE_ID        | Google Custom Search Engine ID (optional, see above)                                            |
 
@@ -74,7 +75,6 @@ AZURE_ENDPOINT=https://<your-openai-name>.openai.azure.com/
 AZURE_API_KEY=35RpgJ******************************************************************************
 AZURE_DEPLOYMENT=gpt-41
 AZURE_API_VERSION=2024-12-01-preview
-MAX_TURNS=999
 GOOGLE_API_KEY=AIza***********************************
 GOOGLE_CSE_ID=3fc2************
 ```
