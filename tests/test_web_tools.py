@@ -21,7 +21,9 @@ async def test_google_search__should_return_results(setup_test):
     results = google_search("juha lähteenmäki linkedIn tieto")
 
     # Assert
-    assert results[0]["link"] == "https://fi.linkedin.com/in/juhalahteenmaki", "Expected link not found in search results."
+    assert (
+        results[0]["link"] == "https://fi.linkedin.com/in/juhalahteenmaki"
+    ), "Expected link not found in search results."
 
 
 @pytest.mark.skipif(condition=SKIP_TESTS, reason="Skipping test")
