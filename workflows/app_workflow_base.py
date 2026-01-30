@@ -55,7 +55,7 @@ class AppWorkflowBase(WorkflowBase):
                 return self._over_to(self._reviewer_agent.name)
             else:
                 return self._over_to(self._developer_agent.name)
-        elif last_message.source is self._reviewer_agent.name:
+        elif last_message.source == self._reviewer_agent.name:
             if REVIEW_RESULT_APPROVED in last_message.content:
                 return self._over_to(self._output_agent.name)
             elif REVIEW_RESULT_CHANGES_REQUIRED in last_message.content:
