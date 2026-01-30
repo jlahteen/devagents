@@ -207,7 +207,7 @@ class TestAgent(InnerTeamAgent):
     def _select_speaker(self, message_count: int, last_message: Message) -> str:
         """Selects the next speaker based on the last message."""
 
-        if message_count == 1 or last_message is None:
+        if message_count == 1:
             return self._over_to(TESTER_AGENT_NAME)
         if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(TESTER_AGENT_NAME)
