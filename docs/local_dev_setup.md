@@ -1,55 +1,68 @@
 # Local Development Setup
 
-Follow the steps below to setup DevAgents locally:
+Follow the steps below to set up DevAgents locally:
 
-## Install Python
+## 1. Install Python
 
-[Install Python](https://www.python.org/downloads/) 3.11 or later.
+- [Install Python](https://www.python.org/downloads/) 3.11 or later.
 
-## Clone the DevAgents repository
+## 2. Clone the DevAgents Repository
 
-Create a local development directory and clone the DevAgents repository.
+Create a local development directory and clone the DevAgents repository:
 
-```bash
+```powershell
 # Create a local dev directory
 mkdir <your-dev-directory>
-
-# Move to the directory
 cd <your-dev-directory>
 
 # Clone the repository
 git clone https://github.com/jlahteen/devagents
+cd devagents
 ```
 
-## Create a Virtual Environment
+## 3. Create and Activate a Virtual Environment
 
-Create a virtual environment in the `devgents` directory:
+Create a virtual environment:
 
-```bash
-# Move to devagents
-cd devagents
-
+```powershell
 # Create a virtual environment
 python -m venv ./venv
 
 # Activate the virtual environment
-venv\Scripts\activate
+.\venv\Scripts\Activate.ps1
+```
 
-# Install the requirements
+## 4. Install Requirements
+
+Install dependencies from the provided requirements.txt:
+
+```powershell
 pip install -r requirements.txt
 ```
 
-## Configure Environment Variables
+## 5. Configure Environment Variables
 
-Create a `.env` file in the `devagents` directory to setup the configuration as instructed in the `README` file.
+Create a `.env` file in the `devagents` directory to set up configuration as instructed in the `README` file.
 
-## Run DevAgents
+## 6. Run DevAgents
 
-To start DevAgents, use the following command:
+Activate your virtual environment if not already active, then run:
 
-```bash
-python -m cli.devagents.py [--workflow <workflowName>] [--prompt <prompt>] [--workspace <workspace>]
+```powershell
+python -m cli.devagents --workflow <workflowName> --prompt "<prompt>" --workspace <workspace>
 ```
+
+## 7. Troubleshooting
+
+- If you encounter dependency issues, run:
+  ```powershell
+  pip check
+  ```
+- If you accidentally overwrite requirements.txt, restore it from version control and reinstall:
+  ```powershell
+  git checkout requirements.txt
+  pip install -r requirements.txt
+  ```
 
 ---
 Happy prompting with DevAgents! 🚀

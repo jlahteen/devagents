@@ -5,25 +5,62 @@ Below you'll find helpful tips and commands for maintaining and updating your de
 
 ---
 
-## 🚀 AutoGen Package Management
+## 🚀 Microsoft Agent Framework (MAF) Package Management
 
-Keep the AutoGen packages up to date with these commands:
+### Updating MAF
 
-```bash
-pip install --upgrade autogen-core
-pip install --upgrade autogen-agentchat
-pip install --upgrade autogen-ext
+To update the Microsoft Agent Framework to the latest version:
+
+```powershell
+pip install --upgrade agent-framework[azure]
+```
+
+### Checking Current Version
+
+To see which version of MAF is installed:
+
+```powershell
+pip show agent-framework
+```
+
+### Verifying Package Compatibility
+
+After updating MAF or any other package, always check for dependency conflicts:
+
+```powershell
+pip check
+```
+
+If conflicts are reported, resolve them by:
+1. Reinstalling the conflicting package to match requirements.txt:
+   ```powershell
+   pip install --force-reinstall <package>==<version>
+   ```
+2. Or updating requirements.txt with compatible versions
+
+### Updating requirements.txt
+
+After updating packages, you can regenerate requirements.txt:
+
+```powershell
+pip freeze > requirements.txt
+```
+
+**Important:** `pip freeze` will expand `agent-framework[azure]` into multiple individual packages. For maintainability, consider keeping only the main package in requirements.txt:
+```
+agent-framework[azure]==1.0.0b260127
 ```
 
 ---
 
-## 📦 Updating `requirements.txt`
+## 📦 Best Practices
 
-To refresh `requirements.txt` with the latest installed packages, run:
-
-```bash
-pip freeze > requirements.txt
-```
+- **Pin versions:** Always specify exact versions in requirements.txt for reproducibility
+- **Check compatibility:** Run `pip check` after any package update
+- **Test after updates:** Run the test suite to ensure nothing broke:
+  ```powershell
+  python tests/run_tests.py
+  ```
 
 ---
 
