@@ -1,21 +1,25 @@
-from typing import Sequence
-
-from autogen_agentchat.agents import SocietyOfMindAgent
-from autogen_agentchat.base import TerminationCondition
-from autogen_agentchat.messages import AgentEvent, ChatMessage
-from autogen_agentchat.teams import SelectorGroupChat
-from autogen_agentchat.ui import Console
-from autogen_core.models import ChatCompletionClient
+from agent_framework import ChatAgent, GroupChatBuilder, GroupChatState
+from agent_framework._types import ChatMessage
+from agent_framework.azure import AzureOpenAIChatClient
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
+from agent_platform.console_printer import ConsolePrinter
+from agent_platform.termination import SuccessOrFailureTermination
 from utils.config import Config
 
+# Define a constant for the maximum conversation rounds
+_MAX_CONVERSATION_ROUNDS = 999
 
-class InnerTeamAgentBase(SocietyOfMindAgent):
+# Define the default team lead agent name
+_DEFAULT_TEAM_LEAD_AGENT = "team_lead_agent"
+
+
+class InnerTeamAgentBase(ChatAgent):
     """
-    Defines a base class for agents with an inner team with a platform-agnostic interface.
+    Defines a platform-agnostic base class for agents with an inner team.
 
-    Internal implementation uses Autogen's SocietyOfMindAgent and SelectorGroupChat.
+    Internal implementation inherits from ChatAgent and overrides run_stream() to execute the inner workflow. Returns
+    a response based on a specified response prompt.
     """
 
     def __init__(
@@ -24,11 +28,28 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
         config: Config,
         agents: list[AgentBase],
         speaker_selector: SpeakerSelectorFunc,
-        termination_condition: TerminationCondition,
+        termination_condition: SuccessOrFailureTermination,
         system_message: str,
         response_prompt: str,
+        team_lead_agent_name: str = _DEFAULT_TEAM_LEAD_AGENT,
     ):
-        """Initializes the inner team agent."""
+        """Initializes a new inner team agent."""
+
+        # Create a chat client using the config values
+        model_config = config.model_client["config"]
+        chat_client = AzureOpenAIChatClient(
+            api_key=model_config.get("api_key"),
+            endpoint=model_config.get("azure_endpoint"),
+            deployment_name=model_config.get("azure_deployment"),
+            api_version=model_config.get("api_version"),
+        )
+
+        # Initialize the base class
+        super().__init__(
+            chat_client=chat_client,
+            instructions=system_message,
+            name=name,
+        )
 
         self._config = config
         self._agents = agents
@@ -36,39 +57,88 @@ class InnerTeamAgentBase(SocietyOfMindAgent):
         self._termination_condition = termination_condition
         self._system_message = system_message
         self._response_prompt = response_prompt
+        self._console_printer = ConsolePrinter()
+        self._team_lead_agent_name = team_lead_agent_name
 
-        model_client = ChatCompletionClient.load_component(config.model_client)
-        team = self._create_platform_team(model_client)
-
-        super().__init__(
-            name=name,
-            team=team,
-            model_client=model_client,
-            instruction=self._system_message,
-            response_prompt=self._response_prompt,
+        # Build the inner team workflow
+        self._inner_workflow = (
+            GroupChatBuilder()
+                .participants(agents)
+                .with_select_speaker_func(self._select_next_speaker)
+                .with_termination_condition(self._termination_condition_wrapper)
+                .with_max_rounds(_MAX_CONVERSATION_ROUNDS)
+                .build()
         )
+
+    async def run_stream(self, messages=None, *, thread=None, **kwargs):
+        """
+        Overrides run_stream() to execute an inner workflow and return its response to the outer GroupChat.
+
+        In the end, we must call super().run_stream() to maintain conversation threading in the outer GroupChat. We
+        also build a response prompt that instructs the LLM how to respond to the outer chat. The outer chat is not
+        interested in the inner team's conversation history, just in the final result.
+        """
+
+        # Run the inner workflow with the system message (contains instructions for the inner team)
+        events = []
+        async for event in self._inner_workflow.run_stream(self._system_message, include_status_events=True):
+            self._console_printer.print_event(event)
+            events.append(event)
+
+        # Extract the final message from WorkflowOutputEvents
+        final_message = ""
+        for event in reversed(events):
+            if event.__class__.__name__ == "WorkflowOutputEvent":
+                if hasattr(event, "data") and event.data:
+                    # Search backwards for the team_lead_agent message
+                    for msg in reversed(event.data):
+                        if (
+                            hasattr(msg, "author_name")
+                            and msg.author_name == self._team_lead_agent_name
+                            and hasattr(msg, "text")
+                            and msg.text
+                            and msg.text.strip()
+                        ):
+                            final_message = msg.text
+                            break
+                    if final_message:
+                        break
+
+        if not final_message:
+            final_message = "Inner team error: No result from the inner team"
+
+        # Use the response prompt to relay the inner team's result to the outer chat
+        response_prompt = f"{self._response_prompt}\n\n{final_message}"
+
+        # Call the parent ChatAgent.run_stream() with the response prompt
+        async for update in super().run_stream(
+            messages=[ChatMessage(role="user", text=response_prompt)], thread=thread, **kwargs
+        ):
+            yield update
 
     async def run_inner_team(self, prompt: str):
-        """Runs the inner team with the given prompt."""
+        """Runs the inner team with a given prompt."""
 
-        await Console(self.run_stream(task=prompt))
+        self._console_printer.print_user_prompt(prompt)
+        async for event in self._inner_workflow.run_stream(prompt, include_status_events=True):
+            self._console_printer.print_event(event)
+        self._console_printer.print_separator()
 
-    def _create_platform_team(self, model_client: ChatCompletionClient) -> SelectorGroupChat:
-        """Creates the Autogen SelectorGroupChat from the AgentBase instances."""
+    def _select_next_speaker(self, state: GroupChatState) -> str:
+        """Selects the next speaker in the inner team workflow."""
 
-        return SelectorGroupChat(
-            self._agents,
-            model_client=model_client,
-            selector_func=self._select_next_speaker,
-            termination_condition=self._termination_condition,
-        )
-
-    def _select_next_speaker(self, messages: Sequence[AgentEvent | ChatMessage]) -> str:
-        """Selects the next speaker. Passes the last message to speaker_selector."""
-
-        message_count = len(messages)
+        message_count = len(state.conversation)
         last_message = None
-        if message_count > 0:
-            msg = messages[-1]
-            last_message = Message(source=msg.source, content=getattr(msg, "content", ""))
+
+        if len(state.conversation) > 0:
+            msg = state.conversation[-1]
+            # Use the author_name if available, otherwise an empty string
+            author = msg.author_name if hasattr(msg, "author_name") and msg.author_name else ""
+            last_message = Message(source=author, content=msg.text)
+
         return self._speaker_selector(message_count, last_message)
+
+    async def _termination_condition_wrapper(self, messages) -> bool:
+        """Checks the termination condition."""
+
+        return await self._termination_condition.check(messages)
