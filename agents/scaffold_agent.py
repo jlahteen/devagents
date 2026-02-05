@@ -37,7 +37,7 @@ class ScaffoldAgent(AgentBase):
         - When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
 
         ## CONSTRAINTS
-        - Do not write any code for the requested solution excluding necessary placeholder files.
+        - Do not write any code for the requested solution, just scaffold the directory structure.
 
         ## TOOLS
         You have the following tools:
