@@ -63,11 +63,11 @@ class InnerTeamAgentBase(ChatAgent):
         # Build the inner team workflow
         self._inner_workflow = (
             GroupChatBuilder()
-                .participants(agents)
-                .with_select_speaker_func(self._select_next_speaker)
-                .with_termination_condition(self._termination_condition_wrapper)
-                .with_max_rounds(_MAX_CONVERSATION_ROUNDS)
-                .build()
+            .participants(agents)
+            .with_select_speaker_func(self._select_next_speaker)
+            .with_termination_condition(self._termination_condition_wrapper)
+            .with_max_rounds(_MAX_CONVERSATION_ROUNDS)
+            .build()
         )
 
     async def run_stream(self, messages=None, *, thread=None, **kwargs):
@@ -107,6 +107,9 @@ class InnerTeamAgentBase(ChatAgent):
         if not final_message:
             final_message = "Inner team error: No result from the inner team"
 
+        # Show that this agent is now working to return the response to the outer chat
+        self._console_printer.print_working_agent(self.name)
+
         # Use the response prompt to relay the inner team's result to the outer chat
         response_prompt = f"{self._response_prompt}\n\n{final_message}"
 
@@ -136,7 +139,9 @@ class InnerTeamAgentBase(ChatAgent):
             author = msg.author_name if hasattr(msg, "author_name") and msg.author_name else ""
             last_message = Message(source=author, content=msg.text)
 
-        return self._speaker_selector(message_count, last_message)
+        next_speaker = self._speaker_selector(message_count, last_message)
+        self._console_printer.print_working_agent(self.name, next_speaker)
+        return next_speaker
 
     async def _termination_condition_wrapper(self, messages) -> bool:
         """Checks the termination condition."""

@@ -70,7 +70,9 @@ class AgentTeam:
                     last_message = Message(source=author, content=msg.text)
                     break
 
-        return self._selector_func(message_count, last_message)
+        next_speaker = self._selector_func(message_count, last_message)
+        self._console_printer.print_working_agent(next_speaker)
+        return next_speaker
 
     async def _termination_condition_wrapper(self, messages) -> bool:
         """Checks the termination condition."""
