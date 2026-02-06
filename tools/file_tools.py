@@ -2,6 +2,8 @@ import fnmatch
 import os
 import threading
 
+from utils.misc import print_tool_error, print_tool_use
+
 file_lock = threading.Lock()
 
 
@@ -22,10 +24,12 @@ def save_file(file_path: str, file_content: str) -> str:
                 file.write(file_content)
                 file.flush()
                 os.fsync(file.fileno())
-        print(f"save_file OK: Content was saved to the file '{file_path}'")
+        print_tool_use(f"save_file: '{file_path}'")
         return file_path
     except Exception as e:
-        return f"save_file ERROR: Failed to save the content to the file '{file_path}': {e}"
+        error_msg = f"save_file ERROR: Failed to save the content to the file '{file_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def read_file(file_path: str) -> str:
@@ -41,10 +45,12 @@ def read_file(file_path: str) -> str:
                 return f"read_file ERROR: The file '{file_path}' does not exist"
             with open(file_path, "r", encoding="utf-8") as file:
                 file_content = file.read()
-        print(f"read_file OK: Content of the file '{file_path}' was read")
+        print_tool_use(f"read_file: '{file_path}'")
         return file_content
     except Exception as e:
-        return f"read_file ERROR: Failed to read the file '{file_path}': {e}"
+        error_msg = f"read_file ERROR: Failed to read the file '{file_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def enum_subdirs(dir_path: str) -> list:
@@ -61,10 +67,12 @@ def enum_subdirs(dir_path: str) -> list:
             subdirs = [
                 d for d in os.listdir(dir_path) if os.path.isdir(os.path.join(dir_path, d)) and d != ".devagents"
             ]
-        print(f"enum_subdirs OK: Subdirectories of the directory '{dir_path}' were enumerated")
+        print_tool_use(f"enum_subdirs: '{dir_path}'")
         return subdirs
     except Exception as e:
-        return f"enum_subdirs ERROR: Failed to enumerate the subdirectories of '{dir_path}': {e}"
+        error_msg = f"enum_subdirs ERROR: Failed to enumerate the subdirectories of '{dir_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def enum_files(dir_path: str) -> list:
@@ -79,10 +87,12 @@ def enum_files(dir_path: str) -> list:
             if not os.path.exists(dir_path):
                 return f"enum_files ERROR: The directory '{dir_path}' does not exist"
             files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
-        print(f"enum_files OK: Files of the directory '{dir_path}' were enumerated")
+        print_tool_use(f"enum_files: '{dir_path}'")
         return files
     except Exception as e:
-        return f"enum_files ERROR: Failed to enumerate the files of '{dir_path}': {e}"
+        error_msg = f"enum_files ERROR: Failed to enumerate the files of '{dir_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def delete_file(file_path: str) -> str:
@@ -97,10 +107,12 @@ def delete_file(file_path: str) -> str:
             if not os.path.exists(file_path):
                 return f"delete_file ERROR: The file '{file_path}' does not exist"
             os.remove(file_path)
-        print(f"delete_file OK: The file '{file_path}' was deleted")
+        print_tool_use(f"delete_file: '{file_path}'")
         return f"delete_file OK: The file '{file_path}' was deleted"
     except Exception as e:
-        return f"delete_file ERROR: Failed to delete the file '{file_path}': {e}"
+        error_msg = f"delete_file ERROR: Failed to delete the file '{file_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def search_in_files(dir_path: str, search_term: str, file_name_mask: str) -> list:
@@ -130,11 +142,13 @@ def search_in_files(dir_path: str, search_term: str, file_name_mask: str) -> lis
                                 matching_files.append(file_path)
                     except Exception:
                         pass
-        result_text = f"search_in_files OK: Term '{search_term}' searched in files '{dir_path}/**/{file_name_mask}'"
-        print(result_text)
+        result_text = f"search_in_files: Term '{search_term}' searched in files '{dir_path}/**/{file_name_mask}'"
+        print_tool_use(result_text)
         return {"message": result_text, "result": matching_files}
     except Exception as e:
-        return f"search_in_files ERROR: Failed to search for term '{search_term}' in files '{dir_path}/**/{file_name_mask}': {e}"
+        error_msg = f"search_in_files ERROR: Failed to search for term '{search_term}' in files '{dir_path}/**/{file_name_mask}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
 
 
 def file_exists(file_path: str) -> str:
@@ -146,9 +160,9 @@ def file_exists(file_path: str) -> str:
             result = f"File '{file_path}' does exist"
         else:
             result = f"File '{file_path}' does not exist"
-        print(f"file_exists OK: {result}")
+        print_tool_use(f"file_exists: '{file_path}'")
         return result
     except Exception as e:
         result = f"Failed to check the existence of the file '{file_path}': {e}"
-        print("file_exists ERROR: {result}")
+        print_tool_error(f"file_exists ERROR: {result}")
         return result
