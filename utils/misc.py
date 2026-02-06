@@ -22,7 +22,7 @@ def print_green(text: str) -> None:
 
 
 def print_tool_error(message: str) -> None:
-    """Prints a tool error message with icon in light yellow color."""
+    """Prints a tool error message in light yellow color."""
 
     try:
         print(f"\033[93m🔧 {message}\033[0m")
