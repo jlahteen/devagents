@@ -166,10 +166,14 @@ async def test_generate_cs_two_layer_greeting_app__creates_app(setup_test):
 
     # Assert
     assert os.path.exists(
-        os.path.join(test_run_dir, to_os_path("MyGreetingApp.UI\\bin\\Debug\\net8.0\\MyGreetingApp.UI.exe"))
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.UI\\bin\\Release\\net8.0\\MyGreetingApp.UI.exe"))
+    ) or os.path.exists(
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.UI\\bin\\Release\\net9.0\\MyGreetingApp.UI.exe"))
     )
     assert os.path.exists(
-        os.path.join(test_run_dir, to_os_path("MyGreetingApp.Backend\\bin\\Debug\\net8.0\\MyGreetingApp.Backend.dll"))
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.Backend\\bin\\Release\\net8.0\\MyGreetingApp.Backend.dll"))
+    ) or os.path.exists(
+        os.path.join(test_run_dir, to_os_path("MyGreetingApp.Backend\\bin\\Release\\net9.0\\MyGreetingApp.Backend.dll"))
     )
 
 
