@@ -25,7 +25,7 @@ async def test_failing_tests__should_fix_and_pass(setup_test):
     workflow = FixTestsWorkflow(config=Config(), monitor=None)
     # Act
     with redirect_stdout(tee):
-        await workflow.run(prompt="Fix the build errors in the project.")
+        await workflow.run(prompt="Fix the tests in the project.")
     output = console_output.getvalue()
 
     # Assert
