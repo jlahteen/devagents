@@ -10,16 +10,16 @@ from utils.tee import Tee
 
 file_lock = threading.Lock()
 
-DEFAULT_TERMINAL_WIDTH = 120
-DEFAULT_TERMINAL_HEIGHT = 24
-MIN_CONTENT_WIDTH = 20
-DEFAULT_OUTPUT_INDENT = 5
-DEFAULT_INACTIVITY_TIMEOUT = 150
+_DEFAULT_TERMINAL_WIDTH = 120
+_DEFAULT_TERMINAL_HEIGHT = 24
+_MIN_CONTENT_WIDTH = 20
+_DEFAULT_OUTPUT_INDENT = 5
+_DEFAULT_INACTIVITY_TIMEOUT = 150
 
 
-def detect_terminal_width(default=DEFAULT_TERMINAL_WIDTH):
+def detect_terminal_width(default=_DEFAULT_TERMINAL_WIDTH):
     try:
-        return shutil.get_terminal_size(fallback=(default, DEFAULT_TERMINAL_HEIGHT)).columns
+        return shutil.get_terminal_size(fallback=(default, _DEFAULT_TERMINAL_HEIGHT)).columns
     except Exception:
         return default
 
@@ -30,7 +30,7 @@ class StreamingFormatter:
         self._indent = " " * indent
         term_width = max_width or detect_terminal_width()
         # Reserve one char to prevent automatic terminal line wraps with the maximum terminal width
-        self._max_width = max(term_width - 1, indent + MIN_CONTENT_WIDTH)
+        self._max_width = max(term_width - 1, indent + _MIN_CONTENT_WIDTH)
         self._content_width = self._max_width - indent
         self._buffer = ""
 
@@ -76,7 +76,7 @@ def run_command(command: str) -> str:
 
         formatter = StreamingFormatter(
             writer=tee,
-            indent=DEFAULT_OUTPUT_INDENT,
+            indent=_DEFAULT_OUTPUT_INDENT,
         )
 
         try:
@@ -101,7 +101,7 @@ def run_command(command: str) -> str:
                 nonlocal timed_out
                 while process.poll() is None:
                     time.sleep(1)
-                    if time.time() - last_activity > DEFAULT_INACTIVITY_TIMEOUT:
+                    if time.time() - last_activity > _DEFAULT_INACTIVITY_TIMEOUT:
                         timed_out = True
                         process.kill()
                         break
@@ -125,7 +125,7 @@ def run_command(command: str) -> str:
             output_text = output.getvalue()
 
             if timed_out:
-                error_msg = f"run_command ERROR: Command '{command}' had no output for {DEFAULT_INACTIVITY_TIMEOUT} seconds (likely waiting for user input)"
+                error_msg = f"run_command ERROR: Command '{command}' had no output for {_DEFAULT_INACTIVITY_TIMEOUT} seconds (likely waiting for user input)"
                 print_tool_error(error_msg)
                 return error_msg + "\n" + output_text
             elif return_code == 0:
