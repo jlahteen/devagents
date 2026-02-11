@@ -84,6 +84,8 @@ class BuildAgent(InnerTeamAgent):
             - Pass options to skip tests if the build command also runs them.
             - Use such options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
             - Use the Release build configuration if applicable.
+            - For the verbosity level of the build commands, use options that suppress INFO level output if available.
+              - Especially for maven use --no-transfer-progress.
           - Run the build command.
         - When the build has been run for all components, say '{BUILDER_AGENT_DONE}' without any other content.
 

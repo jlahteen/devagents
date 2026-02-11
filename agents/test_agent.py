@@ -76,13 +76,16 @@ class TestAgent(InnerTeamAgent):
         ## INSTRUCTIONS
         - Always run the tests when your turn comes.
         - The application may consist of multiple components so there might be several test sets to run.
-        - When looking for tests, directory names like "test", "tests", "spec", etc. are good indicators of test components.
+        - When looking for tests, directory names containing terms like "test", "tests", "spec", etc. are good
+          indicators of test components. Investigate files in such directories whether they contain tests.
         - For each found test set, run the tests as follows:
           - Find out the test technology by investigating the file names, types and contents in the test directory.
-          - After detecting the test technology, determine the "run tests" command.
-          - Ensure that the "run tests" command is suitable for CI/CD (e.g. no user input, no interactive prompts).
+          - After detecting the test technology, determine the test command.
+          - Ensure that the test command is suitable for CI/CD (e.g. no user input, no interactive prompts).
             - Especially for npm test use the "-- --ci --watchAll=false" options.
-          - Run the tests.
+          - For the verbosity level of the test commands, use options that suppress INFO level output if available.
+            - Especially for maven use --no-transfer-progress
+          - Run the tests with the determined test commands and options.
         - After running all the tests, report the results.
           - If no tests are found, report also that.
         - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' without any other content.
