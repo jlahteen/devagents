@@ -211,7 +211,7 @@ class TestAgent(InnerTeamAgent):
         """Selects the next speaker based on the last message."""
 
         if message_count == 1:
-            return self._over_to(TESTER_AGENT_NAME)
+            return self._over_to(TEAM_LEAD_AGENT_NAME)
         if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(TESTER_AGENT_NAME)
         elif last_message.source == TESTER_AGENT_NAME:
