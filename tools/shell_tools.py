@@ -2,6 +2,7 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 from io import StringIO
 
 from utils.misc import print_tool_error, print_tool_use
@@ -13,6 +14,7 @@ DEFAULT_TERMINAL_WIDTH = 120
 DEFAULT_TERMINAL_HEIGHT = 24
 MIN_CONTENT_WIDTH = 20
 DEFAULT_OUTPUT_INDENT = 5
+DEFAULT_INACTIVITY_TIMEOUT = 150
 
 
 def detect_terminal_width(default=DEFAULT_TERMINAL_WIDTH):
@@ -81,6 +83,7 @@ def run_command(command: str) -> str:
             process = subprocess.Popen(
                 command,
                 shell=True,
+                stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -89,10 +92,28 @@ def run_command(command: str) -> str:
                 errors="replace",
             )
 
+            last_activity = time.time()
+            timed_out = False
+
+            def watchdog():
+                """Monitors for inactivity and kills the process if it is stuck."""
+
+                nonlocal timed_out
+                while process.poll() is None:
+                    time.sleep(1)
+                    if time.time() - last_activity > DEFAULT_INACTIVITY_TIMEOUT:
+                        timed_out = True
+                        process.kill()
+                        break
+
+            watchdog_thread = threading.Thread(target=watchdog, daemon=True)
+            watchdog_thread.start()
+
             while True:
                 char = process.stdout.read(1)
                 if not char:
                     break
+                last_activity = time.time()
                 formatter.write_char(char)
                 tee.flush()
 
@@ -103,11 +124,15 @@ def run_command(command: str) -> str:
 
             output_text = output.getvalue()
 
-            if return_code == 0:
+            if timed_out:
+                error_msg = f"run_command ERROR: Command '{command}' had no output for {DEFAULT_INACTIVITY_TIMEOUT} seconds (likely waiting for user input)"
+                print_tool_error(error_msg)
+                return error_msg + "\n" + output_text
+            elif return_code == 0:
                 print()
                 return output_text
             else:
-                error_msg = f"run_command ERROR: Command '{command}' reported an error " f"(code {return_code})"
+                error_msg = f"run_command ERROR: Command '{command}' reported an error (code {return_code})"
                 print_tool_error(error_msg)
                 return error_msg + "\n" + output_text
 
