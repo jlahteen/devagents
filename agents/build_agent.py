@@ -87,13 +87,12 @@ class BuildAgent(InnerTeamAgent):
             - For the verbosity level of the build commands, use options that suppress INFO level output if available.
               - Especially for maven use --no-transfer-progress.
           - Run the build command.
-        - When the build has been run for all components, say '{BUILDER_AGENT_DONE}' without any other content.
+        - After running all builds, say '{BUILDER_AGENT_DONE}' without any other content.
 
         ## CONSTRAINTS
-        - Do not run tests, just build the application.
+        - Your ONLY job is to run build commands and say '{BUILDER_AGENT_DONE}' when finished.
+        - The analyst agent will analyze errors, the fixer agent will fix them.
         - The application should already exist, so do not create any new files or directories.
-        - Do not analyze or fix the build errors, neither ask questions, it is not your job.
-        - Just build the application and report the results.
 
         ## TOOLS
         You have the following tools:
@@ -209,7 +208,7 @@ class BuildAgent(InnerTeamAgent):
         """Selects the next speaker based on the last message."""
 
         if message_count == 1:
-            return self._over_to(BUILDER_AGENT_NAME)
+            return self._over_to(TEAM_LEAD_AGENT_NAME)
         if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(BUILDER_AGENT_NAME)
         elif last_message.source == BUILDER_AGENT_NAME:
