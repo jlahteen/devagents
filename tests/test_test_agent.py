@@ -82,13 +82,7 @@ async def test_fi_ssn_validator_lib_broken_tests_with_valid_test_data__should_fi
 
     # Act
     with redirect_stdout(tee):
-        await test_agent.run_inner_team(
-            prompt=(
-                "Fix the SSN Validator code to pass all the tests. "
-                "Not sure about all expected results, fix those if in doubt they are not correct. "
-                "Use Google to verify Finnish SSN validity rules."
-            )
-        )
+        await test_agent.run_inner_team(prompt="Fix the SSN Validator code to pass all the tests.")
     output = console_output.getvalue()
 
     # Assert
