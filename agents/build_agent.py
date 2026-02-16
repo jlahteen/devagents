@@ -53,8 +53,8 @@ class BuildAgent(InnerTeamAgent):
           - The fixer agent implements the suggested fixes.
         - When the iteration is done, check the build results and decide whether to continue or not.
           If you decide to take a new iteration, end your response with 'Please rebuild the application.'
-          You should give up only in very rare circumstances where the fixes don't seem to resolve build errors after
-          several iterations.
+          Important: You should give up only in very rare circumstances where the fixes don't seem to resolve build
+          errors after several iterations. Continue if there is still some progress, even if the progress is very slow.
         - You should end the conversation in the following cases:
           - If there is no application to build, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
           - If the build was successful, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
@@ -85,7 +85,7 @@ class BuildAgent(InnerTeamAgent):
             - Use such options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
             - Use the Release build configuration if applicable.
             - For the verbosity level of the build commands, use options that suppress INFO level output if available.
-              - Especially for maven use --no-transfer-progress.
+              - For "maven": use the "--no-transfer-progress" option.
           - Run the build command.
         - After running all builds, say '{BUILDER_AGENT_DONE}' without any other content.
 

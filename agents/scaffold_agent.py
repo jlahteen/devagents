@@ -29,10 +29,10 @@ class ScaffoldAgent(AgentBase):
         - Scaffold the directory structure by using appropriate CLI commands.
         - Scaffold Java projects using maven.
         - Pass such options to commands that require no user input and are designed for the CI/CD mode.
-          - Especially for npm and npx use the --yes option.
-          - Especially for maven use the --batch-mode option.
+          - For "npm" and "npx": use the "--yes" option.
+          - For "maven": use the "--batch-mode" option.
         - For the verbosity level of the scaffold commands, use options that suppress INFO level output if available.
-          - Especially for maven use --no-transfer-progress.
+          - For "maven": use the "--no-transfer-progress" option.
         - Run all necessary install commands when scaffolding the solution.
         - If some scaffold command fails, analyze the error and fix it.
         - Document the directory structure after scaffolding the solution. Do not list the files in the directories.

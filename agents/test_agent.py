@@ -51,12 +51,12 @@ class TestAgent(InnerTeamAgent):
           - The fixer agent implements the suggested fixes.
         - When the iteration is done, check the test results and decide whether to continue or not.
           If you decide to take a new iteration, end your response with 'Please rerun the tests.'
-          You should give up only in very rare circumstances where the fixes don't seem to work after several
-          iterations.
+          Important: You should give up only in very rare circumstances where the fixes don't seem to resolve test
+          errors after several iterations. Continue if there is still some progress, even if the progress is very slow.
         - You should end the conversation in the following cases:
           - If there are no tests in the application, say '{TEST_AGENT_SUCCESSFUL}' without any other content.
           - If all tests passed, say '{TEST_AGENT_SUCCESSFUL}' without any other content.
-          - If you feel the team is facing overwhelming obstacles fixing the tests, response with a short explanation
+          - If you feel the team is facing overwhelming obstacles fixing the tests, respond with a short explanation
             why you decided to end the testing process. End your response with '{TEST_AGENT_FAILED}' in a separate
             line.
 
@@ -82,9 +82,10 @@ class TestAgent(InnerTeamAgent):
           - Find out the test technology by investigating the file names, types and contents in the test directory.
           - After detecting the test technology, determine the test command.
           - Ensure that the test command is suitable for CI/CD (e.g. no user input, no interactive prompts).
-            - Especially for npm test use the "-- --ci --watchAll=false" options.
-          - For the verbosity level of the test commands, use options that suppress INFO level output if available.
-            - Especially for maven use --no-transfer-progress
+            - For "npm test": use the "-- --ci --watchAll=false" options.
+          - For the verbosity level of the test commands, use minimal or normal verbosity to reduce output.
+            - For "dotnet test": do not use the "--no-build" option - always build before running the tests.
+            - For "maven": use the "--no-transfer-progress" option.
           - Run the tests with the determined test commands and options.
         - After running all the tests, report the results.
           - If no tests are found, report also that.
@@ -114,6 +115,7 @@ class TestAgent(InnerTeamAgent):
         ## INSTRUCTIONS
         - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
           the latest information about the errors.
+        - Investigate the code files related to the failed tests to understand better the context of the errors.
         - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
 
         ## CONSTRAINTS
