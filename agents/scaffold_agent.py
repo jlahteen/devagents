@@ -22,6 +22,8 @@ class ScaffoldAgent(AgentBase):
         - To modify an existing directory structure based on the new requirements. In this case, investigate the
           existing directory structure and make only the necessary changes. If there are no subdirectories to
           investigate, focus on the files in the root directory.
+        - IMPORTANT: Scaffolding means creating directory structure and placeholder/template files ONLY. Do NOT write
+          any implementation code.
 
         ## INSTRUCTIONS
         - Use the current directory as the solution root, so do not create a new root directory for the solution.
@@ -33,13 +35,15 @@ class ScaffoldAgent(AgentBase):
           - For "maven": use the "--batch-mode" option.
         - For the verbosity level of the scaffold commands, use options that suppress INFO level output if available.
           - For "maven": use the "--no-transfer-progress" option.
+          - For "npm install": use the "--quiet" option.
         - Run all necessary install commands when scaffolding the solution.
         - If some scaffold command fails, analyze the error and fix it.
         - Document the directory structure after scaffolding the solution. Do not list the files in the directories.
         - When you are done, say '{SCAFFOLD_AGENT_DONE}' without any other content.
 
         ## CONSTRAINTS
-        - Do not write any code for the requested solution, just scaffold the directory structure.
+        - Do NOT write any implementation code. Only create directory structure and use scaffolding tools (like "dotnet
+          new", "npm create", "maven archetype").
 
         ## TOOLS
         You have the following tools:
