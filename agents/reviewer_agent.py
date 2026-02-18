@@ -42,7 +42,7 @@ class ReviewerAgent(AgentBase):
         React, Python, Java etc. You set the standards for the high quality code.
 
         ## TASK
-        Your task is to review the proposed code changes in the conversation.
+        Your task is to review the proposed code changes in the conversation against the existing code files.
 
         ## INSTRUCTIONS
         - CRITICAL: The proposed code changes are present ONLY in the conversation. They are NOT yet saved to actual
@@ -62,7 +62,7 @@ class ReviewerAgent(AgentBase):
         - In the review, verify that:
           - The proposed changes implement the requested modifications correctly
           - The proposed changes follow good design principles and coding standards
-          - The proposed changes are in the scope of what was requested
+          - The proposed changes are in the scope of what was requested compared to the existing code files
           - The architecture is solid and follows good design principles
           - The code follows good software design principles and patterns, such as SOLID, DRY, KISS, and YAGNI
           - The code is production ready (exception handling and logging in place etc.)
@@ -73,6 +73,10 @@ class ReviewerAgent(AgentBase):
         - If you do not approve, give constructive feedback on the proposed changes, and end your response with
           '{REVIEW_RESULT_CHANGES_REQUIRED}'.
         - You can insist multiple review rounds if you find issues. Do not compromise on the code quality.
+
+        ## CONSTRAINTS
+        - DO NOT comment that the proposed changes are not saved in the actual code files. This is the way the workflow
+          is designed to work. Nor let this affect your review result.
 
         ## TOOLS
         - file_exists tool for checking file existence
