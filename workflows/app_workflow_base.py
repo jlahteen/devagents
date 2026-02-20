@@ -35,7 +35,7 @@ class AppWorkflowBase(WorkflowBase):
             config=config,
             monitor=monitor,
         )
-        self._scaffold_agent = ScaffoldAgent(config=config)
+        self._scaffold_agent = ScaffoldAgent(config=config, workflow_type=workflow_type)
         self._developer_agent = DeveloperAgent(config=config, workflow_type=workflow_type)
         self._reviewer_agent = ReviewerAgent(config=config, workflow_type=workflow_type)
         self._output_agent = OutputAgent(config=config)
