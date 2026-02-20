@@ -7,7 +7,7 @@ from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, s
 from tools.shell_tools import run_command
 from tools.web_tools import google_search, load_page
 from utils.config import Config
-from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
+from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL, DEFAULT_MAX_HISTORY_ITERATIONS
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 BUILDER_AGENT_NAME = "builder_agent"
@@ -173,6 +173,7 @@ class BuildAgent(InnerTeamAgent):
             failure_phrase=BUILD_AGENT_FAILED,
             monitor=monitor,
             on_error_callback=on_error_callback,
+            max_history_iterations=DEFAULT_MAX_HISTORY_ITERATIONS,
         )
 
     def _create_team(self, config: Config) -> list[AgentBase]:

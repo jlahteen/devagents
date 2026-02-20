@@ -22,6 +22,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
         failure_phrase: str,
         monitor: MonitorBase = None,
         on_error_callback: callable = None,
+        max_history_iterations: int | None = None,
     ):
         """
         Initialize a new InnerTeamAgent instance.
@@ -43,6 +44,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
             termination_condition=termination_condition,
             system_message=system_message,
             response_prompt=response_prompt,
+            max_history_iterations=max_history_iterations,
         )
 
     def _over_to(self, agent_name: str) -> str:

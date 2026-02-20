@@ -12,6 +12,9 @@ OUTPUT_AGENT_DONE: Final[str] = "OUTPUT_AGENT DONE"
 REVIEW_RESULT_APPROVED: Final[str] = "REVIEW RESULT: APPROVED"
 REVIEW_RESULT_CHANGES_REQUIRED: Final[str] = "REVIEW RESULT: CHANGES REQUIRED"
 
+# Default number of iterations to keep conversation history in inner teams
+DEFAULT_MAX_HISTORY_ITERATIONS: Final[int] = 2
+
 
 class WorkflowType(Enum):
     NEW_CODE = 200
