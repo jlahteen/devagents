@@ -36,6 +36,7 @@ class ReviewerAgent(AgentBase):
           - The code is production ready (exception handling and logging in place etc.)
           - The code is well documented and has also inline comments in complex methods
           - The code follows security best practices
+        - If the developer asks questions about your feedback, answer them to clarify your feedback.
         - If you approve the code in the conversation, respond with '{REVIEW_RESULT_APPROVED}'.
         - If you do not approve, give constructive feedback on the code, and end your response with
           '{REVIEW_RESULT_CHANGES_REQUIRED}'.
@@ -85,6 +86,7 @@ class ReviewerAgent(AgentBase):
           - The code is well documented and has also inline comments in complex methods
           - The code follows security best practices
         - Use file_exists and read_file tools to check existing files and compare with proposed changes.
+        - If the developer asks questions about your feedback, answer them to clarify your feedback.
         - If you approve the proposed changes in the conversation, respond with '{REVIEW_RESULT_APPROVED}'.
         - If you do not approve, give constructive feedback on the proposed changes, and end your response with
           '{REVIEW_RESULT_CHANGES_REQUIRED}'.
