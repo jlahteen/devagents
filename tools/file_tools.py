@@ -53,6 +53,29 @@ def read_file(file_path: str) -> str:
         return error_msg
 
 
+def read_previous_version(file_path: str) -> str:
+    """
+    Reads the previous (i.e. current) version of a file.
+
+    If the file does not exist, returns a message indicating it's a new file with no previous version.
+    """
+
+    try:
+        with file_lock:
+            if not os.path.exists(file_path):
+                return f"File '{file_path}' is new, no previous version exists."
+            else:
+                with open(file_path, "r", encoding="utf-8") as file:
+                    result = file.read()
+
+        print_tool_use(f"read_previous_version: '{file_path}'")
+        return result
+    except Exception as e:
+        error_msg = f"read_previous_version ERROR: Failed to read the file '{file_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
+
+
 def enum_subdirs(dir_path: str) -> list:
     """
     Enumerates all subdirectories of a given directory.
