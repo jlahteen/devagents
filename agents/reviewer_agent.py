@@ -1,7 +1,7 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase
-from tools.file_tools import file_exists, read_file
+from tools.file_tools import read_previous_version
 from utils.config import Config
 from utils.constants import REVIEW_RESULT_APPROVED, REVIEW_RESULT_CHANGES_REQUIRED, WorkflowType
 
@@ -18,13 +18,12 @@ class ReviewerAgent(AgentBase):
         ## TASK
         Your ONLY task is to review the code present in the conversation.
 
-        ## CONSTRAINTS (NEVER DO)
+        ## CONSTRAINTS
         - NEVER write, modify, build, or test code.
         - NEVER review scaffolding-phase output like package.json, CI configs, build tools, lockfiles, or any scaffold-
           generated files.
         - NEVER review or comment on npm audit, npm ci, dependency vulnerabilities, peer dependencies, package versions,
           security vulnerabilities in dependencies, or any build/deployment configurations.
-        - NEVER provide complete code solutions. Give specific feedback on what needs to be changed.
 
         ## INSTRUCTIONS
         - In the review, verify that:
@@ -51,17 +50,14 @@ class ReviewerAgent(AgentBase):
         React, Python, Java etc. You set the standards for the high quality code.
 
         ## TASK
-        Your ONLY task is to review the proposed code changes in the conversation against the existing code files.
-        
-        ## CONSTRAINTS (NEVER DO)
+        Your ONLY task is to review the proposed code changes in the conversation.
+
+        ## CONSTRAINTS
         - NEVER write, modify, build, or test code.
         - NEVER review scaffolding-phase output like package.json, CI configs, build tools, lockfiles, or any scaffold-
           generated files.
         - NEVER review or comment on npm audit, npm ci, dependency vulnerabilities, peer dependencies, package versions,
           security vulnerabilities in dependencies, or any build/deployment configurations.
-        - NEVER provide complete code solutions. Give specific feedback on what needs to be changed.
-        - NEVER expect or require that the proposed changes are already present in the actual files. They are present
-          in the conversation for the review purposes, and this is the way the workflow is designed to work.
 
         ## INSTRUCTIONS
         - Modified code files are marked with @save_file followed by the file path and the proposed new content. For
@@ -85,7 +81,8 @@ class ReviewerAgent(AgentBase):
           - The code is production ready (exception handling and logging in place etc.)
           - The code is well documented and has also inline comments in complex methods
           - The code follows security best practices
-        - Use file_exists and read_file tools to check existing files and compare with proposed changes.
+        - Use the read_previous_version tool to compare the proposed changes against the earlier versions of existing
+          files.
         - If the developer asks questions about your feedback, answer them to clarify your feedback.
         - If you approve the proposed changes in the conversation, respond with '{REVIEW_RESULT_APPROVED}'.
         - If you do not approve, give constructive feedback on the proposed changes, and end your response with
@@ -93,8 +90,7 @@ class ReviewerAgent(AgentBase):
         - You can insist multiple review rounds if you find issues. Do not compromise on the code quality.
 
         ## TOOLS
-        - file_exists tool for checking file existence
-        - read_file tool for reading existing files to compare with proposed changes
+        - read_previous_version tool for comparing the proposed changes against the previous versions of existing files
         """
     )
 
@@ -122,6 +118,6 @@ class ReviewerAgent(AgentBase):
         if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
             return []
         elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
-            return [file_exists, read_file]
+            return [read_previous_version]
         else:
             raise ValueError(f"Tools not defined for the workflow type: {workflow_type}")

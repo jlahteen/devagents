@@ -19,7 +19,7 @@ class ScaffoldAgent(AgentBase):
         ## TASK
         Your ONLY task is to scaffold a directory structure for a new solution using scaffold commands.
 
-        ## CONSTRAINTS (NEVER DO)
+        ## CONSTRAINTS
         - NEVER write any implementation code. There is another agent for that job.
         - NEVER modify existing code files. There is another agent for that job.
         - NEVER build the projects. There is another agent for that job.
@@ -59,7 +59,7 @@ class ScaffoldAgent(AgentBase):
         Your ONLY task is to modify an existing directory structure based on the new requirements using scaffold
         commands.
 
-        ## CONSTRAINTS (NEVER DO)
+        ## CONSTRAINTS
         - NEVER write any implementation code. There is another agent for that job.
         - NEVER modify existing code files. There is another agent for that job.
         - NEVER build the projects. There is another agent for that job.

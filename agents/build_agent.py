@@ -46,6 +46,9 @@ class BuildAgent(InnerTeamAgent):
         ## TASK
         Your task is to control how long the build process will continue.
 
+        ## CONSTRAINTS
+        - NEVER comment the build process or the build results.
+
         ## INSTRUCTIONS
         - The team runs on iterations. Each iteration goes as follows:
           - The builder agent builds the application and reports the results.
@@ -61,9 +64,6 @@ class BuildAgent(InnerTeamAgent):
           - If you feel the team is facing overwhelming obstacles fixing the build errors, response with a short
             explanation why you decided to end the build process. End your response with '{BUILD_AGENT_FAILED}' in a
             separate line.
-
-        ## CONSTRAINTS
-        Do not comment the build process or the build results. There are other agents for that.
         """
     )
 
@@ -74,6 +74,11 @@ class BuildAgent(InnerTeamAgent):
 
         ## TASK
         Your task is to build the application in the current directory.
+
+        ## CONSTRAINTS
+        - NEVER analyze the build results.
+        - NEVER suggest or implement fixes for build errors.
+        - NEVER create any new files or directories.
 
         ## INSTRUCTIONS
         - Always build the application when your turn comes.
@@ -88,11 +93,6 @@ class BuildAgent(InnerTeamAgent):
               - For "maven": use the "--no-transfer-progress" option.
           - Run the build command.
         - After running all builds, say '{BUILDER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Your ONLY job is to run build commands and say '{BUILDER_AGENT_DONE}' when finished.
-        - The analyst agent will analyze errors, the fixer agent will fix them.
-        - The application should already exist, so do not create any new files or directories.
 
         ## TOOLS
         You have the following tools:
@@ -112,14 +112,16 @@ class BuildAgent(InnerTeamAgent):
         Your task is to analyze the build results and suggest fixes for the build errors.
         Build warnings are not in the scope of the task, so do not suggest fixes for them.
 
+        ## CONSTRAINTS
+        - NEVER ask questions, just suggest specific fixes.
+
         ## INSTRUCTIONS
         - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
           the latest information about the errors.
           When googling, use build error codes and messages as search queries.
+        - Read each necessary file only once. Analyze all errors from that file in a single pass without re-reading.
+          Even with multiple errors, read the file once and provide fixes for all issues together.
         - If the build was successful, end your response with '{BUILD_SUCCEEDED}'.
-
-        ## CONSTRAINTS
-        Do not ask questions, just suggest specific fixes.
 
         ## TOOLS
         You have the following tools:
@@ -139,16 +141,16 @@ class BuildAgent(InnerTeamAgent):
         ## TASK
         Your task is to fix the build errors according to the suggested fixes.
 
+        ## CONSTRAINTS
+        - NEVER comment the suggested fixes, just implement them.
+        - NEVER suggest new fixes, just implement the suggested ones.
+        - NEVER run the build.
+
         ## INSTRUCTIONS
         - Check the last message from the analyst agent for suggested fixes.
         - Implement the suggested fixes.
         - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
         - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not comment the suggested fixes, just implement them.
-        - Do not suggest new fixes, just implement the suggested ones.
-        - Do not run the build, there is another agent for that.
 
         ## TOOLS
         You have the following tools:

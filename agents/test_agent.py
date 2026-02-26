@@ -44,6 +44,9 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to control how long the testing process will continue.
 
+        ## CONSTRAINTS
+        - NEVER comment on the testing process or the results of the tests.
+
         ## INSTRUCTIONS
         - The team runs on iterations. Each iteration goes as follows:
           - The tester agent runs the tests and reports the results.
@@ -59,9 +62,6 @@ class TestAgent(InnerTeamAgent):
           - If you feel the team is facing overwhelming obstacles fixing the tests, respond with a short explanation
             why you decided to end the testing process. End your response with '{TEST_AGENT_FAILED}' in a separate
             line.
-
-        ## CONSTRAINTS
-        Do not comment on the testing process or the results of the tests. There are other agents for that.
         """
     )
 
@@ -72,6 +72,11 @@ class TestAgent(InnerTeamAgent):
 
         ## TASK
         Your task is to run all the tests implemented for the application in the current workspace.
+
+        ## CONSTRAINTS
+        - NEVER analyze or fix the failed tests.
+        - NEVER ask questions about failed tests.
+        - NEVER suggest to add tests if no tests are found.
 
         ## INSTRUCTIONS
         - Always run the tests when your turn comes.
@@ -86,14 +91,10 @@ class TestAgent(InnerTeamAgent):
           - For the verbosity level of the test commands, use minimal or normal verbosity to reduce output.
             - For "dotnet test": do not use the "--no-build" option - always build before running the tests.
             - For "maven": use the "--no-transfer-progress" option.
-          - Run the tests with the determined test commands and options.
+          - Run the tests with the determined test commands and options exactly once per your turn.
         - After running all the tests, report the results.
           - If no tests are found, report also that.
         - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not analyze or fix the failed tests, neither ask questions about failed tests, it is not your job.
-        - If no tests are found, do not suggest to add tests.
 
         ## TOOLS
         You have the following tools:
@@ -112,16 +113,16 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to analyze the tests results and suggest fixes for the failed tests.
 
+        ## CONSTRAINTS
+        - NEVER ask questions, just suggest specific fixes.
+        - NEVER implement the suggested fixes.
+        - NEVER suggest to add tests if no tests are found.
+
         ## INSTRUCTIONS
         - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
           the latest information about the errors.
         - Investigate the code files related to the failed tests to understand better the context of the errors.
         - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
-
-        ## CONSTRAINTS
-        - Do not ask questions, just suggest specific fixes.
-        - Do not implement the suggested fixes, there is another agent for that.
-        - If no tests are found, do not suggest to add tests.
 
         ## TOOLS
         You have the following tools:
@@ -141,16 +142,16 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to fix the failed tests according to the suggested fixes.
 
+        ## CONSTRAINTS
+        - NEVER comment the suggested fixes, just implement them.
+        - NEVER suggest new fixes, just implement the suggested ones.
+        - NEVER run the tests.
+
         ## INSTRUCTIONS
         - Check the last message from the analyst agent for suggested fixes.
         - Implement the suggested fixes.
         - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
         - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not comment the suggested fixes, just implement them.
-        - Do not suggest new fixes, just implement the suggested ones.
-        - Do not run the tests, there is another agent for that.
 
         ## TOOLS
         You have the following tools:
