@@ -2,10 +2,10 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
 from agents.inner_team_agent import InnerTeamAgent
+from agents.research_agent import research_web
 from monitoring.monitor import MonitorBase
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
-from tools.web_tools import google_search, load_page
 from utils.config import Config
 from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL, DEFAULT_MAX_HISTORY_ITERATIONS
 
@@ -23,15 +23,17 @@ class BuildAgent(InnerTeamAgent):
 
     _system_message = textwrap.dedent(
         f"""
-        You are a build agent, and your task is to ensure that the application in the current directory will build successfully.
-        
+        You are a build agent, and your task is to ensure that the application in the current directory will build
+        successfully.
+
         You have an inner team to do the actual work, i.e. check the build results and fix the possible build errors.
         """
     )
 
     _response_prompt = textwrap.dedent(
         f"""
-        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the response from the inner team.
+        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the response from the
+        inner team.
         Note:
         - There may be build errors in the early conversation, so it is important to check the end result.
         - Do not treat build warnings as a failure.
@@ -116,9 +118,8 @@ class BuildAgent(InnerTeamAgent):
         - NEVER ask questions, just suggest specific fixes.
 
         ## INSTRUCTIONS
-        - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
-          the latest information about the errors.
-          When googling, use build error codes and messages as search queries.
+        - Use your knowledge to suggest fixes, but if that is not enough, use research_web tool to find the latest
+          information about the errors. Use build error codes and messages as research topics.
         - Read each necessary file only once. Analyze all errors from that file in a single pass without re-reading.
           Even with multiple errors, read the file once and provide fixes for all issues together.
         - If the build was successful, end your response with '{BUILD_SUCCEEDED}'.
@@ -128,8 +129,7 @@ class BuildAgent(InnerTeamAgent):
         - read_file tool for reading files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -197,7 +197,7 @@ class BuildAgent(InnerTeamAgent):
                 name=ANALYST_AGENT_NAME,
                 system_message=self._system_message_analyst_agent,
                 config=config,
-                tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+                tools=[read_file, research_web, enum_subdirs, enum_files],
             ),
             AgentBase(
                 name=FIXER_AGENT_NAME,

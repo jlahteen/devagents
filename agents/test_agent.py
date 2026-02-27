@@ -2,10 +2,10 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
 from agents.inner_team_agent import InnerTeamAgent
+from agents.research_agent import research_web
 from monitoring.monitor import MonitorBase
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
-from tools.web_tools import google_search, load_page
 from utils.config import Config
 from utils.constants import DEFAULT_MAX_HISTORY_ITERATIONS, TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
 
@@ -119,8 +119,8 @@ class TestAgent(InnerTeamAgent):
         - NEVER suggest to add tests if no tests are found.
 
         ## INSTRUCTIONS
-        - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
-          the latest information about the errors.
+        - Use your knowledge to suggest fixes, but if that is not enough, use research_web tool to find the latest
+          information about the errors.
         - Investigate the code files related to the failed tests to understand better the context of the errors.
         - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
 
@@ -129,8 +129,7 @@ class TestAgent(InnerTeamAgent):
         - read_file tool for reading files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -201,7 +200,7 @@ class TestAgent(InnerTeamAgent):
                 name=ANALYST_AGENT_NAME,
                 system_message=self._system_message_analyst_agent,
                 config=config,
-                tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+                tools=[read_file, research_web, enum_subdirs, enum_files],
             ),
             AgentBase(
                 name=FIXER_AGENT_NAME,
