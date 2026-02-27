@@ -6,6 +6,7 @@ import pytest
 from agents.scaffold_agent import ScaffoldAgent
 from tests.test_utils import setup_test
 from utils.config import Config
+from utils.constants import WorkflowType
 
 prompt = textwrap.dedent(
     """
@@ -32,7 +33,7 @@ prompt = textwrap.dedent(
 async def test_scaffold_react_app__should_scaffold(setup_test):
     # Arrange
     test_run_dir = setup_test
-    scaffold_agent = ScaffoldAgent(config=Config())
+    scaffold_agent = ScaffoldAgent(config=Config(), workflow_type=WorkflowType.NEW_APP)
 
     # Act
     await scaffold_agent.run(prompt)
