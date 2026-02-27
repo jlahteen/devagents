@@ -44,3 +44,6 @@ if __name__ == "__main__":
 
     # ModifyAppWorkflow tests
     # pytest.main(["-s", to_os_path("tests\\test_modify_app_workflow.py")])
+
+    # ResearchAgent tests
+    # pytest.main(["-s", to_os_path("tests\\test_research_agent.py")])
