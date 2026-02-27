@@ -1,8 +1,8 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase
+from agents.research_agent import research_web
 from tools.file_tools import enum_files, enum_subdirs, read_file, save_file, search_in_files
-from tools.web_tools import google_search, load_page
 from utils.config import Config
 from utils.constants import DEVELOPER_AGENT_DONE, WorkflowType
 
@@ -40,11 +40,13 @@ class DeveloperAgent(AgentBase):
             }}
             ```
         - If you modify a file based on the feedback from the reviewer, always provide the full version of the file.
+        - If the reviewer's feedback is to delete a file, mark it for deletion using the marker @delete_file followed
+          by the file's relative path in the workspace. See the example below.
+            ## @delete_file ./src/ObsoleteFile.cs
         - When you are done with the implementation, end your response with '{DEVELOPER_AGENT_DONE}'.
 
-        You have the following tools:
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        ## TOOLS
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -95,8 +97,7 @@ class DeveloperAgent(AgentBase):
         - enum_files tool for enumerating files
         - enum_subdirs tool for enumerating subdirectories
         - search_in_files tool for searching search terms in files recursively
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -122,15 +123,14 @@ class DeveloperAgent(AgentBase):
         """Returns the list of tools for the given workflow type."""
 
         if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
-            return [google_search, load_page]
+            return [research_web]
         elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
             return [
                 read_file,
                 enum_files,
                 enum_subdirs,
                 search_in_files,
-                google_search,
-                load_page,
+                research_web,
             ]
         else:
             raise ValueError(f"Tools not defined for the workflow type: {workflow_type}")
