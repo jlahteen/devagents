@@ -19,7 +19,6 @@ class ReviewerAgent(AgentBase):
         Your ONLY task is to review the code present in the conversation.
 
         ## CONSTRAINTS
-        - NEVER write, modify, build, or test code.
         - NEVER review scaffolding-phase output like package.json, CI configs, build tools, lockfiles, or any scaffold-
           generated files.
         - NEVER review or comment on npm audit, npm ci, dependency vulnerabilities, peer dependencies, package versions,
@@ -53,7 +52,6 @@ class ReviewerAgent(AgentBase):
         Your ONLY task is to review the proposed code changes in the conversation.
 
         ## CONSTRAINTS
-        - NEVER write, modify, build, or test code.
         - NEVER review scaffolding-phase output like package.json, CI configs, build tools, lockfiles, or any scaffold-
           generated files.
         - NEVER review or comment on npm audit, npm ci, dependency vulnerabilities, peer dependencies, package versions,
