@@ -18,6 +18,12 @@ JUDGE_AGENT_CHANGES_REQUIRED: Final[str] = "JUDGE AGENT: CHANGES REQUIRED"
 # Default number of iterations to keep conversation history in inner teams
 DEFAULT_MAX_HISTORY_ITERATIONS: Final[int] = 2
 
+# Maximum number of pages to load during web research
+MAX_PAGE_LOADS: Final[int] = 8
+
+# Maximum number of Google searches to perform during web research
+MAX_GOOGLE_SEARCHES: Final[int] = 4
+
 
 class WorkflowType(Enum):
     NEW_CODE = 200
