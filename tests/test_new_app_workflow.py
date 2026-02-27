@@ -194,11 +194,12 @@ async def test_generate_cs_fi_ssn_validator_lib__creates_lib(setup_test):
 
     # Assert
     assert os.path.exists(
-        os.path.join(test_run_dir, to_os_path("MyBase.FiSsnValidator\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.dll"))
+        os.path.join(test_run_dir, to_os_path("MyBase.FiSsnValidator\\bin\\Release\\net8.0\\MyBase.FiSsnValidator.dll"))
     )
     assert os.path.exists(
         os.path.join(
-            test_run_dir, to_os_path("MyBase.FiSsnValidator.Tests\\bin\\Debug\\net8.0\\MyBase.FiSsnValidator.Tests.dll")
+            test_run_dir,
+            to_os_path("MyBase.FiSsnValidator.Tests\\bin\\Release\\net8.0\\MyBase.FiSsnValidator.Tests.dll"),
         )
     )
 
