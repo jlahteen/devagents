@@ -74,7 +74,8 @@ class TestAgent(InnerTeamAgent):
         Your task is to run all the tests implemented for the application in the current workspace.
 
         ## CONSTRAINTS
-        - NEVER analyze or fix the failed tests.
+        - NEVER analyze the failed tests.
+        - NEVER modify code to fix the failed tests.
         - NEVER ask questions about failed tests.
         - NEVER suggest to add tests if no tests are found.
 
