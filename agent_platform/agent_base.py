@@ -105,11 +105,11 @@ class AgentBase(ChatAgent):
 
         response = await super().run(prompt)
 
-        # Extract the final text response (tool call messages have empty text)
+        # Extract the final text response
         if not response.messages:
             return ""
 
-        # Return the last non-empty text message (iterate backwards for efficiency)
+        # Return the last non-empty text message
         for msg in reversed(response.messages):
             if hasattr(msg, "text") and msg.text:
                 return msg.text
