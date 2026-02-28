@@ -104,7 +104,17 @@ class AgentBase(ChatAgent):
         """Runs the agent with a prompt. Returns the agent's response content."""
 
         response = await super().run(prompt)
-        return response.messages[0].text if response.messages else ""
+
+        # Extract the final text response (tool call messages have empty text)
+        if not response.messages:
+            return ""
+
+        # Return the last non-empty text message (iterate backwards for efficiency)
+        for msg in reversed(response.messages):
+            if hasattr(msg, "text") and msg.text:
+                return msg.text
+
+        return ""
 
     def _to_maf_tools(self):
         """Converts the platform-agnostic tools to the corresponding MAF tools."""
