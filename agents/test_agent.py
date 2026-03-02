@@ -91,7 +91,7 @@ class TestAgent(InnerTeamAgent):
           - Ensure that the test command is suitable for CI/CD (e.g. no user input, no interactive prompts).
             - For "npm test": use the "-- --ci --watchAll=false" options.
           - For the verbosity level of the test commands, use minimal or normal verbosity to reduce output.
-            - For "dotnet test": do not use the "--no-build" option - always build before running the tests.
+            - For "dotnet test": do not use the "--no-build" and "-v diag" options.
             - For "maven": use the "--no-transfer-progress" option.
           - Run the tests with the determined test commands and options exactly once per your turn.
         - After running all the tests, report the results.
