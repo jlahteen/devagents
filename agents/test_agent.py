@@ -1,6 +1,7 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
+from agent_platform.history_optimizer import IterationOptimizer
 from agents.inner_team_agent import InnerTeamAgent
 from agents.research_agent import research_web
 from monitoring.monitor import MonitorBase
@@ -168,6 +169,9 @@ class TestAgent(InnerTeamAgent):
     __test__ = False
 
     def __init__(self, config: Config, monitor: MonitorBase = None, on_error_callback: callable = None):
+        history_optimizer = IterationOptimizer(
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME, max_iterations=DEFAULT_MAX_HISTORY_ITERATIONS
+        )
         super().__init__(
             name="test_agent",
             config=config,
@@ -179,7 +183,8 @@ class TestAgent(InnerTeamAgent):
             failure_phrase=TEST_AGENT_FAILED,
             monitor=monitor,
             on_error_callback=on_error_callback,
-            max_history_iterations=DEFAULT_MAX_HISTORY_ITERATIONS,
+            history_optimizer=history_optimizer,
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME,
         )
 
     def _create_team(self, config: Config) -> list[AgentBase]:

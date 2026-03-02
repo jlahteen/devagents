@@ -4,14 +4,12 @@ from agent_framework.azure import AzureOpenAIChatClient
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
 from agent_platform.console_printer import ConsolePrinter
+from agent_platform.history_optimizer import HistoryOptimizer
 from agent_platform.termination import SuccessOrFailureTermination
 from utils.config import Config
 
 # Define a constant for the maximum conversation rounds
 _MAX_CONVERSATION_ROUNDS = 999
-
-# Define the default team lead agent name
-_DEFAULT_TEAM_LEAD_AGENT = "team_lead_agent"
 
 
 class InnerTeamAgentBase(ChatAgent):
@@ -31,7 +29,8 @@ class InnerTeamAgentBase(ChatAgent):
         termination_condition: SuccessOrFailureTermination,
         system_message: str,
         response_prompt: str,
-        team_lead_agent_name: str = _DEFAULT_TEAM_LEAD_AGENT,
+        team_lead_agent_name: str,
+        history_optimizer: HistoryOptimizer | None = None,
     ):
         """Initializes a new inner team agent."""
 
@@ -59,6 +58,7 @@ class InnerTeamAgentBase(ChatAgent):
         self._response_prompt = response_prompt
         self._console_printer = ConsolePrinter()
         self._team_lead_agent_name = team_lead_agent_name
+        self._history_optimizer = history_optimizer
 
         # Build the inner team workflow
         self._inner_workflow = (
@@ -129,6 +129,10 @@ class InnerTeamAgentBase(ChatAgent):
 
     def _select_next_speaker(self, state: GroupChatState) -> str:
         """Selects the next speaker in the inner team workflow."""
+
+        # Optimize the conversation history if a history optimizer is provided
+        if self._history_optimizer is not None:
+            self._history_optimizer.trim(state)
 
         message_count = len(state.conversation)
         last_message = None
