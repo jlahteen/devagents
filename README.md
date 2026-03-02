@@ -15,10 +15,7 @@ The workflows that are currently supported are listed in the table below.
 | FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
-DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft AutoGen](https://github.com/microsoft/autogen), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
-
-> ℹ️ **Information**: The agent platform will be replaced by [Microsoft Agent Framework](https://github.com/microsoft/agent-framework) since AutoGen is no longer actively developed.
-
+DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft Agent Framework](https://github.com/microsoft/agent-framework), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
 ## DevAgents Architecture
 
@@ -87,13 +84,13 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ## Remarks
 
-- DevAgents is currently tested with Azure OpenAI Service using GPT-4o and GPT-4.1.
+- DevAgents is currently tested with Azure OpenAI Service using GPT-5.2.
 - Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
 
 
 ## Further Information
 
-- [Local Development Setup](docs/local_dev_setup.md)
+- [Developer Guide](docs/developer-guide.md.md)
 
 
 ---
