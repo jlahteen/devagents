@@ -84,13 +84,13 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ## Remarks
 
-- DevAgents is currently tested with Azure OpenAI Service using GPT-5.2.
+- DevAgents has been tested with Azure OpenAI Service using GPT-5.2.
 - Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
 
 
 ## Further Information
 
-- [Developer Guide](docs/developer-guide.md.md)
+- [Developer Guide](docs/developer-guide.md)
 
 
 ---
