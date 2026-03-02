@@ -67,13 +67,13 @@ To run DevAgents, you have to set the following environment variables in a `.env
 Below is a sample of a content of a `.env` file.
 
 ```bash
-AZURE_MODEL=gpt-4.1
-AZURE_ENDPOINT=https://<your-openai-name>.openai.azure.com/
-AZURE_API_KEY=35RpgJ******************************************************************************
-AZURE_DEPLOYMENT=gpt-41
-AZURE_API_VERSION=2024-12-01-preview
-GOOGLE_API_KEY=AIza***********************************
-GOOGLE_CSE_ID=3fc2************
+AZURE_MODEL=gpt-5.2
+AZURE_ENDPOINT=https://<your-instance>.openai.azure.com/
+AZURE_API_KEY=<secret>
+AZURE_DEPLOYMENT=gpt-5.2
+AZURE_API_VERSION=2025-04-01-preview
+GOOGLE_API_KEY=<secret>
+GOOGLE_CSE_ID=<secret>
 ```
 
 
