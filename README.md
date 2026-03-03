@@ -2,7 +2,7 @@
 
 DevAgents is an **experimental** project for using a team of AI agents for generating code or even create complete applications.
 
-DevAgents uses a workflow-based approach. There are workflows for different development tasks. DevAgents aims to complete all workflows autonomously.
+DevAgents uses a workflow-based approach. There are workflows for different scenarios. DevAgents aims to complete all workflows autonomously.
 
 The workflows that are currently supported are listed in the table below.
 
@@ -15,7 +15,7 @@ The workflows that are currently supported are listed in the table below.
 | FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
-DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft Agent Framework](https://github.com/microsoft/agent-framework), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
+DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current implementation uses [Microsoft Agent Framework](https://github.com/microsoft/agent-framework), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
 ## DevAgents Architecture
 
@@ -85,7 +85,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Remarks
 
 - DevAgents has been tested with Azure OpenAI Service using GPT-5.2.
-- Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
+- Always carefully review and test all code written by AI - this is valid for all tools, not just for DevAgents.
 
 
 ## Further Information
