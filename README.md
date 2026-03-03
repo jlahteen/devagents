@@ -2,7 +2,7 @@
 
 DevAgents is an **experimental** project for using a team of AI agents for generating code or even create complete applications.
 
-DevAgents uses a workflow-based approach. There are workflows for different development tasks. DevAgents aims to complete all workflows autonomously.
+DevAgents uses a workflow-based approach. There are workflows for different scenarios. DevAgents aims to complete all workflows autonomously.
 
 The workflows that are currently supported are listed in the table below.
 
@@ -15,10 +15,7 @@ The workflows that are currently supported are listed in the table below.
 | FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
 
-DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current internal implementation uses [Microsoft AutoGen](https://github.com/microsoft/autogen), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
-
-> ℹ️ **Information**: The agent platform will be replaced by [Microsoft Agent Framework](https://github.com/microsoft/agent-framework) since AutoGen is no longer actively developed.
-
+DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current implementation uses [Microsoft Agent Framework](https://github.com/microsoft/agent-framework), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
 ## DevAgents Architecture
 
@@ -70,13 +67,13 @@ To run DevAgents, you have to set the following environment variables in a `.env
 Below is a sample of a content of a `.env` file.
 
 ```bash
-AZURE_MODEL=gpt-4.1
-AZURE_ENDPOINT=https://<your-openai-name>.openai.azure.com/
-AZURE_API_KEY=35RpgJ******************************************************************************
-AZURE_DEPLOYMENT=gpt-41
-AZURE_API_VERSION=2024-12-01-preview
-GOOGLE_API_KEY=AIza***********************************
-GOOGLE_CSE_ID=3fc2************
+AZURE_MODEL=gpt-5.2
+AZURE_ENDPOINT=https://<your-instance>.openai.azure.com/
+AZURE_API_KEY=<secret>
+AZURE_DEPLOYMENT=gpt-5.2
+AZURE_API_VERSION=2025-04-01-preview
+GOOGLE_API_KEY=<secret>
+GOOGLE_CSE_ID=<secret>
 ```
 
 
@@ -87,13 +84,13 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ## Remarks
 
-- DevAgents is currently tested with Azure OpenAI Service using GPT-4o and GPT-4.1.
-- Always carefully review and test all code written by AI - this is valid for all tools, not just DevAgents.
+- DevAgents has been tested with Azure OpenAI Service using GPT-5.2.
+- Always carefully review and test all code written by AI - this is valid for all tools, not just for DevAgents.
 
 
 ## Further Information
 
-- [Local Development Setup](docs/local_dev_setup.md)
+- [Developer Guide](docs/developer-guide.md)
 
 
 ---

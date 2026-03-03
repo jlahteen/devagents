@@ -21,6 +21,24 @@ def print_green(text: str) -> None:
     print(f"\033[0;32m{text}\033[0m")
 
 
+def print_tool_error(message: str) -> None:
+    """Prints a tool error message in light yellow color."""
+
+    try:
+        print(f"\033[93m🔧 {message}\033[0m")
+    except UnicodeEncodeError:
+        print(f"\033[93m[TOOL] {message}\033[0m")
+
+
+def print_tool_use(message: str) -> None:
+    """Prints a tool usage message in gray color."""
+
+    try:
+        print(f"\033[90m🔧 {message}\033[0m")
+    except UnicodeEncodeError:
+        print(f"\033[90m[TOOL] {message}\033[0m")
+
+
 def generate_timestamp():
     """Generates a timestamp in the format of YYYYMMDDHHMMSSmmm."""
 

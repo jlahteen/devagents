@@ -1,13 +1,14 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
+from agent_platform.history_optimizer import IterationOptimizer
 from agents.inner_team_agent import InnerTeamAgent
+from agents.research_agent import research_web
 from monitoring.monitor import MonitorBase
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
-from tools.web_tools import google_search, load_page
 from utils.config import Config
-from utils.constants import TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
+from utils.constants import DEFAULT_MAX_HISTORY_ITERATIONS, TEST_AGENT_FAILED, TEST_AGENT_SUCCESSFUL
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 TESTER_AGENT_NAME = "tester_agent"
@@ -44,6 +45,9 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to control how long the testing process will continue.
 
+        ## CONSTRAINTS
+        - NEVER comment on the testing process or the results of the tests.
+
         ## INSTRUCTIONS
         - The team runs on iterations. Each iteration goes as follows:
           - The tester agent runs the tests and reports the results.
@@ -51,17 +55,14 @@ class TestAgent(InnerTeamAgent):
           - The fixer agent implements the suggested fixes.
         - When the iteration is done, check the test results and decide whether to continue or not.
           If you decide to take a new iteration, end your response with 'Please rerun the tests.'
-          You should give up only in very rare circumstances where the fixes don't seem to work after several
-          iterations.
+          Important: You should give up only in very rare circumstances where the fixes don't seem to resolve test
+          errors after several iterations. Continue if there is still some progress, even if the progress is very slow.
         - You should end the conversation in the following cases:
           - If there are no tests in the application, say '{TEST_AGENT_SUCCESSFUL}' without any other content.
           - If all tests passed, say '{TEST_AGENT_SUCCESSFUL}' without any other content.
-          - If you feel the team is facing overwhelming obstacles fixing the tests, response with a short explanation
+          - If you feel the team is facing overwhelming obstacles fixing the tests, respond with a short explanation
             why you decided to end the testing process. End your response with '{TEST_AGENT_FAILED}' in a separate
             line.
-
-        ## CONSTRAINTS
-        Do not comment on the testing process or the results of the tests. There are other agents for that.
         """
     )
 
@@ -73,23 +74,29 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to run all the tests implemented for the application in the current workspace.
 
+        ## CONSTRAINTS
+        - NEVER analyze the failed tests.
+        - NEVER modify code to fix the failed tests.
+        - NEVER ask questions about failed tests.
+        - NEVER suggest to add tests if no tests are found.
+
         ## INSTRUCTIONS
         - Always run the tests when your turn comes.
         - The application may consist of multiple components so there might be several test sets to run.
-        - When looking for tests, directory names like "test", "tests", "spec", etc. are good indicators of test components.
+        - When looking for tests, directory names containing terms like "test", "tests", "spec", etc. are good
+          indicators of test components. Investigate files in such directories whether they contain tests.
         - For each found test set, run the tests as follows:
           - Find out the test technology by investigating the file names, types and contents in the test directory.
-          - After detecting the test technology, determine the "run tests" command.
-          - Ensure that the "run tests" command is suitable for CI/CD (e.g. no user input, no interactive prompts).
-            - Especially for npm test use the "-- --ci --watchAll=false" options.
-          - Run the tests.
+          - After detecting the test technology, determine the test command.
+          - Ensure that the test command is suitable for CI/CD (e.g. no user input, no interactive prompts).
+            - For "npm test": use the "-- --ci --watchAll=false" options.
+          - For the verbosity level of the test commands, use minimal or normal verbosity to reduce output.
+            - For "dotnet test": do not use the "--no-build" and "-v diag" options.
+            - For "maven": use the "--no-transfer-progress" option.
+          - Run the tests with the determined test commands and options exactly once per your turn.
         - After running all the tests, report the results.
           - If no tests are found, report also that.
         - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not analyze or fix the failed tests, neither ask questions about failed tests, it is not your job.
-        - If no tests are found, do not suggest to add tests.
 
         ## TOOLS
         You have the following tools:
@@ -108,23 +115,23 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to analyze the tests results and suggest fixes for the failed tests.
 
-        ## INSTRUCTIONS
-        - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
-          the latest information about the errors.
-        - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
-
         ## CONSTRAINTS
-        - Do not ask questions, just suggest specific fixes.
-        - Do not implement the suggested fixes, there is another agent for that.
-        - If no tests are found, do not suggest to add tests.
+        - NEVER ask questions, just suggest specific fixes.
+        - NEVER implement the suggested fixes.
+        - NEVER suggest to add tests if no tests are found.
+
+        ## INSTRUCTIONS
+        - Use your knowledge to suggest fixes, but if that is not enough, use research_web tool to find the latest
+          information about the errors.
+        - Investigate the code files related to the failed tests to understand better the context of the errors.
+        - If all tests passed, end your response with '{ALL_TESTS_PASSED}'.
 
         ## TOOLS
         You have the following tools:
         - read_file tool for reading files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -136,16 +143,16 @@ class TestAgent(InnerTeamAgent):
         ## TASK
         Your task is to fix the failed tests according to the suggested fixes.
 
+        ## CONSTRAINTS
+        - NEVER comment the suggested fixes, just implement them.
+        - NEVER suggest new fixes, just implement the suggested ones.
+        - NEVER run the tests.
+
         ## INSTRUCTIONS
         - Check the last message from the analyst agent for suggested fixes.
         - Implement the suggested fixes.
         - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
         - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not comment the suggested fixes, just implement them.
-        - Do not suggest new fixes, just implement the suggested ones.
-        - Do not run the tests, there is another agent for that.
 
         ## TOOLS
         You have the following tools:
@@ -162,6 +169,9 @@ class TestAgent(InnerTeamAgent):
     __test__ = False
 
     def __init__(self, config: Config, monitor: MonitorBase = None, on_error_callback: callable = None):
+        history_optimizer = IterationOptimizer(
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME, max_iterations=DEFAULT_MAX_HISTORY_ITERATIONS
+        )
         super().__init__(
             name="test_agent",
             config=config,
@@ -173,6 +183,8 @@ class TestAgent(InnerTeamAgent):
             failure_phrase=TEST_AGENT_FAILED,
             monitor=monitor,
             on_error_callback=on_error_callback,
+            history_optimizer=history_optimizer,
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME,
         )
 
     def _create_team(self, config: Config) -> list[AgentBase]:
@@ -194,7 +206,7 @@ class TestAgent(InnerTeamAgent):
                 name=ANALYST_AGENT_NAME,
                 system_message=self._system_message_analyst_agent,
                 config=config,
-                tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+                tools=[read_file, research_web, enum_subdirs, enum_files],
             ),
             AgentBase(
                 name=FIXER_AGENT_NAME,
@@ -207,8 +219,8 @@ class TestAgent(InnerTeamAgent):
     def _select_speaker(self, message_count: int, last_message: Message) -> str:
         """Selects the next speaker based on the last message."""
 
-        if message_count == 1 or last_message is None:
-            return self._over_to(TESTER_AGENT_NAME)
+        if message_count == 1:
+            return self._over_to(TEAM_LEAD_AGENT_NAME)
         if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(TESTER_AGENT_NAME)
         elif last_message.source == TESTER_AGENT_NAME:

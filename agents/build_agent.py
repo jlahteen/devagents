@@ -1,13 +1,14 @@
 import textwrap
 
 from agent_platform.agent_base import AgentBase, Message
+from agent_platform.history_optimizer import IterationOptimizer
 from agents.inner_team_agent import InnerTeamAgent
+from agents.research_agent import research_web
 from monitoring.monitor import MonitorBase
 from tools.file_tools import delete_file, enum_files, enum_subdirs, read_file, save_file
 from tools.shell_tools import run_command
-from tools.web_tools import google_search, load_page
 from utils.config import Config
-from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL
+from utils.constants import BUILD_AGENT_FAILED, BUILD_AGENT_SUCCESSFUL, DEFAULT_MAX_HISTORY_ITERATIONS
 
 TEAM_LEAD_AGENT_NAME = "team_lead_agent"
 BUILDER_AGENT_NAME = "builder_agent"
@@ -23,15 +24,17 @@ class BuildAgent(InnerTeamAgent):
 
     _system_message = textwrap.dedent(
         f"""
-        You are a build agent, and your task is to ensure that the application in the current directory will build successfully.
-        
+        You are a build agent, and your task is to ensure that the application in the current directory will build
+        successfully.
+
         You have an inner team to do the actual work, i.e. check the build results and fix the possible build errors.
         """
     )
 
     _response_prompt = textwrap.dedent(
         f"""
-        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the response from the inner team.
+        Respond either with '{BUILD_AGENT_SUCCESSFUL}' or '{BUILD_AGENT_FAILED}' according to the response from the
+        inner team.
         Note:
         - There may be build errors in the early conversation, so it is important to check the end result.
         - Do not treat build warnings as a failure.
@@ -46,6 +49,9 @@ class BuildAgent(InnerTeamAgent):
         ## TASK
         Your task is to control how long the build process will continue.
 
+        ## CONSTRAINTS
+        - NEVER comment the build process or the build results.
+
         ## INSTRUCTIONS
         - The team runs on iterations. Each iteration goes as follows:
           - The builder agent builds the application and reports the results.
@@ -53,17 +59,14 @@ class BuildAgent(InnerTeamAgent):
           - The fixer agent implements the suggested fixes.
         - When the iteration is done, check the build results and decide whether to continue or not.
           If you decide to take a new iteration, end your response with 'Please rebuild the application.'
-          You should give up only in very rare circumstances where the fixes don't seem to resolve build errors after
-          several iterations.
+          Important: You should give up only in very rare circumstances where the fixes don't seem to resolve build
+          errors after several iterations. Continue if there is still some progress, even if the progress is very slow.
         - You should end the conversation in the following cases:
           - If there is no application to build, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
           - If the build was successful, say '{BUILD_AGENT_SUCCESSFUL}' without any other content.
           - If you feel the team is facing overwhelming obstacles fixing the build errors, response with a short
             explanation why you decided to end the build process. End your response with '{BUILD_AGENT_FAILED}' in a
             separate line.
-
-        ## CONSTRAINTS
-        Do not comment the build process or the build results. There are other agents for that.
         """
     )
 
@@ -75,6 +78,11 @@ class BuildAgent(InnerTeamAgent):
         ## TASK
         Your task is to build the application in the current directory.
 
+        ## CONSTRAINTS
+        - NEVER analyze the build results.
+        - NEVER suggest or implement fixes for build errors.
+        - NEVER create any new files or directories.
+
         ## INSTRUCTIONS
         - Always build the application when your turn comes.
         - Note that the application may consist of multiple components that are located in separate subdirectories.
@@ -84,14 +92,10 @@ class BuildAgent(InnerTeamAgent):
             - Pass options to skip tests if the build command also runs them.
             - Use such options that are suitable for CI/CD (e.g. no user input, no interactive prompts).
             - Use the Release build configuration if applicable.
+            - For the verbosity level of the build commands, use options that suppress INFO level output if available.
+              - For "maven": use the "--no-transfer-progress" option.
           - Run the build command.
-        - When the build has been run for all components, say '{BUILDER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not run tests, just build the application.
-        - The application should already exist, so do not create any new files or directories.
-        - Do not analyze or fix the build errors, neither ask questions, it is not your job.
-        - Just build the application and report the results.
+        - After running all builds, say '{BUILDER_AGENT_DONE}' without any other content.
 
         ## TOOLS
         You have the following tools:
@@ -111,22 +115,22 @@ class BuildAgent(InnerTeamAgent):
         Your task is to analyze the build results and suggest fixes for the build errors.
         Build warnings are not in the scope of the task, so do not suggest fixes for them.
 
-        ## INSTRUCTIONS
-        - Use your knowledge to suggest fixes, but if that is not enough, use google_search and load_page tools to find
-          the latest information about the errors.
-          When googling, use build error codes and messages as search queries.
-        - If the build was successful, end your response with '{BUILD_SUCCEEDED}'.
-
         ## CONSTRAINTS
-        Do not ask questions, just suggest specific fixes.
+        - NEVER ask questions, just suggest specific fixes.
+
+        ## INSTRUCTIONS
+        - Use your knowledge to suggest fixes, but if that is not enough, use research_web tool to find the latest
+          information about the errors. Use build error codes and messages as research topics.
+        - Read each necessary file only once. Analyze all errors from that file in a single pass without re-reading.
+          Even with multiple errors, read the file once and provide fixes for all issues together.
+        - If the build was successful, end your response with '{BUILD_SUCCEEDED}'.
 
         ## TOOLS
         You have the following tools:
         - read_file tool for reading files
         - enum_subdirs tool for enumerating subdirectories in a directory
         - enum_files tool for enumerating files in a directory
-        - google_search tool for searching the web for latest information
-        - load_page tool for loading a web page found by the google_search tool
+        - research_web tool for researching topics online and getting focused summaries
         """
     )
 
@@ -138,16 +142,16 @@ class BuildAgent(InnerTeamAgent):
         ## TASK
         Your task is to fix the build errors according to the suggested fixes.
 
+        ## CONSTRAINTS
+        - NEVER comment the suggested fixes, just implement them.
+        - NEVER suggest new fixes, just implement the suggested ones.
+        - NEVER run the build.
+
         ## INSTRUCTIONS
         - Check the last message from the analyst agent for suggested fixes.
         - Implement the suggested fixes.
         - When you have implemented the fixes, say '{FIXER_AGENT_DONE}' without any other content.
         - If there are no suggested fixes, say '{FIXER_AGENT_DONE}' without any other content.
-
-        ## CONSTRAINTS
-        - Do not comment the suggested fixes, just implement them.
-        - Do not suggest new fixes, just implement the suggested ones.
-        - Do not run the build, there is another agent for that.
 
         ## TOOLS
         You have the following tools:
@@ -161,6 +165,9 @@ class BuildAgent(InnerTeamAgent):
     )
 
     def __init__(self, config: Config, monitor: MonitorBase = None, on_error_callback: callable = None):
+        history_optimizer = IterationOptimizer(
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME, max_iterations=DEFAULT_MAX_HISTORY_ITERATIONS
+        )
         super().__init__(
             name="build_agent",
             config=config,
@@ -172,6 +179,8 @@ class BuildAgent(InnerTeamAgent):
             failure_phrase=BUILD_AGENT_FAILED,
             monitor=monitor,
             on_error_callback=on_error_callback,
+            history_optimizer=history_optimizer,
+            team_lead_agent_name=TEAM_LEAD_AGENT_NAME,
         )
 
     def _create_team(self, config: Config) -> list[AgentBase]:
@@ -193,7 +202,7 @@ class BuildAgent(InnerTeamAgent):
                 name=ANALYST_AGENT_NAME,
                 system_message=self._system_message_analyst_agent,
                 config=config,
-                tools=[read_file, google_search, load_page, enum_subdirs, enum_files],
+                tools=[read_file, research_web, enum_subdirs, enum_files],
             ),
             AgentBase(
                 name=FIXER_AGENT_NAME,
@@ -206,8 +215,8 @@ class BuildAgent(InnerTeamAgent):
     def _select_speaker(self, message_count: int, last_message: Message | None) -> str:
         """Selects the next speaker based on the last message."""
 
-        if message_count == 1 or last_message is None:
-            return self._over_to(BUILDER_AGENT_NAME)
+        if message_count == 1:
+            return self._over_to(TEAM_LEAD_AGENT_NAME)
         if last_message.source == TEAM_LEAD_AGENT_NAME:
             return self._over_to(BUILDER_AGENT_NAME)
         elif last_message.source == BUILDER_AGENT_NAME:

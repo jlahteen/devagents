@@ -1,4 +1,5 @@
 from agent_platform.agent_base import AgentBase, SpeakerSelectorFunc
+from agent_platform.history_optimizer import HistoryOptimizer
 from agent_platform.inner_team_agent_base import InnerTeamAgentBase
 from agent_platform.termination import SuccessOrFailureTermination
 from monitoring.monitor import MonitorBase
@@ -20,8 +21,10 @@ class InnerTeamAgent(InnerTeamAgentBase):
         response_prompt: str,
         success_phrase: str,
         failure_phrase: str,
+        team_lead_agent_name: str,
         monitor: MonitorBase = None,
         on_error_callback: callable = None,
+        history_optimizer: HistoryOptimizer | None = None,
     ):
         """
         Initialize a new InnerTeamAgent instance.
@@ -43,6 +46,8 @@ class InnerTeamAgent(InnerTeamAgentBase):
             termination_condition=termination_condition,
             system_message=system_message,
             response_prompt=response_prompt,
+            history_optimizer=history_optimizer,
+            team_lead_agent_name=team_lead_agent_name,
         )
 
     def _over_to(self, agent_name: str) -> str:

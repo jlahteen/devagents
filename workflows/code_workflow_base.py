@@ -4,12 +4,15 @@ from typing import Sequence
 from agent_platform.agent_base import Message
 from agent_platform.agent_team import AgentTeam
 from agents.developer_agent import DeveloperAgent
+from agents.judge_agent import JudgeAgent
 from agents.output_agent import OutputAgent
 from agents.reviewer_agent import ReviewerAgent
 from monitoring.monitor import MonitorBase
 from utils.config import Config
 from utils.constants import (
     DEVELOPER_AGENT_DONE,
+    JUDGE_AGENT_APPROVED,
+    JUDGE_AGENT_CHANGES_REQUIRED,
     OUTPUT_AGENT_DONE,
     REVIEW_RESULT_APPROVED,
     REVIEW_RESULT_CHANGES_REQUIRED,
@@ -33,6 +36,7 @@ class CodeWorkflowBase(WorkflowBase):
         )
         self._developer_agent = DeveloperAgent(config=config, workflow_type=workflow_type)
         self._reviewer_agent = ReviewerAgent(config=config, workflow_type=workflow_type)
+        self._judge_agent = JudgeAgent(config=config)
         self._output_agent = OutputAgent(config=config)
 
     def _select_next_speaker(self, message_count: int, last_message: Message | None):
@@ -43,13 +47,20 @@ class CodeWorkflowBase(WorkflowBase):
                 return self._over_to(self._reviewer_agent.name)
             else:
                 return self._over_to(self._developer_agent.name)
-        elif last_message.source is self._reviewer_agent.name:
+        elif last_message.source == self._reviewer_agent.name:
             if REVIEW_RESULT_APPROVED in last_message.content:
                 return self._over_to(self._output_agent.name)
             elif REVIEW_RESULT_CHANGES_REQUIRED in last_message.content:
-                return self._over_to(self._developer_agent.name)
+                return self._over_to(self._judge_agent.name)
             else:
                 return self._over_to(self._reviewer_agent.name)
+        elif last_message.source == self._judge_agent.name:
+            if JUDGE_AGENT_APPROVED in last_message.content:
+                return self._over_to(self._output_agent.name)
+            elif JUDGE_AGENT_CHANGES_REQUIRED in last_message.content:
+                return self._over_to(self._developer_agent.name)
+            else:
+                return self._over_to(self._judge_agent.name)
         elif last_message.source == self._output_agent.name:
             if OUTPUT_AGENT_DONE in last_message.content:
                 return self._over_to(self._termination_agent.name)
@@ -67,6 +78,7 @@ class CodeWorkflowBase(WorkflowBase):
             agents=[
                 self._developer_agent,
                 self._reviewer_agent,
+                self._judge_agent,
                 self._output_agent,
                 self._termination_agent,
             ],

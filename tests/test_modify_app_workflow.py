@@ -12,7 +12,7 @@ SKIP_TESTS = False
 
 prompt_modify_hello_world_cs_console_app = textwrap.dedent(
     """
-    Modify the Hello World app to also display the current date and time below the greeting.
+    Modify the Hello World C# console app to also display the current date and time below the greeting.
     Its output should look like this:
     Hello, World!
     Current date and time: {current_date_time}
