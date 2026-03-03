@@ -61,7 +61,7 @@ python -m cli.devagents --workflow <workflowName> --prompt "<prompt>" --workspac
 
 ## 📦 Package Management
 
-### Updating MAF
+### Updating Microsoft Agent Framework
 
 To update the Microsoft Agent Framework to the latest version:
 
@@ -71,7 +71,7 @@ pip install --upgrade agent-framework[azure]
 
 ### Checking Current Version
 
-To see which version of MAF is installed:
+To see which version of Microsoft Agent Framework is installed:
 
 ```powershell
 pip show agent-framework
@@ -79,7 +79,7 @@ pip show agent-framework
 
 ### Verifying Package Compatibility
 
-After updating MAF or any other package, always check for dependency conflicts:
+After updating Microsoft Agent Framework or any other package, always check for dependency conflicts:
 
 ```powershell
 pip check
@@ -100,9 +100,9 @@ After updating packages, you can regenerate requirements.txt:
 pip freeze > requirements.txt
 ```
 
-**Important:** `pip freeze` will expand `agent-framework[azure]` into multiple individual packages. For maintainability, consider keeping only the main package in requirements.txt:
+**Important:** `pip freeze` will expand `agent-framework[azure]` into multiple individual packages. For maintainability, consider keeping only the main package in requirements.txt, for example:
 ```
-agent-framework[azure]==1.0.0b260127
+agent-framework[azure]==1.0.0rc2
 ```
 
 ---
