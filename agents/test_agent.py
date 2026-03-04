@@ -95,8 +95,11 @@ class TestAgent(InnerTeamAgent):
             - For "maven": use the "--no-transfer-progress" option.
           - Run the tests with the determined test commands and options exactly once per your turn.
         - After running all the tests, report the results.
+          - Include the failure/error lines and final summary from the test output (lines containing
+            'failed', 'error', 'FAIL', 'ERROR', or the summary line such as 'Tests run', 'passed', 'failed').
           - If no tests are found, report also that.
-        - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' without any other content.
+        - When all tests are run and the results are reported, say '{TESTER_AGENT_DONE}' on its own line
+          as the very last line.
 
         ## TOOLS
         You have the following tools:

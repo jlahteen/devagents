@@ -18,17 +18,30 @@ class ConsolePrinter:
         """Prints a workflow event to the console."""
 
         event_type = type(event).__name__
+        workflow_event_type = getattr(event, "type", None)
 
-        # Filter out certain event types
-        if self._should_filter_event(event_type):
-            return
-
-        # Delegate the printing to the specific print methods based on the event type
+        # Always print events that carry agent text, regardless of type
         if self._has_text_content(event):
             self._print_text_content(event)
-        elif "output" in event_type.lower() or "response" in event_type.lower():
+            return
+
+        # group_chat event: fires when a participant is selected — print their working header
+        if workflow_event_type == "group_chat":
+            data = getattr(event, "data", None)
+            if type(data).__name__ == "GroupChatRequestSentEvent":
+                participant_name = getattr(data, "participant_name", None)
+                if participant_name:
+                    self.print_working_agent(participant_name)
+            return
+
+        # Filter out noisy infrastructure events
+        if self._should_filter_event(event_type, workflow_event_type):
+            return
+
+        # Delegate remaining events
+        if "output" in event_type.lower() or "response" in event_type.lower() or workflow_event_type == "output":
             self._print_output(event)
-        elif "fail" in event_type.lower() or "error" in event_type.lower():
+        elif "fail" in event_type.lower() or "error" in event_type.lower() or workflow_event_type == "failed":
             self._print_error(event)
         else:
             self._print_unrecognized_event(event)
@@ -65,13 +78,27 @@ class ConsolePrinter:
         """Prints an agent response."""
 
         try:
-            print(content, end="", flush=True)
+            print(content, flush=True)
         except UnicodeEncodeError:
-            print(content.encode("ascii", errors="ignore").decode(), end="", flush=True)
+            print(content.encode("ascii", errors="ignore").decode(), flush=True)
 
-    def _should_filter_event(self, event_type: str) -> bool:
+    def _should_filter_event(self, event_type: str, workflow_event_type: str | None = None) -> bool:
         """Checks whether an event should be filtered out."""
 
+        # Filter by WorkflowEvent.type string (new rc2 API emits all events as WorkflowEvent)
+        if workflow_event_type is not None:
+            _FILTERED_WORKFLOW_EVENT_TYPES = {
+                "executor_invoked",
+                "executor_completed",
+                "superstep_started",
+                "superstep_completed",
+                "started",
+                "status",
+            }
+            if workflow_event_type in _FILTERED_WORKFLOW_EVENT_TYPES:
+                return True
+
+        # Filter by class name (legacy / in-process events)
         event_type_lower = event_type.lower()
         return (
             "workflowstarted" in event_type_lower
@@ -86,14 +113,30 @@ class ConsolePrinter:
     def _has_text_content(self, event: Any) -> bool:
         """Checks whether an event has text content to display."""
 
+        return self._extract_text(event) is not None
+
+    def _extract_text(self, event: Any) -> str | None:
+        """Extracts displayable text from an event, returning None if not present."""
+
         data = getattr(event, "data", None)
-        return data is not None and hasattr(data, "text")
+        if data is None:
+            return None
+
+        # Skip AgentExecutorResponse — its text was already printed token-by-token
+        # via the streaming AgentResponseUpdate events above.
+        if hasattr(data, "agent_response"):
+            return None
+
+        # Streaming AgentResponseUpdate: data.text
+        if hasattr(data, "text") and data.text:
+            return data.text
+
+        return None
 
     def _print_text_content(self, event: Any):
         """Prints an event with a text content."""
 
-        data = getattr(event, "data", None)
-        content = data.text
+        content = self._extract_text(event)
         if content:
             self._print_agent_response(content)
 

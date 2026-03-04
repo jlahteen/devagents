@@ -4,10 +4,10 @@ from utils.misc import to_os_path
 
 if __name__ == "__main__":
     # Run all tests
-    pytest.main(["-s", "tests"])
+    # pytest.main(["-s", "tests"])
 
     # BuldAgent tests
-    # pytest.main(["-s", to_os_path("tests\\test_build_agent.py")])
+    pytest.main(["-s", to_os_path("tests\\test_build_agent.py")])
 
     # Shell tools tests
     # pytest.main(["-s", to_os_path("tests\\test_shell_tools.py")])

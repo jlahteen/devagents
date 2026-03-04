@@ -2,9 +2,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Awaitable
 
-from agent_framework import ChatAgent, ai_function
+from agent_framework import Agent, tool as af_tool
 from agent_framework.azure import AzureOpenAIChatClient
-from agent_framework.exceptions import ServiceResponseException
+from agent_framework.exceptions import ChatClientException
 from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait_exponential
 
 from utils.config import Config
@@ -35,7 +35,7 @@ _HTTP_STATUS_RATE_LIMIT = 429
 def _is_rate_limit_error(exception: BaseException) -> bool:
     """Checks if the exception is a rate limit error."""
 
-    if isinstance(exception, ServiceResponseException):
+    if isinstance(exception, ChatClientException):
         # Check the inner exception for the HTTP status code
         inner = getattr(exception, "inner_exception", None)
         if inner and hasattr(inner, "status_code"):
@@ -76,7 +76,7 @@ class RetryableAzureOpenAIChatClient(AzureOpenAIChatClient):
                     raise
 
 
-class AgentBase(ChatAgent):
+class AgentBase(Agent):
     """Defines a Microsoft Agent Framework implementation for the platform-agnostic AgentBase."""
 
     def __init__(self, name: str, system_message: str, config: Config, tools: list[Tool] | None = None):
@@ -92,38 +92,51 @@ class AgentBase(ChatAgent):
             api_version=model_config.get("api_version"),
         )
 
-        # Initialize the ChatAgent parent
+        # Initialize the Agent parent
         super().__init__(
+            client=chat_client,
             name=name,
             instructions=system_message,
-            chat_client=chat_client,
             tools=self._to_maf_tools(),
         )
 
-    async def run(self, prompt: str) -> str:
-        """Runs the agent with a prompt. Returns the agent's response content."""
+    def run(self, messages=None, *, stream=False, session=None, **kwargs):
+        """
+        Runs the agent.
 
-        response = await super().run(prompt)
+        When called with a plain string prompt (direct/test usage), returns a coroutine that awaits and extracts
+        the text response. When called by the framework (stream=True or messages list), delegates to the parent
+        to preserve the expected GroupChat participant protocol.
+        """
 
-        # Extract the final text response
+        if isinstance(messages, str):
+            # Simple prompt convenience form: return awaitable that extracts text
+            return self._run_with_prompt(messages, session=session)
+        elif stream:
+            # Framework streaming call: return ResponseStream directly (not a coroutine)
+            return super().run(messages, stream=True, session=session, **kwargs)
+        else:
+            # Framework non-streaming call
+            return super().run(messages, stream=False, session=session, **kwargs)
+
+    async def _run_with_prompt(self, prompt: str, session=None) -> str:
+        """Awaits a plain-prompt run and extracts the final text."""
+
+        response = await super().run(prompt, stream=False, session=session)
         if not response.messages:
             return ""
-
-        # Return the last non-empty text message
         for msg in reversed(response.messages):
             if hasattr(msg, "text") and msg.text:
                 return msg.text
-
         return ""
 
     def _to_maf_tools(self):
         """Converts the platform-agnostic tools to the corresponding MAF tools."""
 
         maf_tools = []
-        for tool in self._tools:
-            # Wrap plain functions using MAF's ai_function
-            func_name = tool.__name__ if hasattr(tool, "__name__") else "tool"
-            func_desc = tool.__doc__ or f"Tool: {func_name}"
-            maf_tool = ai_function(func=tool, name=func_name, description=func_desc)
-            maf_tools.append(maf_tool)
+        for fn in self._tools:
+            # Wrap plain functions using MAF's tool decorator
+            func_name = fn.__name__ if hasattr(fn, "__name__") else "tool"
+            func_desc = fn.__doc__ or f"Tool: {func_name}"
+            maf_tools.append(af_tool(func=fn, name=func_name, description=func_desc))
         return maf_tools

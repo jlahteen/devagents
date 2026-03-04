@@ -95,7 +95,9 @@ class BuildAgent(InnerTeamAgent):
             - For the verbosity level of the build commands, use options that suppress INFO level output if available.
               - For "maven": use the "--no-transfer-progress" option.
           - Run the build command.
-        - After running all builds, say '{BUILDER_AGENT_DONE}' without any other content.
+        - After running all builds, report only the error and warning lines from the build output
+          (lines containing 'error' or 'warning', plus the final summary line such as 'Error(s)'),
+          then end your response with '{BUILDER_AGENT_DONE}' on its own line as the very last line.
 
         ## TOOLS
         You have the following tools:
@@ -165,9 +167,10 @@ class BuildAgent(InnerTeamAgent):
     )
 
     def __init__(self, config: Config, monitor: MonitorBase = None, on_error_callback: callable = None):
-        history_optimizer = IterationOptimizer(
-            team_lead_agent_name=TEAM_LEAD_AGENT_NAME, max_iterations=DEFAULT_MAX_HISTORY_ITERATIONS
-        )
+        history_optimizer = None  # IterationOptimizer disabled for stability
+        # history_optimizer = IterationOptimizer(
+        #     team_lead_agent_name=TEAM_LEAD_AGENT_NAME, max_iterations=DEFAULT_MAX_HISTORY_ITERATIONS
+        # )
         super().__init__(
             name="build_agent",
             config=config,

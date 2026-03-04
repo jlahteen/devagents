@@ -1,6 +1,6 @@
 from typing import Any
 
-from agent_framework import GroupChatState
+from agent_framework.orchestrations import GroupChatState
 
 
 class HistoryOptimizer:
@@ -20,8 +20,8 @@ class MessageCountOptimizer(HistoryOptimizer):
     def trim(self, messages: Any) -> None:
         """Trims conversation history to keep only the most recent max_messages in the conversation history."""
 
-        if len(messages) > self._max_messages:
-            del messages[: -self._max_messages]
+        if len(messages.conversation) > self._max_messages:
+            del messages.conversation[: -self._max_messages]
 
 
 class IterationOptimizer(HistoryOptimizer):
@@ -35,17 +35,17 @@ class IterationOptimizer(HistoryOptimizer):
         """Trims the conversation history to keep only the most recent max_iterations in the conversation history."""
 
         state: GroupChatState = messages
-        if not state or not hasattr(state, "messages") or not state.messages:
+        if not state or not hasattr(state, "conversation") or not state.conversation:
             return
         team_lead_name = self._team_lead_agent_name
         team_lead_count = 0
         cutoff_index = 0
-        for i in range(len(state.messages) - 1, -1, -1):
-            msg = state.messages[i]
+        for i in range(len(state.conversation) - 1, -1, -1):
+            msg = state.conversation[i]
             if msg.author_name == team_lead_name:
                 team_lead_count += 1
                 if team_lead_count >= self._max_iterations:
                     cutoff_index = i
                     break
         if cutoff_index > 0:
-            del state.messages[:cutoff_index]
+            del state.conversation[:cutoff_index]

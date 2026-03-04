@@ -1,4 +1,4 @@
-from agent_framework import GroupChatBuilder, GroupChatState
+from agent_framework.orchestrations import GroupChatBuilder, GroupChatState
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
 from agent_platform.console_printer import ConsolePrinter
@@ -32,12 +32,12 @@ class AgentTeam:
 
         # Build a GroupChat with speaker selection
         self._workflow = (
-            GroupChatBuilder()
-            .participants(agents)
-            .with_select_speaker_func(self._select_next_speaker)
-            .with_termination_condition(self._termination_condition_wrapper)
-            .with_max_rounds(_MAX_CONVERSATION_ROUNDS)
-            .build()
+            GroupChatBuilder(
+                participants=agents,
+                selection_func=self._select_next_speaker,
+                termination_condition=self._termination_condition_wrapper,
+                max_rounds=_MAX_CONVERSATION_ROUNDS,
+            ).build()
         )
 
     async def run(self, prompt: str) -> None:
@@ -47,7 +47,7 @@ class AgentTeam:
         self._console_printer.print_user_prompt(prompt)
 
         # Stream workflow events in real-time
-        async for event in self._workflow.run_stream(prompt, include_status_events=True):
+        async for event in self._workflow.run(prompt, stream=True, include_status_events=True):
             self._console_printer.print_event(event)
 
         self._console_printer.print_separator()
@@ -71,7 +71,6 @@ class AgentTeam:
                     break
 
         next_speaker = self._selector_func(message_count, last_message)
-        self._console_printer.print_working_agent(next_speaker)
         return next_speaker
 
     async def _termination_condition_wrapper(self, messages) -> bool:

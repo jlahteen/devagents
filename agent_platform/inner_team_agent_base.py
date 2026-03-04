@@ -1,5 +1,5 @@
-from agent_framework import ChatAgent, GroupChatBuilder, GroupChatState
-from agent_framework._types import ChatMessage
+from agent_framework import Agent, AgentResponse, AgentResponseUpdate, Content, ResponseStream
+from agent_framework.orchestrations import GroupChatBuilder, GroupChatState
 from agent_framework.azure import AzureOpenAIChatClient
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
@@ -12,11 +12,11 @@ from utils.config import Config
 _MAX_CONVERSATION_ROUNDS = 999
 
 
-class InnerTeamAgentBase(ChatAgent):
+class InnerTeamAgentBase(Agent):
     """
     Defines a platform-agnostic base class for agents with an inner team.
 
-    Internal implementation inherits from ChatAgent and overrides run_stream() to execute the inner workflow. Returns
+    Internal implementation inherits from Agent and overrides run() to execute the inner workflow. Returns
     a response based on a specified response prompt.
     """
 
@@ -45,7 +45,7 @@ class InnerTeamAgentBase(ChatAgent):
 
         # Initialize the base class
         super().__init__(
-            chat_client=chat_client,
+            client=chat_client,
             instructions=system_message,
             name=name,
         )
@@ -62,68 +62,72 @@ class InnerTeamAgentBase(ChatAgent):
 
         # Build the inner team workflow
         self._inner_workflow = (
-            GroupChatBuilder()
-            .participants(agents)
-            .with_select_speaker_func(self._select_next_speaker)
-            .with_termination_condition(self._termination_condition_wrapper)
-            .with_max_rounds(_MAX_CONVERSATION_ROUNDS)
-            .build()
+            GroupChatBuilder(
+                participants=agents,
+                selection_func=self._select_next_speaker,
+                termination_condition=self._termination_condition_wrapper,
+                max_rounds=_MAX_CONVERSATION_ROUNDS,
+            ).build()
         )
 
-    async def run_stream(self, messages=None, *, thread=None, **kwargs):
+    def run(self, messages=None, *, stream=False, session=None, **kwargs):
         """
-        Overrides run_stream() to execute an inner workflow and return its response to the outer GroupChat.
+        Overrides run() to execute an inner workflow and return its response to the outer GroupChat.
 
-        In the end, we must call super().run_stream() to maintain conversation threading in the outer GroupChat. We
-        also build a response prompt that instructs the LLM how to respond to the outer chat. The outer chat is not
-        interested in the inner team's conversation history, just in the final result.
+        Returns a ResponseStream wrapping the inner team execution so the framework can iterate it with stream=True.
+        """
+        return ResponseStream.from_awaitable(self._run_inner_and_relay(session=session))
+
+    async def _run_inner_and_relay(self, session=None) -> ResponseStream:
+        """
+        Runs the inner workflow, extracts the team lead result, then returns the parent's ResponseStream.
+
+        This coroutine returns a ResponseStream (not an AgentResponse), satisfying ResponseStream.from_awaitable().
         """
 
         # Run the inner workflow with the system message (contains instructions for the inner team)
-        events = []
-        async for event in self._inner_workflow.run_stream(self._system_message, include_status_events=True):
+        inner_stream = self._inner_workflow.run(self._system_message, stream=True, include_status_events=True)
+        async for event in inner_stream:
             self._console_printer.print_event(event)
-            events.append(event)
 
-        # Extract the final message from WorkflowOutputEvents
+        # Extract the final message from the workflow outputs
+        result = await inner_stream.get_final_response()
         final_message = ""
-        for event in reversed(events):
-            if event.__class__.__name__ == "WorkflowOutputEvent":
-                if hasattr(event, "data") and event.data:
-                    # Search backwards for the team_lead_agent message
-                    for msg in reversed(event.data):
-                        if (
-                            hasattr(msg, "author_name")
-                            and msg.author_name == self._team_lead_agent_name
-                            and hasattr(msg, "text")
-                            and msg.text
-                            and msg.text.strip()
-                        ):
-                            final_message = msg.text
-                            break
-                    if final_message:
+        for output in result.get_outputs():
+            if isinstance(output, list):
+                for msg in reversed(output):
+                    if (
+                        hasattr(msg, "author_name")
+                        and msg.author_name == self._team_lead_agent_name
+                        and hasattr(msg, "text")
+                        and msg.text
+                        and msg.text.strip()
+                    ):
+                        final_message = msg.text
                         break
+            if final_message:
+                break
 
         if not final_message:
             final_message = "Inner team error: No result from the inner team"
 
-        # Show that this agent is now working to return the response to the outer chat
-        self._console_printer.print_working_agent(self.name)
+        # Return the final message directly as a ResponseStream — no extra LLM call needed
+        text = final_message
 
-        # Use the response prompt to relay the inner team's result to the outer chat
-        response_prompt = f"{self._response_prompt}\n\n{final_message}"
+        async def _text_gen():
+            yield AgentResponseUpdate(
+                contents=[Content.from_text(text)],
+                role="assistant",
+                author_name=self.name,
+            )
 
-        # Call the parent ChatAgent.run_stream() with the response prompt
-        async for update in super().run_stream(
-            messages=[ChatMessage(role="user", text=response_prompt)], thread=thread, **kwargs
-        ):
-            yield update
+        return ResponseStream(_text_gen(), finalizer=AgentResponse.from_updates)
 
     async def run_inner_team(self, prompt: str):
         """Runs the inner team with a given prompt."""
 
         self._console_printer.print_user_prompt(prompt)
-        async for event in self._inner_workflow.run_stream(prompt, include_status_events=True):
+        async for event in self._inner_workflow.run(prompt, stream=True, include_status_events=True):
             self._console_printer.print_event(event)
         self._console_printer.print_separator()
 
@@ -144,7 +148,6 @@ class InnerTeamAgentBase(ChatAgent):
             last_message = Message(source=author, content=msg.text)
 
         next_speaker = self._speaker_selector(message_count, last_message)
-        self._console_printer.print_working_agent(self.name, next_speaker)
         return next_speaker
 
     async def _termination_condition_wrapper(self, messages) -> bool:
