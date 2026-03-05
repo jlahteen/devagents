@@ -31,11 +31,34 @@ Create a virtual environment:
 
 ```powershell
 # Create a virtual environment
-python -m venv ./venv
+python -m venv .venv
 
 # Activate the virtual environment
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
+
+#### Recreating the Virtual Environment
+
+If you need to recreate your virtual environment (e.g., after upgrading Python, fixing package conflicts, or cleaning up after experiments):
+
+```powershell
+# Deactivate the current environment (if active)
+deactivate
+
+# Remove the existing virtual environment directory
+Remove-Item -Recurse -Force .venv
+
+# Create a fresh virtual environment
+python -m venv .venv
+
+# Activate the new environment
+.\.venv\Scripts\Activate.ps1
+
+# Reinstall all dependencies
+pip install -r requirements.txt
+```
+
+**Note:** The convenience scripts `_venv.bat` and `_venv.ps1` in the project root can be used to quickly activate the virtual environment.
 
 ### 4. Install Requirements
 
