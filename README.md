@@ -1,5 +1,8 @@
 # Welcome to DevAgents!
 
+[![Docker Build](https://github.com/jlahteen/devagents/actions/workflows/docker-build.yml/badge.svg)](https://github.com/jlahteen/devagents/actions/workflows/docker-build.yml)
+[![Container](https://ghcr-badge.egpl.dev/jlahteen/devagents/latest_tag?trim=major&label=latest)](https://github.com/jlahteen/devagents/pkgs/container/devagents)
+
 DevAgents is an **experimental** project for using a team of AI agents for generating code or even create complete applications.
 
 DevAgents uses a workflow-based approach. There are workflows for different scenarios. DevAgents aims to complete all workflows autonomously.
