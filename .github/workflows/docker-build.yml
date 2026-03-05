@@ -1,0 +1,88 @@
+name: Build and Publish DevAgents Docker Image
+
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Prepare deployment files
+        run: |
+          cd deploy
+          mkdir -p devagents
+          
+          # Copy root files
+          cp ../*.py devagents/ 2>/dev/null || true
+          cp ../*.txt devagents/ 2>/dev/null || true
+          cp ../LICENSE devagents/ 2>/dev/null || true
+          cp ../README.md devagents/ 2>/dev/null || true
+          
+          # Copy directories
+          cp -r ../utils devagents/
+          cp -r ../tools devagents/
+          cp -r ../workflows devagents/
+          cp -r ../agents devagents/
+          cp -r ../agent_platform devagents/
+          cp -r ../monitoring devagents/
+          cp -r ../workflow_engine devagents/
+          cp -r ../cli devagents/
+          
+          # Copy tests
+          mkdir -p devagents/tests
+          cp ../tests/*.py devagents/tests/ 2>/dev/null || true
+          cp -r ../tests/test_data devagents/tests/ 2>/dev/null || true
+          
+          # Update build number
+          python update_build.py
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./deploy
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Image digest
+        run: echo ${{ steps.meta.outputs.digest }}
