@@ -1,6 +1,5 @@
 import pyfiglet
 
-VERSION = "Version 1.0.0-preview"
 BUILD = "Build __BUILD__"
 HOME_PAGE = "https://github.com/jlahteen/devagents"
 
@@ -30,12 +29,13 @@ def say_hello():
     for line in ascii_art.splitlines():
         print(f"/ {line.ljust(width)} \\")
     print(f"/ {''.ljust(width)} \\")
-    print(f"/ {VERSION.center(width)} \\")
     print(f"/ {BUILD.center(width)} \\")
     print_home_page(width)
+    print(f"/ {''.ljust(width)} \\")
     print(border_line)
-    print(" ✨  Hey! We are a software team of AI agents.  ✨")
+    print(" ✨  Hey! We're AI agents that build software.  ✨")
     print(" ✨       Let's create something together!      ✨")
+    print(" ✨   Always verify and test AI written code.   ✨")
     print()
 
 
