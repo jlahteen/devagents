@@ -2,7 +2,7 @@ name: Build and Publish DevAgents Docker Image
 
 on:
   push:
-    branches: [ main, develop, 'feature/**' ]
+    branches: [ main, develop ]
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ main ]
