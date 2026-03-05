@@ -27,35 +27,15 @@ DevAgents architecture is illustrated in the diagram below.
 ![DevAgents Logo](docs/devagents-architecture.png)
 
 
-## How to Run Workflows with DevAgents
+## Docker Support
 
-To run workflows with DevAgents, use the following command:
+You can start DevAgents in a Docker container with the following command:
 
 ```bash
-python -m cli.devagents.py [--workflow <workflowName>] [--prompt <prompt>] [--workspace <workspace>]
+docker run -it -v <local-workspace-path>:/workspace --env-file <path-to-env-file> ghcr.io/jlahteen/devagents:latest
 ```
 
-When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
-
-Generated or modified code and other artifacts are saved in the given workspace.
-
-DevAgents is available in a Docker container. The container defines the following aliases for starting workflows more easily.
-
-| **Alias**   | **Definition**                       | **Description**              |
-|-------------|--------------------------------------|------------------------------|
-| devagents   | python -m cli.devagents              | Starts DevAgents             |
-| new-code    | devagents --workflow NewCode         | Starts a NewCode workflow    |
-| modify-code | devagents --workflow ModifyCode      | Starts a ModifyCode workflow |
-| new-app     | devagents --workflow NewApp          | Starts a NewApp workflow     |
-| modify-app  | devagents --workflow ModifyApp       | Starts a ModifyApp workflow  |
-| fix-build   | devagents --workflow FixBuild        | Starts a FixBuild workflow   |
-| fix-tests   | devagents --workflow FixTests        | Starts a FixTests workflow   |
-| ver         | python -m cli.hello                  | Prints the DevAgents version |
-
-
-## Configuration
-
-To run DevAgents, you have to set the following environment variables in a `.env` file.
+You have to set the following environment variables in a `.env` file.
 
 | Environment variable | Description                                                                                     |
 |----------------------|-------------------------------------------------------------------------------------------------|
@@ -80,6 +60,32 @@ GOOGLE_CSE_ID=<secret>
 ```
 
 
+## How to Run Workflows with DevAgents
+
+To run workflows with DevAgents, use the following command:
+
+```bash
+python -m cli.devagents.py [--workflow <workflowName>] [--prompt <prompt>] [--workspace <workspace>]
+```
+
+When DevAgents starts, you will be asked to enter missing command line arguments. You can give a prompt as a raw prompt or as a file path to a file containing a prompt. A workspace is a directory where DevAgents operates when processing a coding task specified by the given prompt.
+
+Generated or modified code and other artifacts are saved in the given workspace.
+
+The following aliases are available for starting workflows more easily.
+
+| **Alias**   | **Definition**                       | **Description**              |
+|-------------|--------------------------------------|------------------------------|
+| devagents   | python -m cli.devagents              | Starts DevAgents             |
+| new-code    | devagents --workflow NewCode         | Starts a NewCode workflow    |
+| modify-code | devagents --workflow ModifyCode      | Starts a ModifyCode workflow |
+| new-app     | devagents --workflow NewApp          | Starts a NewApp workflow     |
+| modify-app  | devagents --workflow ModifyApp       | Starts a ModifyApp workflow  |
+| fix-build   | devagents --workflow FixBuild        | Starts a FixBuild workflow   |
+| fix-tests   | devagents --workflow FixTests        | Starts a FixTests workflow   |
+| ver         | python -m cli.hello                  | Prints the DevAgents version |
+
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
@@ -88,7 +94,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Remarks
 
 - DevAgents has been tested with Azure OpenAI Service using GPT-5.2.
-- Always carefully review and test all code written by AI - this is valid for all tools, not just for DevAgents.
+- Always carefully review and test all code written by AI - this is valid for all AI tools, not just for DevAgents.
 
 
 ## Further Information
