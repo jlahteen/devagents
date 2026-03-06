@@ -76,4 +76,4 @@ jobs:
             -e GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} \
             -e GOOGLE_CSE_ID=${{ secrets.GOOGLE_CSE_ID }} \
             devagents:test \
-            bash -c "cd /app/devagents && source .venv/bin/activate && $TEST_CMD"
+            bash -c "cd /app/devagents && $TEST_CMD"
