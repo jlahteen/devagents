@@ -1,3 +1,5 @@
+import inspect
+
 from agent_framework import GroupChatBuilder, GroupChatState
 
 from agent_platform.agent_base import AgentBase, Message, SpeakerSelectorFunc
@@ -77,4 +79,7 @@ class AgentTeam:
     async def _termination_condition_wrapper(self, messages) -> bool:
         """Checks the termination condition."""
 
-        return self._termination_condition.check(messages)
+        result = self._termination_condition.check(messages)
+        if inspect.isawaitable(result):
+            return await result
+        return result
