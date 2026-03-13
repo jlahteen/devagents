@@ -41,5 +41,15 @@ class WorkflowFactory:
 
                 return FixTestsWorkflow(config=config, monitor=monitor)
 
+            case "NewPlan" | "new-plan":
+                from workflows.new_plan.new_plan_workflow import NewPlanWorkflow
+
+                return NewPlanWorkflow(config=config, monitor=monitor)
+
+            case "ImplementPlan" | "implement-plan":
+                from workflows.implement_plan.implement_plan_workflow import ImplementPlanWorkflow
+
+                return ImplementPlanWorkflow(config=config, monitor=monitor)
+
             case _:
                 raise ValueError(f"Unknown workflow: '{workflow_name}'")
