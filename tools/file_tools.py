@@ -76,6 +76,21 @@ def read_previous_version(file_path: str) -> str:
         return error_msg
 
 
+def create_directory(dir_path: str) -> str:
+    """Creates a directory."""
+
+    try:
+        with file_lock:
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path, exist_ok=True)
+        print_tool_use(f"create_directory: '{dir_path}'")
+        return f"create_directory OK: Created the directory '{dir_path}'"
+    except Exception as e:
+        error_msg = f"create_directory ERROR: Failed to create the directory '{dir_path}': {e}"
+        print_tool_error(error_msg)
+        return error_msg
+
+
 def enum_subdirs(dir_path: str) -> list:
     """
     Enumerates all subdirectories of a given directory.
