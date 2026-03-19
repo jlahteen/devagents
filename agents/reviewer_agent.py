@@ -105,7 +105,7 @@ class ReviewerAgent(AgentBase):
 
         if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
             return self._system_message_new
-        elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
+        elif workflow_type in [WorkflowType.MODIFY_CODE, WorkflowType.MODIFY_APP, WorkflowType.IMPLEMENT_PLAN]:
             return self._system_message_modify
         else:
             raise ValueError(f"System message not defined for the workflow type: {workflow_type}")
@@ -115,7 +115,7 @@ class ReviewerAgent(AgentBase):
 
         if workflow_type == WorkflowType.NEW_CODE or workflow_type == WorkflowType.NEW_APP:
             return []
-        elif workflow_type == WorkflowType.MODIFY_CODE or workflow_type == WorkflowType.MODIFY_APP:
+        elif workflow_type in [WorkflowType.MODIFY_CODE, WorkflowType.MODIFY_APP, WorkflowType.IMPLEMENT_PLAN]:
             return [read_previous_version]
         else:
             raise ValueError(f"Tools not defined for the workflow type: {workflow_type}")
