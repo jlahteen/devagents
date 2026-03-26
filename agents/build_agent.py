@@ -119,8 +119,10 @@ class BuildAgent(InnerTeamAgent):
         - NEVER ask questions, just suggest specific fixes.
 
         ## INSTRUCTIONS
-        - Use your knowledge to suggest fixes, but if that is not enough, use research_web tool to find the latest
-          information about the errors. Use build error codes and messages as research topics.
+        - Use your knowledge to suggest fixes, but if that is not enough, use the research_web tool to find the latest
+          information about the build errors. Use build error codes and messages as research topics. Build errors are
+          syntax errors, missing dependencies, incompatible versions, configuration issues, etc. Do not research
+          business-related topics.
         - Read each necessary file only once. Analyze all errors from that file in a single pass without re-reading.
           Even with multiple errors, read the file once and provide fixes for all issues together.
         - If the build was successful, end your response with '{BUILD_SUCCEEDED}'.
