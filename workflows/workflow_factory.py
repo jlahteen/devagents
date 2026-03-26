@@ -41,6 +41,11 @@ class WorkflowFactory:
 
                 return FixTestsWorkflow(config=config, monitor=monitor)
 
+            case "NewArchitecture" | "new-architecture":
+                from workflows.new_architecture.new_architecture_workflow import NewArchitectureWorkflow
+
+                return NewArchitectureWorkflow(config=config, monitor=monitor)
+
             case "NewPlan" | "new-plan":
                 from workflows.new_plan.new_plan_workflow import NewPlanWorkflow
 
