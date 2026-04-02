@@ -31,6 +31,7 @@ class InnerTeamAgentBase(ChatAgent):
         response_prompt: str,
         team_lead_agent_name: str,
         history_optimizer: HistoryOptimizer | None = None,
+        forward_outer_prompt: bool = False,
     ):
         """Initializes a new inner team agent."""
 
@@ -54,11 +55,11 @@ class InnerTeamAgentBase(ChatAgent):
         self._agents = agents
         self._speaker_selector = speaker_selector
         self._termination_condition = termination_condition
-        self._system_message = system_message
         self._response_prompt = response_prompt
         self._console_printer = ConsolePrinter()
         self._team_lead_agent_name = team_lead_agent_name
         self._history_optimizer = history_optimizer
+        self._forward_outer_prompt = forward_outer_prompt
 
         # Build the inner team workflow
         self._inner_workflow = (
@@ -79,9 +80,11 @@ class InnerTeamAgentBase(ChatAgent):
         interested in the inner team's conversation history, just in the final result.
         """
 
-        # Run the inner workflow with the system message (contains instructions for the inner team)
+        # Get the prompt for the inner team
+        inner_prompt = self._get_inner_team_prompt(messages)
+
         events = []
-        async for event in self._inner_workflow.run_stream(self._system_message, include_status_events=True):
+        async for event in self._inner_workflow.run_stream(inner_prompt, include_status_events=True):
             self._console_printer.print_event(event)
             events.append(event)
 
@@ -126,6 +129,25 @@ class InnerTeamAgentBase(ChatAgent):
         async for event in self._inner_workflow.run_stream(prompt, include_status_events=True):
             self._console_printer.print_event(event)
         self._console_printer.print_separator()
+
+    def _get_inner_team_prompt(self, messages) -> str:
+        """Returns the prompt for the inner team."""
+
+        if self._forward_outer_prompt:
+            if isinstance(messages, list):
+                for message in reversed(messages):
+                    text = getattr(message, "text", None)
+                    if text and text.strip():
+                        return text.strip()
+
+            text = getattr(messages, "text", None)
+            if text and text.strip():
+                return text.strip()
+
+            if isinstance(messages, str) and messages.strip():
+                return messages.strip()
+
+        return "Begin."
 
     def _select_next_speaker(self, state: GroupChatState) -> str:
         """Selects the next speaker in the inner team workflow."""

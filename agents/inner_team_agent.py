@@ -25,6 +25,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
         monitor: MonitorBase = None,
         on_error_callback: callable = None,
         history_optimizer: HistoryOptimizer | None = None,
+        forward_outer_prompt: bool = False,
     ):
         """
         Initialize a new InnerTeamAgent instance.
@@ -48,6 +49,7 @@ class InnerTeamAgent(InnerTeamAgentBase):
             response_prompt=response_prompt,
             history_optimizer=history_optimizer,
             team_lead_agent_name=team_lead_agent_name,
+            forward_outer_prompt=forward_outer_prompt,
         )
 
     def _over_to(self, agent_name: str) -> str:

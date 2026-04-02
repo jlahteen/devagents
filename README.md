@@ -17,6 +17,7 @@ The workflows that are currently supported are listed in the table below.
 | ModifyApp         | A workflow for modifying existing applications. In a ModifyApp workflow, the application will be rebuilt and retested after modifications by specialized agents. |
 | FixBuild          | A workflow to ensure an application builds successfully. Build errors will be fixed if necessary. |
 | FixTests          | A workflow to ensure all tests pass successfully. Tests will be fixed if necessary. |
+| NewArchitecture   | A workflow for creating an architecture document from a specifications file. The architecture is reviewed by a reviewer agent and revised until approved. |
 
 DevAgents uses a platform-agnostic abstraction layer for agent orchestration, allowing for flexibility in the underlying AI framework. The current implementation uses [Microsoft Agent Framework](https://github.com/microsoft/agent-framework), but the architecture enables swapping to alternative frameworks without impacting workflows or agents.
 
@@ -74,16 +75,17 @@ Generated or modified code and other artifacts are saved in the given workspace.
 
 The following aliases are available for starting workflows more easily.
 
-| **Alias**   | **Definition**                       | **Description**              |
-|-------------|--------------------------------------|------------------------------|
-| devagents   | python -m cli.devagents              | Starts DevAgents             |
-| new-code    | devagents --workflow NewCode         | Starts a NewCode workflow    |
-| modify-code | devagents --workflow ModifyCode      | Starts a ModifyCode workflow |
-| new-app     | devagents --workflow NewApp          | Starts a NewApp workflow     |
-| modify-app  | devagents --workflow ModifyApp       | Starts a ModifyApp workflow  |
-| fix-build   | devagents --workflow FixBuild        | Starts a FixBuild workflow   |
-| fix-tests   | devagents --workflow FixTests        | Starts a FixTests workflow   |
-| ver         | python -m cli.hello                  | Prints the DevAgents version |
+| **Alias**        | **Definition**                       | **Description**                   |
+|------------------|--------------------------------------|-----------------------------------|
+| devagents        | python -m cli.devagents              | Starts DevAgents                  |
+| new-code         | devagents --workflow NewCode         | Starts a NewCode workflow         |
+| modify-code      | devagents --workflow ModifyCode      | Starts a ModifyCode workflow      |
+| new-app          | devagents --workflow NewApp          | Starts a NewApp workflow          |
+| modify-app       | devagents --workflow ModifyApp       | Starts a ModifyApp workflow       |
+| fix-build        | devagents --workflow FixBuild        | Starts a FixBuild workflow        |
+| fix-tests        | devagents --workflow FixTests        | Starts a FixTests workflow        |
+| new-architecture | devagents --workflow NewArchitecture | Starts a NewArchitecture workflow |
+| ver              | python -m cli.hello                  | Prints the DevAgents version      |
 
 
 ## License
