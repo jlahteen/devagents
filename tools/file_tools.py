@@ -38,6 +38,7 @@ def read_file(file_path: str) -> str:
 
     If the file does not exist, the function returns an error message.
     """
+    
     try:
         # Allow only one thread to access the file reading section
         with file_lock:
@@ -97,6 +98,7 @@ def enum_subdirs(dir_path: str) -> list:
 
     If the directory does not exist, the function returns an error message.
     """
+    
     try:
         # Allow only one thread to access the directory listing section
         with file_lock:
@@ -113,19 +115,24 @@ def enum_subdirs(dir_path: str) -> list:
         return error_msg
 
 
-def enum_files(dir_path: str) -> list:
+def enum_files(dir_path: str, file_mask: str = "*") -> list:
     """
-    Enumerates all files of a given directory.
+    Enumerates files in a given directory, optionally filtered by a file mask.
 
     If the directory does not exist, the function returns an error message.
     """
+
     try:
         # Allow only one thread to access the directory listing section
         with file_lock:
             if not os.path.exists(dir_path):
                 return f"enum_files ERROR: The directory '{dir_path}' does not exist"
-            files = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
-        print_tool_use(f"enum_files: '{dir_path}'")
+            files = [
+                f
+                for f in os.listdir(dir_path)
+                if os.path.isfile(os.path.join(dir_path, f)) and fnmatch.fnmatch(f, file_mask)
+            ]
+        print_tool_use(f"enum_files: '{dir_path}' file_mask='{file_mask}'")
         return files
     except Exception as e:
         error_msg = f"enum_files ERROR: Failed to enumerate the files of '{dir_path}': {e}"
@@ -139,6 +146,7 @@ def delete_file(file_path: str) -> str:
 
     If the file does not exist, the function returns an error message.
     """
+    
     try:
         # Allow only one thread to access the file deletion section
         with file_lock:
