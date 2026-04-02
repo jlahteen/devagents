@@ -38,7 +38,7 @@ def read_file(file_path: str) -> str:
 
     If the file does not exist, the function returns an error message.
     """
-    
+
     try:
         # Allow only one thread to access the file reading section
         with file_lock:
@@ -98,7 +98,7 @@ def enum_subdirs(dir_path: str) -> list:
 
     If the directory does not exist, the function returns an error message.
     """
-    
+
     try:
         # Allow only one thread to access the directory listing section
         with file_lock:
@@ -146,7 +146,7 @@ def delete_file(file_path: str) -> str:
 
     If the file does not exist, the function returns an error message.
     """
-    
+
     try:
         # Allow only one thread to access the file deletion section
         with file_lock:
