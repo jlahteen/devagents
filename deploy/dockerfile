@@ -88,6 +88,7 @@ RUN echo "alias devagents='python -m cli.devagents'" >> ~/.bashrc && \
     echo "alias modify-app='devagents --workflow ModifyApp'" >> ~/.bashrc && \
     echo "alias fix-build='devagents --workflow FixBuild'" >> ~/.bashrc && \
     echo "alias fix-tests='devagents --workflow FixTests'" >> ~/.bashrc && \
+    echo "alias new-architecture='devagents --workflow NewArchitecture'" >> ~/.bashrc && \
     echo "alias ver='python -m cli.hello'" >> ~/.bashrc
 
 # Set the shell prompt
