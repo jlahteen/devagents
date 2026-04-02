@@ -14,7 +14,7 @@ from workflows.workflow_base import WorkflowBase
 
 
 class NewArchitectureWorkflow(WorkflowBase):
-    """A workflow to create an architecture document based on specifications."""
+    """A workflow for creating an architecture document from a specifications file."""
 
     def __init__(self, config: Config, monitor: MonitorBase = None):
         """Initializes the workflow with the necessary agents."""
