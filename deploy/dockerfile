@@ -7,6 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 # - Build tools
 # - vim editor
 # - Set up locales and terminal
+# - Mermaid CLI for diagram validation
 # All apt-get installs are combined for fewer layers and smaller image size
 # Clean up apt cache in the same layer to avoid leftover files
 RUN apt-get update && \
@@ -27,7 +28,8 @@ RUN apt-get update && \
         vim \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @mermaid-js/mermaid-cli
 
 # Set up locales for better curses compatibility
 ENV LANG=en_US.UTF-8

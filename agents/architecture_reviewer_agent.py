@@ -2,6 +2,7 @@ import textwrap
 
 from agent_platform.agent_base import AgentBase
 from tools.file_tools import read_file
+from tools.mermaid_tools import validate_mermaid
 from utils.config import Config
 from utils.constants import ARCHITECTURE_REVIEW_RESULT_APPROVED, ARCHITECTURE_REVIEW_RESULT_CHANGES_REQUIRED
 
@@ -64,7 +65,7 @@ class ArchitectureReviewerAgent(AgentBase):
              - No implementation details are left ambiguous
              - Architecture is agent-implementable (no manual operations required)
            - **Diagrams (if present):**
-             - Mermaid diagrams have no syntax errors and render correctly
+             - Mermaid diagrams pass syntax validation with the validate_mermaid tool
              - Mermaid diagrams match component descriptions in prose
              - Diagrams enhance understanding and are not redundant
         4. After your review:
@@ -78,7 +79,8 @@ class ArchitectureReviewerAgent(AgentBase):
 
         ## TOOLS
         You have the following tools:
-        - read_file tool for reading specs and architecture documents
+        - read_file for reading specs and architecture documents
+        - validate_mermaid for validating Mermaid diagram syntax
         """
     )
 
@@ -87,5 +89,5 @@ class ArchitectureReviewerAgent(AgentBase):
             name="architecture_reviewer_agent",
             system_message=self._system_message,
             config=config,
-            tools=[read_file],
+            tools=[read_file, validate_mermaid],
         )
