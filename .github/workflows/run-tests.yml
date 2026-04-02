@@ -1,0 +1,79 @@
+name: Run Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_file:
+        description: 'Specific test file (optional, e.g., tests/test_new_plan_workflow.py)'
+        required: false
+        default: ''
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Prepare deployment files
+        run: |
+          cd deploy
+          mkdir -p devagents
+          
+          # Copy root files
+          cp ../*.py devagents/ 2>/dev/null || true
+          cp ../*.txt devagents/ 2>/dev/null || true
+          cp ../LICENSE devagents/ 2>/dev/null || true
+          cp ../README.md devagents/ 2>/dev/null || true
+          
+          # Copy directories
+          cp -r ../utils devagents/
+          cp -r ../tools devagents/
+          cp -r ../workflows devagents/
+          cp -r ../agents devagents/
+          cp -r ../agent_platform devagents/
+          cp -r ../monitoring devagents/
+          cp -r ../workflow_engine devagents/
+          cp -r ../cli devagents/
+          
+          # Copy tests
+          mkdir -p devagents/tests
+          cp ../tests/*.py devagents/tests/ 2>/dev/null || true
+          cp -r ../tests/test_data devagents/tests/ 2>/dev/null || true
+          
+          # Update build number
+          python update_build.py
+      
+      - name: Build Docker image
+        run: |
+          cd deploy
+          docker build -t devagents:test .
+      
+      - name: Run tests in container
+        run: |
+          TEST_FILE="${{ github.event.inputs.test_file }}"
+          
+          if [ -z "$TEST_FILE" ]; then
+            echo "Running all tests..."
+            TEST_CMD="pytest -v tests/"
+          else
+            echo "Running: $TEST_FILE"
+            TEST_CMD="pytest -v $TEST_FILE"
+          fi
+          
+          docker run --rm \
+            -e AZURE_MODEL=${{ secrets.AZURE_MODEL }} \
+            -e AZURE_API_KEY=${{ secrets.AZURE_API_KEY }} \
+            -e AZURE_ENDPOINT=${{ secrets.AZURE_ENDPOINT }} \
+            -e AZURE_DEPLOYMENT=${{ secrets.AZURE_DEPLOYMENT }} \
+            -e AZURE_API_VERSION=${{ secrets.AZURE_API_VERSION }} \
+            -e GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} \
+            -e GOOGLE_CSE_ID=${{ secrets.GOOGLE_CSE_ID }} \
+            devagents:test \
+            bash -c "cd /app/devagents && $TEST_CMD"
